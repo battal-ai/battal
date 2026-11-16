@@ -1,6 +1,6 @@
-# Contributing to Kalkan
+# Contributing to Battal
 
-Thanks for your interest. Kalkan is in an early research and design phase.
+Thanks for your interest. Battal is in an early research and design phase.
 
 ## Contributor License Agreement
 

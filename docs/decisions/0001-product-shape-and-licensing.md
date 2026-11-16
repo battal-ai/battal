@@ -5,15 +5,15 @@
 
 ## Context
 
-Kalkan should be usable as open source and also support a paid commercial edition later. It
+Battal should be usable as open source and also support a paid commercial edition later. It
 targets organizations running LLMs on their own infrastructure, with Turkish as the primary
 language. Adoption is the main early risk; a large vendor cloning the core is a lesser one.
 
 ## Decisions
 
-1. **Shape.** Kalkan is a security service and SDK that gateways and agent runtimes call. It is not
+1. **Shape.** Battal is a security service and SDK that gateways and agent runtimes call. It is not
    an LLM proxy. One evaluation API fronts swappable detectors and policy components.
-2. **Distribution.** Python SDK (in-process) and Kalkan Server (container/Helm).
+2. **Distribution.** Python SDK (in-process) and Battal Server (container/Helm).
 3. **Fully open source for now.** The whole repository is Apache-2.0. A commercial enterprise
    edition is deferred to a later stage. When it comes, it will follow the open-core pattern, with
    new code in a separately licensed `enterprise/` directory and production use requiring a

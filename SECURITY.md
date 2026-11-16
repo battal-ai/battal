@@ -1,6 +1,6 @@
 # Security Policy
 
-Kalkan is a security product, so bypasses of its detection or enforcement are in scope as
+Battal is a security product, so bypasses of its detection or enforcement are in scope as
 vulnerabilities, not only classic software bugs.
 
 ## Reporting a vulnerability
