@@ -1,19 +1,19 @@
-# Licensing
+# Lisanslama
 
-All code in this repository is licensed under the [Apache License 2.0](LICENSE).
+Bu repodaki tüm kod [Apache License 2.0](LICENSE) ile lisanslanmıştır.
 
-A commercial enterprise edition may be offered in the future. If it is, it will be added as new,
-separately licensed code. Everything already released under Apache-2.0 stays Apache-2.0.
+İleride ticari bir enterprise sürüm sunulabilir. Sunulursa, ayrı lisanslı yeni kod olarak eklenir.
+Apache-2.0 ile yayınlanmış her şey Apache-2.0 olarak kalır.
 
-## Model weights and datasets
+## Model ağırlıkları ve veri setleri
 
-Model weights and datasets are licensed separately from code, and each one states its own license
-in its model or dataset card. An open-source code license does not imply that any model or dataset
-used with Battal is open. Third-party models with their own licenses (for example, Llama
-Community License models) are not redistributed by this project; adapters let you plug them in
-under your own license agreement.
+Model ağırlıkları ve veri setleri koddan ayrı lisanslanır; her birinin lisansı kendi model veya
+dataset card'ında belirtilir. Kodun açık kaynak lisanslı olması, Battal ile kullanılan bir modelin
+ya da veri setinin de açık olduğu anlamına gelmez. Kendi lisansı olan üçüncü taraf modeller (örneğin
+Llama Community License modelleri) bu proje tarafından yeniden dağıtılmaz; adapter'lar sayesinde
+bunları kendi lisans anlaşmanız kapsamında takabilirsiniz.
 
-## Trademark
+## Marka
 
-"Battal" and associated logos are trademarks of the project owner. The Apache License does not
-grant permission to use them (see Section 6 of the license). Forks must use a different name.
+"Battal" adı ve ilgili logolar proje sahibinin markasıdır. Apache License bunları kullanma izni
+vermez (lisansın 6. maddesi). Fork'lar farklı bir ad kullanmalıdır.

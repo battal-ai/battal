@@ -1,24 +1,25 @@
-# Contributing to Battal
+# Battal'a katkı
 
-Thanks for your interest. Battal is in an early research and design phase.
+İlginiz için teşekkürler. Battal erken araştırma ve tasarım aşamasındadır.
 
-## Contributor License Agreement
+## Contributor License Agreement (CLA)
 
-All code contributions will require signing a Contributor License Agreement (CLA). The CLA is not
-in place yet, so **pull requests containing code cannot be merged for now**. Issues, discussions,
-bug reports and design feedback are welcome.
+Kod katkıları için Contributor License Agreement (CLA) imzalanması gerekecek. CLA henüz hazır
+olmadığı için **kod içeren pull request'ler şimdilik merge edilemez**. Issue, tartışma, bug raporu
+ve tasarım geri bildirimi memnuniyetle karşılanır.
 
-## Languages
+## Dil
 
-- Code, API contracts, code comments, README and contributor docs: **English**.
-- Research reports under `docs/research/`: **Turkish**.
-- Turkish detection examples and test data are Turkish by nature.
+- Dokümantasyon, issue'lar, kod yorumları ve araştırma raporları **Türkçe** yazılır.
+- Teknik terimler İngilizce bırakılır (örneğin guardrail, prompt injection, policy, tool call).
+- Kod içindeki isimler (değişken, fonksiyon, sınıf, API alanları) İngilizcedir.
 
-## Scope rules
+## Kapsam kuralları
 
-- Every detector, model or policy component must be swappable through a documented interface.
-- Model weights and datasets must declare their license separately from code.
+- Her detector, model veya policy bileşeni belgelenmiş bir interface üzerinden değiştirilebilir
+  olmalıdır.
+- Model ağırlıkları ve veri setleri, koddan ayrı olarak kendi lisanslarını belirtmelidir.
 
-## Security issues
+## Güvenlik açıkları
 
-Do not open public issues for vulnerabilities. See [SECURITY.md](SECURITY.md).
+Güvenlik açıkları için herkese açık issue açmayın. [SECURITY.md](SECURITY.md) dosyasına bakın.

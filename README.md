@@ -1,28 +1,31 @@
 # Battal
 
-Open-source AI Safety & Agent Security platform — Turkish-first.
+Açık kaynak, Türkçe öncelikli AI Safety & Agent Security platformu.
 
-Battal is a security service that AI gateways, code studios/IDEs and agent runtimes call to evaluate
-what flows through them: user input, model output (including streaming), RAG content, tool calls and
-tool results. It combines pluggable detectors (Turkish and Turkish–English mixed text, PII and
-secrets, prompt injection, content safety) with deterministic policy enforcement, behind one
-evaluation API.
+Battal; AI gateway'lerin, code studio/IDE ortamlarının ve agent runtime'ların, içlerinden geçen
+içeriği değerlendirmek için çağırdığı bir güvenlik servisidir. Değerlendirilen içerik şunlardır:
+kullanıcı girdisi, model yanıtı (streaming dahil), RAG içeriği, tool call'lar ve tool result'lar.
+Battal, takılıp çıkarılabilen detector'ları (Türkçe ve Türkçe–İngilizce karışık metin, PII ve
+secret, prompt injection, içerik güvenliği) deterministik policy uygulamasıyla tek bir evaluation
+API arkasında birleştirir.
 
-- **Not a proxy.** Gateways such as LiteLLM stay the gateway; Battal is the guard they call.
-- **Swappable components.** Models, scanners and policy engines plug in behind stable interfaces.
-- **Self-hosted.** Designed to run inside your own infrastructure; sensitive content never needs to
-  leave it.
-- **Explainable decisions.** Detector scores, policy decision and rationale are separate, versioned
-  and auditable.
+- **Proxy değildir.** LiteLLM gibi gateway'ler gateway olarak kalır; Battal onların çağırdığı
+  guard'dır.
+- **Değiştirilebilir bileşenler.** Modeller, scanner'lar ve policy engine'ler sabit interface'lerin
+  arkasına takılır.
+- **Self-hosted.** Kendi altyapınızda çalışacak şekilde tasarlanır; hassas içeriğin dışarı çıkması
+  gerekmez.
+- **Açıklanabilir kararlar.** Detector skorları, policy kararı ve gerekçe ayrı alanlardır;
+  sürümlenir ve denetlenebilir.
 
-Planned distribution: a Python SDK (`pip install battal`) and Battal Server (container/Helm).
+Planlanan dağıtım: Python SDK (`pip install battal`) ve Battal Server (container/Helm).
 
-> **Status:** early research & design phase. No usable release yet.
+> **Durum:** erken araştırma ve tasarım aşaması. Henüz kullanılabilir bir sürüm yok.
 
-## Licensing
+## Lisans
 
-Apache-2.0. See [LICENSING.md](LICENSING.md) for models, datasets and trademark.
+Apache-2.0. Modeller, veri setleri ve marka için [LICENSING.md](LICENSING.md) dosyasına bakın.
 
-## Contributing & security
+## Katkı ve güvenlik
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+[CONTRIBUTING.md](CONTRIBUTING.md) ve [SECURITY.md](SECURITY.md) dosyalarına bakın.

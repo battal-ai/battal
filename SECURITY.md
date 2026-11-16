@@ -1,17 +1,17 @@
-# Security Policy
+# Güvenlik politikası
 
-Battal is a security product, so bypasses of its detection or enforcement are in scope as
-vulnerabilities, not only classic software bugs.
+Battal bir güvenlik ürünüdür. Bu yüzden yalnızca klasik yazılım hataları değil, tespit veya
+policy uygulamasını atlatan bypass'lar da güvenlik açığı sayılır.
 
-## Reporting a vulnerability
+## Güvenlik açığı bildirme
 
-Report privately via GitHub: **Security → Report a vulnerability** on this repository
-(private vulnerability reporting). Do not open a public issue.
+GitHub üzerinden gizli olarak bildirin: bu repoda **Security → Report a vulnerability**
+(private vulnerability reporting). Herkese açık issue açmayın.
 
-Please include affected component and version, reproduction steps or a minimal payload, and the
-impact you observed (for example: detection bypass, policy bypass, sensitive data leak, fail-open
-under error).
+Bildiriminize şunları ekleyin: etkilenen bileşen ve sürüm, yeniden üretme adımları veya minimal
+bir payload, gözlemlediğiniz etki (örneğin detection bypass, policy bypass, hassas veri sızıntısı,
+hata durumunda fail-open).
 
-## Supported versions
+## Desteklenen sürümler
 
-No stable release exists yet. Fixes are applied to the `main` branch.
+Henüz kararlı bir sürüm yok. Düzeltmeler `main` branch'ine uygulanır.
