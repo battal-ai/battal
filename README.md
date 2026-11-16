@@ -1,6 +1,15 @@
+<p align="center">
+  <img src="assets/logo.png" alt="Battal logosu" width="160">
+</p>
+
 # Battal
 
 Açık kaynak, Türkçe öncelikli AI Safety & Agent Security platformu.
+
+> **Logo:** Kalkan biçimindeki **B**'nin iki bölümü modele giden istekleri ve modelden dönen
+> yanıtları simgeler. Ortadaki beyaz geçit, ikisinin de güvenlik kontrolünden geçtiği noktadır.
+> Bu geçitte Battal Gazi'den esinlenen bir muhafız nöbet tutar. Al ve beyaz renkler projenin
+> Türkiye'den doğduğunu yansıtır.
 
 Battal; AI gateway'lerin, code studio/IDE ortamlarının ve agent runtime'ların, içlerinden geçen
 içeriği değerlendirmek için çağırdığı bir güvenlik servisidir. Değerlendirilen içerik şunlardır:
