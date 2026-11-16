@@ -44,6 +44,15 @@ markdown_extensions:
 
 nav:
   - Ana sayfa: index.md
+  - Araştırma:
+      - "Araştırma raporu v0.1": research/index.md
+      - Ekler:
+          - "1. Framework'ler ve policy engine'ler": research/ekler/01-frameworks-policy.md
+          - "2. Injection ve safety modelleri": research/ekler/02-models.md
+          - "3. PII, secret ve Türkçe normalizasyon": research/ekler/03-pii-secrets-turkish.md
+          - "4. Entegrasyon noktaları": research/ekler/04-integrations.md
+          - "5. Değerlendirme ve veri setleri": research/ekler/05-eval-datasets.md
+          - "6. Uyum ve taksonomiler": research/ekler/06-compliance.md
   - Kararlar (ADR):
       - "0001: Ürün biçimi ve lisanslama": decisions/0001-product-shape-and-licensing.md
       - "0002: MVP kapsamı": decisions/0002-mvp-scope.md
