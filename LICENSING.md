@@ -1,6 +1,6 @@
 # Lisanslama
 
-Bu repodaki tüm kod [Apache License 2.0](LICENSE) ile lisanslanmıştır.
+Bu repodaki tüm kod [Apache License 2.0](https://github.com/battal-ai/battal/blob/main/LICENSE) ile lisanslanmıştır.
 
 İleride ticari bir enterprise sürüm sunulabilir. Sunulursa, ayrı lisanslı yeni kod olarak eklenir.
 Apache-2.0 ile yayınlanmış her şey Apache-2.0 olarak kalır.

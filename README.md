@@ -1,10 +1,12 @@
 <p align="center">
-  <img src="assets/logo.png" alt="Battal logosu" width="160">
+  <img src="docs/assets/logo.png" alt="Battal logosu" width="160">
 </p>
 
 # Battal
 
 Açık kaynak, Türkçe öncelikli AI Safety & Agent Security platformu.
+
+📖 **Dokümantasyon:** https://battal-ai.github.io/battal/
 
 > **Logo:** Kalkan biçimindeki **B**'nin iki bölümü modele giden istekleri ve modelden dönen
 > yanıtları simgeler. Ortadaki beyaz geçit, ikisinin de güvenlik kontrolünden geçtiği noktadır.

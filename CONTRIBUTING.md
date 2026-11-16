@@ -22,4 +22,4 @@ ve tasarım geri bildirimi memnuniyetle karşılanır.
 
 ## Güvenlik açıkları
 
-Güvenlik açıkları için herkese açık issue açmayın. [SECURITY.md](SECURITY.md) dosyasına bakın.
+Güvenlik açıkları için herkese açık issue açmayın. [SECURITY.md](https://github.com/battal-ai/battal/blob/main/SECURITY.md) dosyasına bakın.

@@ -1,0 +1,52 @@
+site_name: Battal
+site_description: Açık kaynak, Türkçe öncelikli AI guardrail ve agent security platformu
+site_url: https://battal-ai.github.io/battal/
+repo_url: https://github.com/battal-ai/battal
+repo_name: battal-ai/battal
+edit_uri: edit/main/docs/
+copyright: Copyright 2026 The Battal Authors · Apache-2.0
+
+theme:
+  name: material
+  language: tr
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: red
+      accent: red
+      toggle:
+        icon: material/weather-night
+        name: Koyu temaya geç
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: red
+      accent: red
+      toggle:
+        icon: material/weather-sunny
+        name: Açık temaya geç
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+
+nav:
+  - Ana sayfa: index.md
+  - Kararlar (ADR):
+      - "0001: Ürün biçimi ve lisanslama": decisions/0001-product-shape-and-licensing.md
+  - Proje:
+      - Lisanslama: proje/lisanslama.md
+      - Katkı: proje/katki.md
+      - Güvenlik politikası: proje/guvenlik.md
