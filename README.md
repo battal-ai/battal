@@ -8,6 +8,8 @@ Açık kaynak, Türkçe öncelikli AI Safety & Agent Security platformu.
 
 📖 **Dokümantasyon:** https://battal-ai.github.io/battal/
 
+🧭 **Ürüne genel bakış:** https://battal-ai.github.io/battal/urun/
+
 > **Logo:** Kalkan biçimindeki **B**'nin iki bölümü modele giden istekleri ve modelden dönen
 > yanıtları simgeler. Ortadaki beyaz geçit, ikisinin de güvenlik kontrolünden geçtiği noktadır.
 > Bu geçitte Battal Gazi'den esinlenen bir muhafız nöbet tutar. Al ve beyaz renkler projenin

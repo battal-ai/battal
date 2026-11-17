@@ -44,6 +44,7 @@ markdown_extensions:
 
 nav:
   - Ana sayfa: index.md
+  - Ürüne genel bakış: urun.md
   - Araştırma:
       - "Araştırma raporu v0.1": research/index.md
       - Ekler:

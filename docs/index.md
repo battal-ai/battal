@@ -36,6 +36,7 @@ doğduğunu yansıtır.
 
 ## Dokümanlar
 
+- [Ürüne genel bakış](urun.md): ürünün bugünkü tasarımının özeti
 - [Kararlar (ADR)](decisions/0001-product-shape-and-licensing.md): ürün biçimi ve lisanslama
 - [Lisanslama](proje/lisanslama.md)
 - [Katkı](proje/katki.md)
