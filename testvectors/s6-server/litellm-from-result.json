@@ -1,0 +1,502 @@
+{
+  "format_version": 1,
+  "spec": "S6",
+  "function": "litellm.from_result",
+  "description": "Kararın ve hatanın LiteLLM yanıtına çevrilmesi (S6 §7.2, §7.3).",
+  "cases": [
+    {
+      "id": "allow-none",
+      "description": "allow → NONE.",
+      "spec_refs": [
+        "S6-LLM-010"
+      ],
+      "input": {
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "allow",
+            "rule_id": null,
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "default",
+              "binding": null
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [],
+          "transforms": [],
+          "timing_ms": {
+            "total": 1.0
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "NONE"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "mask-butun-texts",
+      "description": "mask → GUARDRAIL_INTERVENED; bütün texts aynı sırayla döner, maskelenmeyenler aynen.",
+      "spec_refs": [
+        "S6-LLM-011"
+      ],
+      "input": {
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "kural-1",
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            },
+            {
+              "segment": 2,
+              "text": "Telefon <PHONE>",
+              "edits": [
+                {
+                  "span": [
+                    8,
+                    22
+                  ],
+                  "replacement": "<PHONE>"
+                }
+              ]
+            }
+          ],
+          "timing_ms": {
+            "total": 1.0
+          },
+          "rationale": {
+            "code": "POLICY_MASKED",
+            "message_tr": "İstekteki bazı bilgiler gizlendi."
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "GUARDRAIL_INTERVENED",
+          "texts": [
+            "TC'm <TCKN>",
+            "Merhaba",
+            "Telefon <PHONE>"
+          ]
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "block-gerekce",
+      "description": "block → BLOCKED; blocked_reason rationale mesajı ve karar kimliğidir.",
+      "spec_refs": [
+        "S6-LLM-012"
+      ],
+      "input": {
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-77",
+          "decision": {
+            "action": "block",
+            "rule_id": "kural-1",
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [],
+          "transforms": [],
+          "timing_ms": {
+            "total": 1.0
+          },
+          "rationale": {
+            "code": "PII_BLOCKED",
+            "message_tr": "İstek kişisel veri içerdiği için engellendi."
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "BLOCKED",
+          "blocked_reason": "İstek kişisel veri içerdiği için engellendi. (karar: req-77)"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "ask-block",
+      "description": "ask, gateway yüzeyinde BLOCKED olarak uygulanır (ADR 0004 karar 8).",
+      "spec_refs": [
+        "S6-LLM-013"
+      ],
+      "input": {
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "ask",
+            "rule_id": "kural-1",
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [],
+          "transforms": [],
+          "timing_ms": {
+            "total": 1.0
+          },
+          "rationale": {
+            "code": "CONFIRMATION_REQUIRED",
+            "message_tr": "Bu işlem için onay gerekiyor."
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "BLOCKED",
+          "blocked_reason": "Bu işlem için onay gerekiyor. (karar: req-1)"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "fail-mode-block",
+      "description": "Motor arızasında verilen fail mode kararı da normal bir block gibi döner.",
+      "spec_refs": [
+        "S6-LLM-012"
+      ],
+      "input": {
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "block",
+            "rule_id": "kural-1",
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [],
+          "transforms": [],
+          "timing_ms": {
+            "total": 1.0
+          },
+          "rationale": {
+            "code": "UNAVAILABLE",
+            "message_tr": "İstek şu anda değerlendirilemiyor."
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ]
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "BLOCKED",
+          "blocked_reason": "İstek şu anda değerlendirilemiyor. (karar: req-1)"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "buyuk-girdi-closed",
+      "description": "INPUT_TOO_LARGE, fail mode closed ise BLOCKED olur ve 2xx döner.",
+      "spec_refs": [
+        "S6-LLM-014"
+      ],
+      "input": {
+        "result": {
+          "error": {
+            "code": "INPUT_TOO_LARGE",
+            "message": "ayrıntı",
+            "request_id": "req-9"
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ],
+        "fail_mode": "closed"
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "BLOCKED",
+          "blocked_reason": "İstek değerlendirilemeyecek kadar büyük. (karar: req-9)"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "buyuk-girdi-closed-kimliksiz",
+      "description": "Hata request_id içermiyorsa blocked_reason'a karar kimliği eklenmez.",
+      "spec_refs": [
+        "S6-LLM-014"
+      ],
+      "input": {
+        "result": {
+          "error": {
+            "code": "INPUT_TOO_LARGE",
+            "message": "ayrıntı"
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ],
+        "fail_mode": "closed"
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "BLOCKED",
+          "blocked_reason": "İstek değerlendirilemeyecek kadar büyük."
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "buyuk-girdi-open",
+      "description": "INPUT_TOO_LARGE, fail mode open ise NONE olur.",
+      "spec_refs": [
+        "S6-LLM-014"
+      ],
+      "input": {
+        "result": {
+          "error": {
+            "code": "INPUT_TOO_LARGE",
+            "message": "ayrıntı"
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ],
+        "fail_mode": "open"
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "NONE"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "buyuk-girdi-bundle-yok",
+      "description": "Fail mode bilinmiyorsa (bundle yok) INPUT_TOO_LARGE 503 döner.",
+      "spec_refs": [
+        "S6-LLM-015"
+      ],
+      "input": {
+        "result": {
+          "error": {
+            "code": "INPUT_TOO_LARGE",
+            "message": "ayrıntı"
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ]
+      },
+      "expected": {
+        "status": 503,
+        "body": {
+          "error": {
+            "code": "INPUT_TOO_LARGE"
+          }
+        }
+      }
+    },
+    {
+      "id": "bundle-yok-503",
+      "description": "NO_BUNDLE_LOADED 503 döner; LiteLLM'in unreachable_fallback ayarı uygulanır.",
+      "spec_refs": [
+        "S6-LLM-015"
+      ],
+      "input": {
+        "result": {
+          "error": {
+            "code": "NO_BUNDLE_LOADED",
+            "message": "ayrıntı"
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ],
+        "fail_mode": "closed"
+      },
+      "expected": {
+        "status": 503,
+        "body": {
+          "error": {
+            "code": "NO_BUNDLE_LOADED"
+          }
+        }
+      }
+    },
+    {
+      "id": "policy-izinsiz-block",
+      "description": "POLICY_NOT_ALLOWED fail mode'dan bağımsız olarak BLOCKED döner.",
+      "spec_refs": [
+        "S6-LLM-016"
+      ],
+      "input": {
+        "result": {
+          "error": {
+            "code": "POLICY_NOT_ALLOWED",
+            "message": "ayrıntı",
+            "request_id": "req-3"
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ],
+        "fail_mode": "open"
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "BLOCKED",
+          "blocked_reason": "İstenen policy kullanılamıyor. (karar: req-3)"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "gecersiz-istek-400",
+      "description": "INVALID_REQUEST 400 döner; LiteLLM'in fail_on_error ayarı uygulanır.",
+      "spec_refs": [
+        "S6-LLM-017"
+      ],
+      "input": {
+        "result": {
+          "error": {
+            "code": "INVALID_REQUEST",
+            "message": "ayrıntı"
+          }
+        },
+        "texts": [
+          "TC'm 10000000146",
+          "Merhaba",
+          "Telefon 0532 123 45 67"
+        ],
+        "fail_mode": "open"
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "error": {
+            "code": "INVALID_REQUEST"
+          }
+        }
+      }
+    }
+  ]
+}

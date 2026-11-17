@@ -594,6 +594,9 @@ Takvim ve sprint ataması yapılmamıştır. MVP epic'leri ayrıntılı, sonraki
 - **PBI 6.3 `docker compose` demosu.**
   *DoD:* Temiz bir makinede tek komutla çalışır; README'deki üç örnek istek (engelle, maskele,
   geçir) beklenen sonucu verir.
+- **PBI 6.4 `/metrics` endpoint'i (MVP sonrası).** Prometheus biçiminde istek sayısı, eylem
+  dağılımı, gecikme histogramı, bundle yeniden yükleme sonucu; içerik ya da kimlik etiketi yoktur.
+  *DoD:* Metrik adları ve etiketleri S6'nın yeni bir sürümünde tanımlanır.
 
 ### E7 Türkçe benchmark v0
 

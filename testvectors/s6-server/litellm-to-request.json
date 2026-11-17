@@ -1,0 +1,452 @@
+{
+  "format_version": 1,
+  "spec": "S6",
+  "function": "litellm.to_request",
+  "description": "LiteLLM Generic Guardrail API isteğinin EvaluationRequest'e çevrilmesi (S6 §7.1).",
+  "cases": [
+    {
+      "id": "istek-temel",
+      "description": "request → input checkpoint'i; her texts elemanı sırasıyla bir segment olur.",
+      "spec_refs": [
+        "S6-LLM-001",
+        "S6-LLM-002"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "texts": [
+            "Birinci",
+            "İkinci"
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+        }
+      },
+      "expected": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Birinci",
+              "source": "user",
+              "trust": "untrusted"
+            },
+            {
+              "id": 1,
+              "text": "İkinci",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "yanit-output",
+      "description": "response → output checkpoint'i; segment kaynağı model.",
+      "spec_refs": [
+        "S6-LLM-001",
+        "S6-LLM-002"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "response",
+          "texts": [
+            "Yanıt metni"
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+        }
+      },
+      "expected": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+          "checkpoint": "output",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Yanıt metni",
+              "source": "model",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "kimlik-alanlari",
+      "description": "request_data alanları principal, tenant, session, target ve policy alanlarına eşlenir; diğerleri kullanılmaz.",
+      "spec_refs": [
+        "S6-LLM-003",
+        "S6-LLM-004"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "texts": [
+            "Merhaba, TC'm 10000000146"
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+          "request_data": {
+            "user_api_key_hash": "88dc28d0f030c55ed4ab77ed8faf098196cb1c05df778539800c9f1243fe6b4b",
+            "user_api_key_alias": "ekip-anahtari",
+            "user_api_key_user_id": "u-42",
+            "user_api_key_user_email": "ali@ornek.com",
+            "user_api_key_team_id": "t-7",
+            "user_api_key_team_alias": "analitik",
+            "user_api_key_end_user_id": null,
+            "user_api_key_org_id": "kurum-1"
+          },
+          "model": "qwen3-32b",
+          "litellm_trace_id": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
+          "additional_provider_specific_params": {
+            "policy_id": "katı"
+          },
+          "litellm_version": "1.80.0"
+        }
+      },
+      "expected": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+          "checkpoint": "input",
+          "tenant": "kurum-1",
+          "principal": {
+            "key_hash": "88dc28d0f030c55ed4ab77ed8faf098196cb1c05df778539800c9f1243fe6b4b",
+            "team_id": "t-7",
+            "user_id": "u-42"
+          },
+          "session": {
+            "id": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d"
+          },
+          "target": {
+            "model": "qwen3-32b"
+          },
+          "policy": {
+            "id": "katı"
+          },
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba, TC'm 10000000146",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "bos-ve-null-alanlar",
+      "description": "Boş string ya da null değerli alanlar istekte yer almaz.",
+      "spec_refs": [
+        "S6-LLM-004"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "texts": [
+            "Merhaba, TC'm 10000000146"
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+          "request_data": {
+            "user_api_key_hash": "",
+            "user_api_key_team_id": null
+          },
+          "model": "",
+          "litellm_trace_id": null
+        }
+      },
+      "expected": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba, TC'm 10000000146",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "gecersiz-call-id",
+      "description": "S1-REQ-004'e uymayan litellm_call_id request_id olarak kullanılmaz.",
+      "spec_refs": [
+        "S6-LLM-003"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "texts": [
+            "Merhaba, TC'm 10000000146"
+          ],
+          "litellm_call_id": "çağrı 1"
+        }
+      },
+      "expected": {
+        "request": {
+          "api_version": "v1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba, TC'm 10000000146",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "bilinmeyen-alanlar",
+      "description": "LiteLLM'in eklediği bilinmeyen alanlar ve MVP'de kullanılmayan alanlar yok sayılır.",
+      "spec_refs": [
+        "S6-LLM-005"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "texts": [
+            "Merhaba, TC'm 10000000146"
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+          "structured_messages": [
+            {
+              "role": "system",
+              "content": "Sen bir asistansın."
+            }
+          ],
+          "images": [
+            "data:image/png;base64,AAAA"
+          ],
+          "tools": [
+            {
+              "type": "function",
+              "function": {
+                "name": "ara"
+              }
+            }
+          ],
+          "tool_calls": [],
+          "request_headers": {
+            "x-api-key": "[present]"
+          },
+          "yeni_alan": 1
+        }
+      },
+      "expected": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba, TC'm 10000000146",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "texts-yok",
+      "description": "texts yoksa değerlendirilecek metin yoktur.",
+      "spec_refs": [
+        "S6-LLM-006"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+        }
+      },
+      "expected": {
+        "skip": true
+      },
+      "match": "exact"
+    },
+    {
+      "id": "texts-bos",
+      "description": "Boş texts dizisi değerlendirilmez.",
+      "spec_refs": [
+        "S6-LLM-006"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "texts": [],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+        }
+      },
+      "expected": {
+        "skip": true
+      },
+      "match": "exact"
+    },
+    {
+      "id": "bos-metin-segment",
+      "description": "Boş string bir segment olarak korunur; sıra değişmez.",
+      "spec_refs": [
+        "S6-LLM-002"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "texts": [
+            "",
+            "ikinci"
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+        }
+      },
+      "expected": {
+        "request": {
+          "segments": [
+            {
+              "id": 0,
+              "text": "",
+              "source": "user",
+              "trust": "untrusted"
+            },
+            {
+              "id": 1,
+              "text": "ikinci",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "input-type-gecersiz",
+      "description": "input_type request ya da response değilse istek geçersizdir.",
+      "spec_refs": [
+        "S6-LLM-007"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "during",
+          "texts": [
+            "Merhaba, TC'm 10000000146"
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "input-type-yok",
+      "description": "input_type yoksa istek geçersizdir.",
+      "spec_refs": [
+        "S6-LLM-007"
+      ],
+      "input": {
+        "payload": {
+          "texts": [
+            "Merhaba, TC'm 10000000146"
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "payload-nesne-degil",
+      "description": "Payload bir nesne değilse istek geçersizdir.",
+      "spec_refs": [
+        "S6-LLM-007"
+      ],
+      "input": {
+        "payload": [
+          "texts"
+        ]
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "texts-string-degil",
+      "description": "texts elemanlarından biri string değilse istek geçersizdir.",
+      "spec_refs": [
+        "S6-LLM-007"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "texts": [
+            "a",
+            1
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "kimlik-tipi-yanlis",
+      "description": "Kullanılan bir alan string değilse istek geçersizdir; sessizce atlanmaz.",
+      "spec_refs": [
+        "S6-LLM-007"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "texts": [
+            "Merhaba, TC'm 10000000146"
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+          "request_data": {
+            "user_api_key_team_id": 7
+          }
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "policy-params-tipi-yanlis",
+      "description": "additional_provider_specific_params nesne değilse istek geçersizdir.",
+      "spec_refs": [
+        "S6-LLM-007"
+      ],
+      "input": {
+        "payload": {
+          "input_type": "request",
+          "texts": [
+            "Merhaba, TC'm 10000000146"
+          ],
+          "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+          "additional_provider_specific_params": "katı"
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    }
+  ]
+}

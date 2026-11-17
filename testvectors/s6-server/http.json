@@ -1,0 +1,1905 @@
+{
+  "format_version": 1,
+  "spec": "S6",
+  "function": "server.http",
+  "description": "HTTP katmanı: endpoint'ler, status kodları, kimlik doğrulama, boyut sınırı ve health (S6 §4–§8).",
+  "cases": [
+    {
+      "id": "evaluate-200",
+      "description": "Geçerli istek 200 ve EvaluationResponse ile döner.",
+      "spec_refs": [
+        "S6-EVAL-001"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "allow",
+            "bundle_hash": "sha256:d12b3abd002448ae65ff0a8cd2d4392724dee59572c8c268f0631e90f4d0552d"
+          }
+        }
+      }
+    },
+    {
+      "id": "evaluate-400-surum",
+      "description": "UNSUPPORTED_API_VERSION 400 döner.",
+      "spec_refs": [
+        "S6-EVAL-002"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body": {
+            "api_version": "v2",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "error": {
+            "code": "UNSUPPORTED_API_VERSION",
+            "request_id": "req-1"
+          }
+        }
+      }
+    },
+    {
+      "id": "evaluate-400-gecersiz",
+      "description": "INVALID_REQUEST 400 döner.",
+      "spec_refs": [
+        "S6-EVAL-002"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ],
+            "fazla": 1
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "error": {
+            "code": "INVALID_REQUEST",
+            "request_id": "req-1"
+          }
+        }
+      }
+    },
+    {
+      "id": "evaluate-400-checkpoint",
+      "description": "CHECKPOINT_NOT_SUPPORTED 400 döner.",
+      "spec_refs": [
+        "S6-EVAL-002"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "tool_call",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "error": {
+            "code": "CHECKPOINT_NOT_SUPPORTED",
+            "request_id": "req-1"
+          }
+        }
+      }
+    },
+    {
+      "id": "evaluate-413-kod-noktasi",
+      "description": "S1 girdi sınırı aşılırsa 413 döner.",
+      "spec_refs": [
+        "S6-EVAL-002"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "limits": {
+            "max_segment_code_points": 3
+          }
+        }
+      },
+      "expected": {
+        "status": 413,
+        "body": {
+          "error": {
+            "code": "INPUT_TOO_LARGE",
+            "request_id": "req-1"
+          }
+        }
+      }
+    },
+    {
+      "id": "evaluate-403-policy",
+      "description": "POLICY_NOT_ALLOWED 403 döner.",
+      "spec_refs": [
+        "S6-EVAL-002"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ],
+            "policy": {
+              "id": "yok"
+            }
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 403,
+        "body": {
+          "error": {
+            "code": "POLICY_NOT_ALLOWED",
+            "request_id": "req-1"
+          }
+        }
+      }
+    },
+    {
+      "id": "evaluate-503-bundle-yok",
+      "description": "Bundle yüklü değilse 503 döner.",
+      "spec_refs": [
+        "S6-EVAL-002"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        }
+      },
+      "expected": {
+        "status": 503,
+        "body": {
+          "error": {
+            "code": "NO_BUNDLE_LOADED",
+            "request_id": "req-1"
+          }
+        }
+      }
+    },
+    {
+      "id": "bozuk-json",
+      "description": "Ayrıştırılamayan JSON 400 / INVALID_REQUEST döner.",
+      "spec_refs": [
+        "S6-HTTP-003"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body_raw": "{\"api_version\": \"v1\","
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "error": {
+            "code": "INVALID_REQUEST"
+          }
+        }
+      }
+    },
+    {
+      "id": "yanlis-content-type",
+      "description": "Content-Type application/json değilse 400 döner.",
+      "spec_refs": [
+        "S6-HTTP-003"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "error": {
+            "code": "INVALID_REQUEST"
+          }
+        }
+      }
+    },
+    {
+      "id": "content-type-charset",
+      "description": "application/json; charset=utf-8 kabul edilir; başlık adları büyük-küçük harf duyarsızdır.",
+      "spec_refs": [
+        "S6-HTTP-003"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "headers": {
+            "CONTENT-TYPE": "Application/JSON; charset=utf-8"
+          },
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200
+      }
+    },
+    {
+      "id": "govde-sinir-asimi",
+      "description": "Gövde max_body_bytes'ı aşarsa ayrıştırılmadan 413 döner.",
+      "spec_refs": [
+        "S6-HTTP-004"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body_raw": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "max_body_bytes": 64
+        }
+      },
+      "expected": {
+        "status": 413,
+        "body": {
+          "error": {
+            "code": "INPUT_TOO_LARGE"
+          }
+        }
+      }
+    },
+    {
+      "id": "govde-sinira-esit",
+      "description": "Sınıra eşit gövde kabul edilir (burada bozuk JSON olduğu için 400).",
+      "spec_refs": [
+        "S6-HTTP-004"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body_raw": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "max_body_bytes": 64
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "error": {
+            "code": "INVALID_REQUEST"
+          }
+        }
+      }
+    },
+    {
+      "id": "govde-sinir-bayt",
+      "description": "Sınır bayt cinsindendir: 32 'ş' 64 bayttır ve 63 baytlık sınırı aşar.",
+      "spec_refs": [
+        "S6-HTTP-004"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body_raw": "şşşşşşşşşşşşşşşşşşşşşşşşşşşşşşşş"
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "max_body_bytes": 63
+        }
+      },
+      "expected": {
+        "status": 413,
+        "body": {
+          "error": {
+            "code": "INPUT_TOO_LARGE"
+          }
+        }
+      }
+    },
+    {
+      "id": "litellm-govde-sinir-asimi",
+      "description": "LiteLLM route'unda bayt sınırı aşımı da 413 döner.",
+      "spec_refs": [
+        "S6-HTTP-004",
+        "S6-LLM-018"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/beta/litellm_basic_guardrail_api",
+          "body_raw": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "max_body_bytes": 64
+        }
+      },
+      "expected": {
+        "status": 413,
+        "body": {
+          "error": {
+            "code": "INPUT_TOO_LARGE"
+          }
+        }
+      }
+    },
+    {
+      "id": "bilinmeyen-yol",
+      "description": "Tanımsız yol 404 döner.",
+      "spec_refs": [
+        "S6-HTTP-002"
+      ],
+      "input": {
+        "request": {
+          "method": "GET",
+          "path": "/v1/policies"
+        }
+      },
+      "expected": {
+        "status": 404,
+        "body": {
+          "error": {
+            "code": "NOT_FOUND"
+          }
+        }
+      }
+    },
+    {
+      "id": "yanlis-metot",
+      "description": "Tanımlı yola yanlış metot 405 döner.",
+      "spec_refs": [
+        "S6-HTTP-002"
+      ],
+      "input": {
+        "request": {
+          "method": "GET",
+          "path": "/v1/evaluate"
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 405,
+        "body": {
+          "error": {
+            "code": "METHOD_NOT_ALLOWED"
+          }
+        }
+      }
+    },
+    {
+      "id": "anahtar-yok-401",
+      "description": "API key ayarlıysa anahtarsız istek 401 döner.",
+      "spec_refs": [
+        "S6-AUTH-001"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "api_key": "test-anahtari-0123456789"
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "error": {
+            "code": "UNAUTHORIZED"
+          }
+        }
+      }
+    },
+    {
+      "id": "anahtar-yanlis-401",
+      "description": "Yanlış anahtar 401 döner.",
+      "spec_refs": [
+        "S6-AUTH-001"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "headers": {
+            "x-api-key": "test-anahtari-0123456789x"
+          },
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "api_key": "test-anahtari-0123456789"
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "error": {
+            "code": "UNAUTHORIZED"
+          }
+        }
+      }
+    },
+    {
+      "id": "anahtar-x-api-key",
+      "description": "x-api-key başlığındaki doğru anahtar kabul edilir.",
+      "spec_refs": [
+        "S6-AUTH-001"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "headers": {
+            "X-Api-Key": "test-anahtari-0123456789"
+          },
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "api_key": "test-anahtari-0123456789"
+        }
+      },
+      "expected": {
+        "status": 200
+      }
+    },
+    {
+      "id": "anahtar-bearer",
+      "description": "Authorization: Bearer başlığındaki doğru anahtar kabul edilir.",
+      "spec_refs": [
+        "S6-AUTH-001"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "headers": {
+            "Authorization": "Bearer test-anahtari-0123456789"
+          },
+          "body": {
+            "api_version": "v1",
+            "request_id": "req-1",
+            "checkpoint": "input",
+            "segments": [
+              {
+                "id": 0,
+                "text": "Merhaba"
+              }
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "api_key": "test-anahtari-0123456789"
+        }
+      },
+      "expected": {
+        "status": 200
+      }
+    },
+    {
+      "id": "anahtar-litellm-route",
+      "description": "LiteLLM route'u da anahtar ister.",
+      "spec_refs": [
+        "S6-AUTH-001"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/beta/litellm_basic_guardrail_api",
+          "body": {
+            "input_type": "request",
+            "texts": [
+              "Merhaba"
+            ],
+            "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "api_key": "test-anahtari-0123456789"
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "error": {
+            "code": "UNAUTHORIZED"
+          }
+        }
+      }
+    },
+    {
+      "id": "auth-once-boyut",
+      "description": "Kimlik doğrulama gövde sınırından önce denetlenir.",
+      "spec_refs": [
+        "S6-HTTP-001"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/v1/evaluate",
+          "body_raw": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "api_key": "test-anahtari-0123456789",
+          "max_body_bytes": 64
+        }
+      },
+      "expected": {
+        "status": 401,
+        "body": {
+          "error": {
+            "code": "UNAUTHORIZED"
+          }
+        }
+      }
+    },
+    {
+      "id": "health-anahtarsiz",
+      "description": "/healthz kimlik doğrulama istemez ve her zaman 200 döner.",
+      "spec_refs": [
+        "S6-HLT-001",
+        "S6-AUTH-002"
+      ],
+      "input": {
+        "request": {
+          "method": "GET",
+          "path": "/healthz"
+        },
+        "config": {
+          "api_key": "test-anahtari-0123456789"
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "ok"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "ready-bundle-var",
+      "description": "/readyz bundle yüklüyse 200, bundle_hash ve bundle_version döner.",
+      "spec_refs": [
+        "S6-HLT-002",
+        "S6-AUTH-002"
+      ],
+      "input": {
+        "request": {
+          "method": "GET",
+          "path": "/readyz"
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "api_key": "test-anahtari-0123456789"
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "ready",
+          "bundle_hash": "sha256:d12b3abd002448ae65ff0a8cd2d4392724dee59572c8c268f0631e90f4d0552d",
+          "bundle_version": "1.2.0"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "ready-bundle-yok",
+      "description": "/readyz bundle yüklü değilse 503 döner.",
+      "spec_refs": [
+        "S6-HLT-002"
+      ],
+      "input": {
+        "request": {
+          "method": "GET",
+          "path": "/readyz"
+        }
+      },
+      "expected": {
+        "status": 503,
+        "body": {
+          "status": "not_ready"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "litellm-allow",
+      "description": "LiteLLM route'u allow kararını NONE olarak döner.",
+      "spec_refs": [
+        "S6-LLM-010"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/beta/litellm_basic_guardrail_api",
+          "body": {
+            "input_type": "request",
+            "texts": [
+              "Merhaba"
+            ],
+            "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "NONE"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "litellm-texts-yok",
+      "description": "texts boşsa değerlendirme yapılmadan NONE döner.",
+      "spec_refs": [
+        "S6-LLM-006"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/beta/litellm_basic_guardrail_api",
+          "body": {
+            "input_type": "request",
+            "texts": [],
+            "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "NONE"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "litellm-bozuk-payload",
+      "description": "Geçersiz LiteLLM payload'ı 400 döner.",
+      "spec_refs": [
+        "S6-LLM-007",
+        "S6-LLM-017"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/beta/litellm_basic_guardrail_api",
+          "body": {
+            "texts": [
+              "a"
+            ]
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "error": {
+            "code": "INVALID_REQUEST"
+          }
+        }
+      }
+    },
+    {
+      "id": "litellm-bundle-yok",
+      "description": "Bundle yoksa LiteLLM route'u 503 döner.",
+      "spec_refs": [
+        "S6-LLM-015"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/beta/litellm_basic_guardrail_api",
+          "body": {
+            "input_type": "request",
+            "texts": [
+              "Merhaba"
+            ],
+            "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+          }
+        }
+      },
+      "expected": {
+        "status": 503,
+        "body": {
+          "error": {
+            "code": "NO_BUNDLE_LOADED",
+            "request_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+          }
+        }
+      }
+    },
+    {
+      "id": "litellm-buyuk-input-closed",
+      "description": "input checkpoint'inde kod noktası sınırı aşılırsa fail mode closed uygulanır.",
+      "spec_refs": [
+        "S6-LLM-014"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/beta/litellm_basic_guardrail_api",
+          "body": {
+            "input_type": "request",
+            "texts": [
+              "Merhaba"
+            ],
+            "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "limits": {
+            "max_total_code_points": 3
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "BLOCKED",
+          "blocked_reason": "İstek değerlendirilemeyecek kadar büyük. (karar: 3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162)"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "litellm-buyuk-output-bundle-closed",
+      "description": "Fail mode bundle'dan okunur: bu bundle'da output closed'dır.",
+      "spec_refs": [
+        "S6-LLM-014"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/beta/litellm_basic_guardrail_api",
+          "body": {
+            "input_type": "response",
+            "texts": [
+              "Merhaba"
+            ],
+            "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162"
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        },
+        "config": {
+          "limits": {
+            "max_total_code_points": 3
+          }
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "BLOCKED",
+          "blocked_reason": "İstek değerlendirilemeyecek kadar büyük. (karar: 3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162)"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "litellm-policy-izinsiz",
+      "description": "İzinsiz policy_id BLOCKED döner.",
+      "spec_refs": [
+        "S6-LLM-016"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/beta/litellm_basic_guardrail_api",
+          "body": {
+            "input_type": "request",
+            "texts": [
+              "Merhaba"
+            ],
+            "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+            "additional_provider_specific_params": {
+              "policy_id": "yok"
+            }
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "BLOCKED",
+          "blocked_reason": "İstenen policy kullanılamıyor. (karar: 3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162)"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "litellm-policy-secimi",
+      "description": "İzin verilen policy_id seçilir ve karar normal döner.",
+      "spec_refs": [
+        "S6-LLM-003"
+      ],
+      "input": {
+        "request": {
+          "method": "POST",
+          "path": "/beta/litellm_basic_guardrail_api",
+          "body": {
+            "input_type": "request",
+            "texts": [
+              "Merhaba"
+            ],
+            "litellm_call_id": "3f1c2a9e-5b7d-4e21-9c0a-1d2e3f405162",
+            "additional_provider_specific_params": {
+              "policy_id": "serbest"
+            }
+          }
+        },
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.2.0",
+            "fail_modes": {
+              "output": "closed"
+            }
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {},
+                "selectable": [
+                  "serbest"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "serbest",
+              "version": "1.0.0",
+              "rules": []
+            }
+          ]
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "action": "NONE"
+        }
+      },
+      "match": "exact"
+    }
+  ]
+}

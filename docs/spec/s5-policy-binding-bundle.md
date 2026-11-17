@@ -1,7 +1,7 @@
 # S5: Policy, binding ve bundle
 
 - Durum: kabul edildi
-- Sürüm: 1.0.0
+- Sürüm: 1.0.1
 - İlgili ADR'ler: [ADR 0002](../decisions/0002-mvp-scope.md),
   [ADR 0004](../decisions/0004-policy-binding-and-playground.md)
 - İlgili backlog: E5 (PBI 5.1–5.5)
@@ -15,6 +15,7 @@
 |---|---|---|
 | 0.1.0 | 2026-11-17 | İlk taslak |
 | 1.0.0 | 2026-11-17 | Kabul edildi |
+| 1.0.1 | 2026-11-18 | Binding tablosunda `surface` satırının kaynağı S6 yerine E13 olarak düzeltildi |
 
 ## 1. Amaç ve kapsam
 
@@ -166,7 +167,7 @@ bindings:
 | `key` | `principal.key_hash` | evet | hayır |
 | `model` | `target.model` | evet | evet (`*`, `?`) |
 | `user` | `principal.user_id` | hayır | hayır |
-| `surface` | (S6) | hayır | hayır |
+| `surface` | (E13) | hayır | hayır |
 | `agent` | `agent.id` | hayır | hayır |
 | `tool` | (E12) | hayır | hayır |
 

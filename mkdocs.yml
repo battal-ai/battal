@@ -54,6 +54,7 @@ nav:
       - "S5: Policy, binding ve bundle": spec/s5-policy-binding-bundle.md
       - "S2: Türkçe normalizasyon": spec/s2-turkce-normalizasyon.md
       - "S3: Türkçe PII": spec/s3-turkce-pii.md
+      - "S6: Sunucu ve LiteLLM adapter'ı": spec/s6-sunucu-litellm.md
   - Araştırma:
       - "Araştırma raporu v0.1": research/index.md
       - Ekler:

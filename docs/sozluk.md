@@ -43,6 +43,11 @@ Değerlendirilen içeriğin gideceği model ve sağlayıcı bölgesi (`target.mo
 `target.provider_region`).
 _Kaçın_: hedef model (alan adı yerine)
 
+**Adapter**:
+Bir dış sistemin (örneğin LiteLLM) kendi biçimindeki isteğini `EvaluationRequest`'e, kararı da o
+sistemin yanıt biçimine çeviren katman; karar mantığı içermez (S6).
+_Kaçın_: plugin, connector, entegrasyon (tek bileşen için)
+
 **Yüzey**:
 Battal'ı çağıran entegrasyon türü: `gateway`, `ide`, `agent`.
 _Kaçın_: platform, kanal

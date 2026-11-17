@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://battal-ai.github.io/battal/schemas/http-error.schema.json",
+  "title": "HttpError",
+  "description": "S6: Battal Server'ın evaluation dışındaki HTTP hataları. Biçim EvaluationError ile aynıdır, kodlar farklıdır.",
+  "type": "object",
+  "required": ["error"],
+  "additionalProperties": false,
+  "properties": {
+    "error": {
+      "type": "object",
+      "required": ["code", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "code": {"enum": ["UNAUTHORIZED", "NOT_FOUND", "METHOD_NOT_ALLOWED", "INTERNAL"]},
+        "message": {"type": "string"}
+      }
+    }
+  }
+}
