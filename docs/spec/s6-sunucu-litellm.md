@@ -1,7 +1,7 @@
 # S6: Sunucu ve LiteLLM adapter'ı
 
 - Durum: kabul edildi
-- Sürüm: 1.0.0
+- Sürüm: 1.1.0
 - İlgili ADR'ler: [ADR 0002](../decisions/0002-mvp-scope.md),
   [ADR 0004](../decisions/0004-policy-binding-and-playground.md)
 - İlgili backlog: E6 (PBI 6.1, 6.2)
@@ -16,6 +16,7 @@
 |---|---|---|
 | 0.1.0 | 2026-11-18 | İlk taslak |
 | 1.0.0 | 2026-11-18 | Kabul edildi |
+| 1.1.0 | 2026-11-18 | S7 için `AUDIT_UNAVAILABLE` kodu ve karar kaydı ayarları eklendi |
 
 ## 1. Amaç ve kapsam
 
@@ -72,12 +73,14 @@ ekler; bu yüzden `api_base` Battal'ın kök adresidir (`http://battal:8080`).
   `Content-Length` yoksa ya da gövde `chunked` gönderilmişse okuma sınır aşıldığı anda kesilir.
   Sınıra eşit gövde kabul edilir. Bu sınır bayt cinsindendir ve S1 §4.3'teki code point
   sınırlarına ek olarak uygulanır.
-- **S6-HTTP-005.** Evaluation'a ulaşmadan verilen hatalar (`UNAUTHORIZED`, `NOT_FOUND`,
-  `METHOD_NOT_ALLOWED`, `INTERNAL`) `schemas/http-error.schema.json` biçimindedir; S1 kodlarıyla
-  verilen hatalar (`INVALID_REQUEST`, `INPUT_TOO_LARGE`…) `EvaluationError` biçimindedir. İkisi de
-  `{"error": {"code", "message"}}` yapısındadır. *[doğrulama: şema]*
+- **S6-HTTP-005.** Evaluation dışındaki hatalar (`UNAUTHORIZED`, `NOT_FOUND`,
+  `METHOD_NOT_ALLOWED`, `INTERNAL`, `AUDIT_UNAVAILABLE`) `schemas/http-error.schema.json`
+  biçimindedir; S1 kodlarıyla verilen hatalar (`INVALID_REQUEST`, `INPUT_TOO_LARGE`…)
+  `EvaluationError` biçimindedir. İkisi de `{"error": {"code", "message"}}` yapısındadır. *[doğrulama: şema]*
 - **S6-HTTP-006.** Beklenmeyen bir istisna **MUST** 500 `INTERNAL` ile dönmeli; `message` genel
   bir metin olmalı, istisna ayrıntısı ve istek içeriği yanıta yazılmamalıdır. *[doğrulama: CI]*
+- **S6-HTTP-007.** `audit_failure` `closed` iken karar kaydı yazılamazsa her iki evaluation
+  endpoint'i 503 `AUDIT_UNAVAILABLE` döner (S7-WRT-004). *[doğrulama: CI]*
 - **S6-LOG-001.** Server, istek ve yanıt gövdelerini, segment metinlerini, `x-api-key` ve
   `Authorization` başlıklarının değerlerini **MUST NOT** loglamamalıdır. *[doğrulama: CI]*
 
@@ -274,6 +277,9 @@ symlink'leri) güvenilir değildir.
 | S1 girdi sınırları | `--max-segments`, `--max-segment-code-points`, `--max-total-code-points` | `BATTAL_MAX_SEGMENTS`, `BATTAL_MAX_SEGMENT_CODE_POINTS`, `BATTAL_MAX_TOTAL_CODE_POINTS` | S1 §4.3 |
 | Yeniden okuma aralığı | `--reload-interval` | `BATTAL_RELOAD_INTERVAL_S` | `5` |
 | Kimlik doğrulamasız dış dinleme | `--insecure-no-auth` | yok | kapalı |
+| Karar kaydı dosyası | `--audit-file` | `BATTAL_AUDIT_FILE` | yok (stdout) |
+| Kayıt HMAC anahtarı | yok | `BATTAL_AUDIT_HMAC_KEY` | geçici anahtar (S7-HMAC-005) |
+| Kayıt yazım hatası | `--audit-failure` | `BATTAL_AUDIT_FAILURE` | `open` |
 
 - **S6-CFG-001.** Bir ayar hem CLI'da hem ortam değişkeninde verilmişse CLI değeri **MUST**
   kullanılmalıdır. *[doğrulama: CI]*

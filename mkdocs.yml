@@ -55,6 +55,7 @@ nav:
       - "S2: Türkçe normalizasyon": spec/s2-turkce-normalizasyon.md
       - "S3: Türkçe PII": spec/s3-turkce-pii.md
       - "S6: Sunucu ve LiteLLM adapter'ı": spec/s6-sunucu-litellm.md
+      - "S7: Karar kaydı": spec/s7-karar-kaydi.md
   - Araştırma:
       - "Araştırma raporu v0.1": research/index.md
       - Ekler:

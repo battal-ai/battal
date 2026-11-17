@@ -617,6 +617,9 @@ Takvim ve sprint ataması yapılmamıştır. MVP epic'leri ayrıntılı, sonraki
 
 - **PBI 8.1 Ham veri içermeyen yapılandırılmış log.**
   *DoD:* Log'larda ham PII taraması CI'da 0 bulgu verir; her karar `request_id` ile izlenebilir.
+- **PBI 8.2 Kayıt zinciri ve `battal audit verify`.**
+  *DoD:* S7 zincir vektörleri geçer; silinen ve değiştirilen kayıt örnekleri CLI'da 1 koduyla
+  raporlanır.
 
 ### E9 Yayın
 

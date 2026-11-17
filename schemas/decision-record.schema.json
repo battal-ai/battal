@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://battal-ai.github.io/battal/schemas/decision-record.schema.json",
+  "title": "DecisionRecord",
+  "description": "S7: Karar kaydı, record_version 1. Ham metin içermez.",
+  "type": "object",
+  "required": ["record_version", "type", "timestamp", "chain", "battal_version", "channel", "hmac_key_id"],
+  "additionalProperties": false,
+  "properties": {
+    "record_version": {"const": 1},
+    "type": {"const": "battal.decision"},
+    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"},
+    "chain": {
+      "type": "object",
+      "required": ["id", "seq", "prev_hash"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+        "seq": {"type": "integer", "minimum": 0},
+        "prev_hash": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+      },
+      "if": {"properties": {"seq": {"const": 0}}},
+      "then": {"properties": {"prev_hash": {"type": "null"}}},
+      "else": {"properties": {"prev_hash": {"type": "string"}}}
+    },
+    "battal_version": {"type": "string", "minLength": 1},
+    "channel": {"enum": ["sdk", "http", "litellm"]},
+    "channel_result": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {"type": "integer", "minimum": 100, "maximum": 599},
+        "action": {"enum": ["NONE", "BLOCKED", "GUARDRAIL_INTERVENED"]}
+      }
+    },
+    "hmac_key_id": {"type": "string", "pattern": "^[0-9a-f]{16}$"},
+    "request_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "checkpoint": {"enum": ["input", "output", "retrieval", "tool_call", "tool_result", "memory_write"]},
+    "tenant": {"type": "string"},
+    "principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "team_id": {"type": "string"},
+        "key_hash": {"type": "string"},
+        "user_id_hmac": {"$ref": "#/$defs/hmac"}
+      }
+    },
+    "session": {"$ref": "https://battal-ai.github.io/battal/schemas/evaluation-request.schema.json#/properties/session"},
+    "agent": {"$ref": "https://battal-ai.github.io/battal/schemas/evaluation-request.schema.json#/properties/agent"},
+    "target": {"$ref": "https://battal-ai.github.io/battal/schemas/evaluation-request.schema.json#/properties/target"},
+    "requested_policy": {"type": "string", "minLength": 1},
+    "segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "trust", "length"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "integer", "minimum": 0},
+          "role": {"enum": ["system", "user", "assistant", "tool"]},
+          "source": {"enum": ["user", "system", "model", "tool", "retrieval"]},
+          "trust": {"enum": ["trusted", "untrusted"]},
+          "length": {"type": "integer", "minimum": 0},
+          "hmac": {"$ref": "#/$defs/hmac"}
+        }
+      }
+    },
+    "decision": {"$ref": "https://battal-ai.github.io/battal/schemas/evaluation-response.schema.json#/properties/decision"},
+    "rationale_code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+    "detections": {"type": "array", "items": {"$ref": "https://battal-ai.github.io/battal/schemas/evaluation-response.schema.json#/$defs/detection"}},
+    "edits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["segment", "span", "replacement"],
+        "additionalProperties": false,
+        "properties": {
+          "segment": {"type": "integer", "minimum": 0},
+          "span": {"$ref": "https://battal-ai.github.io/battal/schemas/evaluation-response.schema.json#/$defs/span"},
+          "replacement": {"type": "string"}
+        }
+      }
+    },
+    "timing_ms": {"type": "object", "additionalProperties": {"type": "number", "minimum": 0}},
+    "error": {
+      "type": "object",
+      "required": ["code"],
+      "additionalProperties": false,
+      "properties": {
+        "code": {"enum": ["UNSUPPORTED_API_VERSION", "INVALID_REQUEST", "CHECKPOINT_NOT_SUPPORTED", "INPUT_TOO_LARGE", "NO_BUNDLE_LOADED", "POLICY_NOT_ALLOWED"]}
+      }
+    }
+  },
+  "oneOf": [
+    {"required": ["decision", "detections", "edits"], "not": {"required": ["error"]}},
+    {"required": ["error"], "not": {"anyOf": [{"required": ["decision"]}, {"required": ["detections"]}, {"required": ["edits"]}, {"required": ["rationale_code"]}]}}
+  ],
+  "$defs": {
+    "hmac": {"type": "string", "pattern": "^hmac-sha256:[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,1191 @@
+{
+  "format_version": 1,
+  "spec": "S7",
+  "function": "audit.build_record",
+  "description": "Karar kaydının üretilmesi (S7 §4–§6).",
+  "cases": [
+    {
+      "id": "allow-kaydi",
+      "description": "allow kararı da kaydedilir; segment metni yerine uzunluk ve HMAC yazılır.",
+      "spec_refs": [
+        "S7-EVT-001",
+        "S7-REC-001",
+        "S7-REC-003",
+        "S7-HMAC-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146, e-postam ali@ornek.com",
+              "role": "user",
+              "source": "user"
+            }
+          ]
+        },
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "allow",
+            "rule_id": null,
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "default",
+              "binding": null
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [],
+          "transforms": [],
+          "timing_ms": {
+            "normalize": 0.2,
+            "total": 1.5
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "sdk",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "record_version": 1,
+        "type": "battal.decision",
+        "timestamp": "2026-11-18T09:30:00.125Z",
+        "chain": {
+          "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null
+        },
+        "battal_version": "0.1.0",
+        "channel": "sdk",
+        "hmac_key_id": "325da75a06a41603",
+        "request_id": "req-1",
+        "checkpoint": "input",
+        "segments": [
+          {
+            "id": 0,
+            "role": "user",
+            "source": "user",
+            "trust": "untrusted",
+            "length": 40,
+            "hmac": "hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267"
+          }
+        ],
+        "decision": {
+          "action": "allow",
+          "rule_id": null,
+          "policy": {
+            "id": "taban",
+            "version": "1.0.0"
+          },
+          "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "matched_bindings": [
+            "global"
+          ],
+          "decided_by": {
+            "kind": "default",
+            "binding": null
+          },
+          "fail_mode": "closed",
+          "degraded": false
+        },
+        "detections": [],
+        "edits": [],
+        "timing_ms": {
+          "normalize": 0.2,
+          "total": 1.5
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "mask-kaydi",
+      "description": "Maskelenmiş metin kaydedilmez; yalnızca edit span'leri ve yer tutucular yazılır.",
+      "spec_refs": [
+        "S7-REC-004",
+        "S7-REC-005"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146, e-postam ali@ornek.com",
+              "role": "user",
+              "source": "user"
+            }
+          ]
+        },
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask",
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "1.0.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true
+            },
+            {
+              "detector": "pii.email",
+              "version": "1.0.0",
+              "segment": 0,
+              "span": [
+                27,
+                40
+              ]
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>, e-postam <EMAIL>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                },
+                {
+                  "span": [
+                    27,
+                    40
+                  ],
+                  "replacement": "<EMAIL>"
+                }
+              ]
+            }
+          ],
+          "timing_ms": {
+            "normalize": 0.2,
+            "total": 1.5
+          },
+          "rationale": {
+            "code": "POLICY_MASKED",
+            "message_tr": "İstekteki bazı bilgiler gizlendi."
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "sdk",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "record_version": 1,
+        "type": "battal.decision",
+        "timestamp": "2026-11-18T09:30:00.125Z",
+        "chain": {
+          "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null
+        },
+        "battal_version": "0.1.0",
+        "channel": "sdk",
+        "hmac_key_id": "325da75a06a41603",
+        "request_id": "req-1",
+        "checkpoint": "input",
+        "segments": [
+          {
+            "id": 0,
+            "role": "user",
+            "source": "user",
+            "trust": "untrusted",
+            "length": 40,
+            "hmac": "hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267"
+          }
+        ],
+        "decision": {
+          "action": "mask",
+          "rule_id": "pii.mask",
+          "policy": {
+            "id": "taban",
+            "version": "1.0.0"
+          },
+          "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "matched_bindings": [
+            "global"
+          ],
+          "decided_by": {
+            "kind": "rule",
+            "binding": "global"
+          },
+          "fail_mode": "closed",
+          "degraded": false
+        },
+        "rationale_code": "POLICY_MASKED",
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "1.0.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          },
+          {
+            "detector": "pii.email",
+            "version": "1.0.0",
+            "segment": 0,
+            "span": [
+              27,
+              40
+            ]
+          }
+        ],
+        "edits": [
+          {
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "replacement": "<TCKN>"
+          },
+          {
+            "segment": 0,
+            "span": [
+              27,
+              40
+            ],
+            "replacement": "<EMAIL>"
+          }
+        ],
+        "timing_ms": {
+          "normalize": 0.2,
+          "total": 1.5
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "baglam-ve-user-id",
+      "description": "Bağlam alanları aynen, user_id HMAC olarak yazılır; trust verilmemişse untrusted'dır.",
+      "spec_refs": [
+        "S7-REC-002",
+        "S7-UID-001",
+        "S7-REC-003"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-2",
+          "checkpoint": "output",
+          "tenant": "kurum-1",
+          "principal": {
+            "user_id": "ali@ornek.com",
+            "team_id": "t-7",
+            "key_hash": "88dc28d0f030c55ed4ab77ed8faf0981"
+          },
+          "session": {
+            "id": "s-9",
+            "turn": 3
+          },
+          "agent": {
+            "id": "a-1",
+            "name": "asistan"
+          },
+          "target": {
+            "model": "qwen3-32b",
+            "provider_region": "tr"
+          },
+          "segments": [
+            {
+              "id": 0,
+              "text": "Yanıt",
+              "trust": "trusted"
+            },
+            {
+              "id": 1,
+              "text": "ali@ornek.com"
+            }
+          ]
+        },
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-2",
+          "decision": {
+            "action": "block",
+            "rule_id": "pii.block",
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [],
+          "transforms": [],
+          "timing_ms": {
+            "normalize": 0.2,
+            "total": 1.5
+          },
+          "rationale": {
+            "code": "PII_BLOCKED",
+            "message_tr": "İstek kişisel veri içerdiği için engellendi."
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 5,
+          "prev_hash": "sha256:abababababababababababababababababababababababababababababababab",
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "http",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "record_version": 1,
+        "type": "battal.decision",
+        "timestamp": "2026-11-18T09:30:00.125Z",
+        "chain": {
+          "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 5,
+          "prev_hash": "sha256:abababababababababababababababababababababababababababababababab"
+        },
+        "battal_version": "0.1.0",
+        "channel": "http",
+        "hmac_key_id": "325da75a06a41603",
+        "request_id": "req-2",
+        "checkpoint": "output",
+        "tenant": "kurum-1",
+        "principal": {
+          "team_id": "t-7",
+          "key_hash": "88dc28d0f030c55ed4ab77ed8faf0981",
+          "user_id_hmac": "hmac-sha256:8f23677e0d9673069f20af9c979bbae954956c1057ece89c6b4564f71f82d9ce"
+        },
+        "session": {
+          "id": "s-9",
+          "turn": 3
+        },
+        "agent": {
+          "id": "a-1",
+          "name": "asistan"
+        },
+        "target": {
+          "model": "qwen3-32b",
+          "provider_region": "tr"
+        },
+        "segments": [
+          {
+            "id": 0,
+            "trust": "trusted",
+            "length": 5,
+            "hmac": "hmac-sha256:418168bfc20ee84e3a4c321c5b568712b0bd68e4c1cca34007302d489f0bb68d"
+          },
+          {
+            "id": 1,
+            "trust": "untrusted",
+            "length": 13,
+            "hmac": "hmac-sha256:f56c594c0139974c838d3d83eebdfa6b48c53ab999a2e59153200f8e217b47be"
+          }
+        ],
+        "decision": {
+          "action": "block",
+          "rule_id": "pii.block",
+          "policy": {
+            "id": "taban",
+            "version": "1.0.0"
+          },
+          "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "matched_bindings": [
+            "global"
+          ],
+          "decided_by": {
+            "kind": "rule",
+            "binding": "global"
+          },
+          "fail_mode": "closed",
+          "degraded": false
+        },
+        "rationale_code": "PII_BLOCKED",
+        "detections": [],
+        "edits": [],
+        "timing_ms": {
+          "normalize": 0.2,
+          "total": 1.5
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "alan-ayrimi",
+      "description": "Aynı değer segment ve user_id olarak farklı HMAC üretir (alan öneki).",
+      "spec_refs": [
+        "S7-HMAC-002"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-2",
+          "checkpoint": "output",
+          "tenant": "kurum-1",
+          "principal": {
+            "user_id": "ali@ornek.com",
+            "team_id": "t-7",
+            "key_hash": "88dc28d0f030c55ed4ab77ed8faf0981"
+          },
+          "session": {
+            "id": "s-9",
+            "turn": 3
+          },
+          "agent": {
+            "id": "a-1",
+            "name": "asistan"
+          },
+          "target": {
+            "model": "qwen3-32b",
+            "provider_region": "tr"
+          },
+          "segments": [
+            {
+              "id": 0,
+              "text": "Yanıt",
+              "trust": "trusted"
+            },
+            {
+              "id": 1,
+              "text": "ali@ornek.com"
+            }
+          ]
+        },
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-2",
+          "decision": {
+            "action": "allow",
+            "rule_id": null,
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "default",
+              "binding": null
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [],
+          "transforms": [],
+          "timing_ms": {
+            "normalize": 0.2,
+            "total": 1.5
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "sdk",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "principal": {
+          "user_id_hmac": "hmac-sha256:8f23677e0d9673069f20af9c979bbae954956c1057ece89c6b4564f71f82d9ce"
+        },
+        "segments": [
+          {
+            "id": 0,
+            "trust": "trusted",
+            "length": 5,
+            "hmac": "hmac-sha256:418168bfc20ee84e3a4c321c5b568712b0bd68e4c1cca34007302d489f0bb68d"
+          },
+          {
+            "id": 1,
+            "trust": "untrusted",
+            "length": 13,
+            "hmac": "hmac-sha256:f56c594c0139974c838d3d83eebdfa6b48c53ab999a2e59153200f8e217b47be"
+          }
+        ]
+      }
+    },
+    {
+      "id": "anahtar-kimligi",
+      "description": "Farklı anahtar farklı hmac_key_id ve HMAC üretir.",
+      "spec_refs": [
+        "S7-HMAC-003"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146, e-postam ali@ornek.com",
+              "role": "user",
+              "source": "user"
+            }
+          ]
+        },
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "allow",
+            "rule_id": null,
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "default",
+              "binding": null
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [],
+          "transforms": [],
+          "timing_ms": {
+            "normalize": 0.2,
+            "total": 1.5
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "baska-test-anahtari-abcdefghijklmnopqrstuvwxyz",
+          "channel": "sdk",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "hmac_key_id": "90d49adb9a2ce19b",
+        "segments": [
+          {
+            "id": 0,
+            "role": "user",
+            "source": "user",
+            "trust": "untrusted",
+            "length": 40,
+            "hmac": "hmac-sha256:f598ec21799dd8f13c0dad6fa4167e4c8e24dc2be22ebbb2696aff9b824664e1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "fail-mode-kaydi",
+      "description": "Fail mode kararı da kaydedilir.",
+      "spec_refs": [
+        "S7-EVT-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146, e-postam ali@ornek.com",
+              "role": "user",
+              "source": "user"
+            }
+          ]
+        },
+        "result": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "block",
+            "rule_id": null,
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "fail_mode",
+              "binding": null
+            },
+            "fail_mode": "closed",
+            "degraded": true
+          },
+          "detections": [],
+          "transforms": [],
+          "timing_ms": {
+            "normalize": 0.2,
+            "total": 1.5
+          },
+          "rationale": {
+            "code": "UNAVAILABLE",
+            "message_tr": "İstek şu anda değerlendirilemiyor."
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "sdk",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "record_version": 1,
+        "type": "battal.decision",
+        "timestamp": "2026-11-18T09:30:00.125Z",
+        "chain": {
+          "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null
+        },
+        "battal_version": "0.1.0",
+        "channel": "sdk",
+        "hmac_key_id": "325da75a06a41603",
+        "request_id": "req-1",
+        "checkpoint": "input",
+        "segments": [
+          {
+            "id": 0,
+            "role": "user",
+            "source": "user",
+            "trust": "untrusted",
+            "length": 40,
+            "hmac": "hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267"
+          }
+        ],
+        "decision": {
+          "action": "block",
+          "rule_id": null,
+          "policy": {
+            "id": "taban",
+            "version": "1.0.0"
+          },
+          "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "matched_bindings": [
+            "global"
+          ],
+          "decided_by": {
+            "kind": "fail_mode",
+            "binding": null
+          },
+          "fail_mode": "closed",
+          "degraded": true
+        },
+        "rationale_code": "UNAVAILABLE",
+        "detections": [],
+        "edits": [],
+        "timing_ms": {
+          "normalize": 0.2,
+          "total": 1.5
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "uretilen-request-id",
+      "description": "İstekte request_id yoksa yanıttaki üretilmiş kimlik yazılır.",
+      "spec_refs": [
+        "S7-REC-002"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146, e-postam ali@ornek.com",
+              "role": "user",
+              "source": "user"
+            }
+          ]
+        },
+        "result": {
+          "api_version": "v1",
+          "request_id": "gen-01",
+          "decision": {
+            "action": "allow",
+            "rule_id": null,
+            "policy": {
+              "id": "taban",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "default",
+              "binding": null
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [],
+          "transforms": [],
+          "timing_ms": {
+            "normalize": 0.2,
+            "total": 1.5
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "sdk",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "request_id": "gen-01"
+      }
+    },
+    {
+      "id": "gecersiz-istek",
+      "description": "INVALID_REQUEST kaydında yalnızca geçerli request_id ve checkpoint bulunur; diğer alanlar alınmaz.",
+      "spec_refs": [
+        "S7-ERR-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-3",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146, e-postam ali@ornek.com"
+            }
+          ],
+          "not": "TC'm 10000000146, e-postam ali@ornek.com",
+          "principal": {
+            "user_id": "ali@ornek.com",
+            "x": 1
+          }
+        },
+        "result": {
+          "error": {
+            "code": "INVALID_REQUEST",
+            "message": "ayrıntı",
+            "request_id": "req-3"
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "sdk",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "record_version": 1,
+        "type": "battal.decision",
+        "timestamp": "2026-11-18T09:30:00.125Z",
+        "chain": {
+          "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null
+        },
+        "battal_version": "0.1.0",
+        "channel": "sdk",
+        "hmac_key_id": "325da75a06a41603",
+        "request_id": "req-3",
+        "checkpoint": "input",
+        "error": {
+          "code": "INVALID_REQUEST"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "gecersiz-request-id",
+      "description": "Biçime uymayan request_id ve tanımsız checkpoint kayda alınmaz.",
+      "spec_refs": [
+        "S7-ERR-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req 10000000146",
+          "checkpoint": "giris",
+          "segments": []
+        },
+        "result": {
+          "error": {
+            "code": "INVALID_REQUEST",
+            "message": "ayrıntı"
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "sdk",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "record_version": 1,
+        "type": "battal.decision",
+        "timestamp": "2026-11-18T09:30:00.125Z",
+        "chain": {
+          "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null
+        },
+        "battal_version": "0.1.0",
+        "channel": "sdk",
+        "hmac_key_id": "325da75a06a41603",
+        "error": {
+          "code": "INVALID_REQUEST"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "istek-nesne-degil",
+      "description": "İstek nesne değilse kayıtta yalnızca hata kodu bulunur.",
+      "spec_refs": [
+        "S7-ERR-001"
+      ],
+      "input": {
+        "request": [
+          "TC'm 10000000146, e-postam ali@ornek.com"
+        ],
+        "result": {
+          "error": {
+            "code": "INVALID_REQUEST",
+            "message": "ayrıntı"
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "sdk",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "record_version": 1,
+        "type": "battal.decision",
+        "timestamp": "2026-11-18T09:30:00.125Z",
+        "chain": {
+          "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null
+        },
+        "battal_version": "0.1.0",
+        "channel": "sdk",
+        "hmac_key_id": "325da75a06a41603",
+        "error": {
+          "code": "INVALID_REQUEST"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "surum-hatasi",
+      "description": "UNSUPPORTED_API_VERSION da ayrıştırılmamış istek kuralına uyar.",
+      "spec_refs": [
+        "S7-ERR-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v9",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146, e-postam ali@ornek.com",
+              "role": "user",
+              "source": "user"
+            }
+          ]
+        },
+        "result": {
+          "error": {
+            "code": "UNSUPPORTED_API_VERSION",
+            "message": "ayrıntı",
+            "request_id": "req-1"
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "sdk",
+          "battal_version": "0.1.0"
+        }
+      },
+      "expected": {
+        "record_version": 1,
+        "type": "battal.decision",
+        "timestamp": "2026-11-18T09:30:00.125Z",
+        "chain": {
+          "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null
+        },
+        "battal_version": "0.1.0",
+        "channel": "sdk",
+        "hmac_key_id": "325da75a06a41603",
+        "request_id": "req-1",
+        "checkpoint": "input",
+        "error": {
+          "code": "UNSUPPORTED_API_VERSION"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "policy-izinsiz",
+      "description": "Doğrulanmış istekteki hatada bağlam, segment'ler ve istenen policy kaydedilir; karar yoktur.",
+      "spec_refs": [
+        "S7-ERR-002"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-4",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146, e-postam ali@ornek.com",
+              "role": "user",
+              "source": "user"
+            }
+          ],
+          "policy": {
+            "id": "gizli"
+          },
+          "principal": {
+            "key_hash": "k1"
+          }
+        },
+        "result": {
+          "error": {
+            "code": "POLICY_NOT_ALLOWED",
+            "message": "ayrıntı",
+            "request_id": "req-4"
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "litellm",
+          "battal_version": "0.1.0",
+          "channel_result": {
+            "status": 200,
+            "action": "BLOCKED"
+          }
+        }
+      },
+      "expected": {
+        "record_version": 1,
+        "type": "battal.decision",
+        "timestamp": "2026-11-18T09:30:00.125Z",
+        "chain": {
+          "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null
+        },
+        "battal_version": "0.1.0",
+        "channel": "litellm",
+        "hmac_key_id": "325da75a06a41603",
+        "channel_result": {
+          "status": 200,
+          "action": "BLOCKED"
+        },
+        "request_id": "req-4",
+        "checkpoint": "input",
+        "principal": {
+          "key_hash": "k1"
+        },
+        "requested_policy": "gizli",
+        "segments": [
+          {
+            "id": 0,
+            "role": "user",
+            "source": "user",
+            "trust": "untrusted",
+            "length": 40,
+            "hmac": "hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267"
+          }
+        ],
+        "error": {
+          "code": "POLICY_NOT_ALLOWED"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "buyuk-girdi",
+      "description": "INPUT_TOO_LARGE kaydında segment HMAC'i hesaplanmaz; LiteLLM'e dönen sonuç yazılır.",
+      "spec_refs": [
+        "S7-ERR-003",
+        "S7-REC-006"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146, e-postam ali@ornek.com",
+              "role": "user",
+              "source": "user"
+            }
+          ]
+        },
+        "result": {
+          "error": {
+            "code": "INPUT_TOO_LARGE",
+            "message": "ayrıntı",
+            "request_id": "req-1"
+          }
+        },
+        "context": {
+          "timestamp": "2026-11-18T09:30:00.125Z",
+          "chain_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null,
+          "hmac_key": "test-anahtari-0123456789abcdef0123456789",
+          "channel": "litellm",
+          "battal_version": "0.1.0",
+          "channel_result": {
+            "status": 200,
+            "action": "BLOCKED"
+          }
+        }
+      },
+      "expected": {
+        "record_version": 1,
+        "type": "battal.decision",
+        "timestamp": "2026-11-18T09:30:00.125Z",
+        "chain": {
+          "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+          "seq": 0,
+          "prev_hash": null
+        },
+        "battal_version": "0.1.0",
+        "channel": "litellm",
+        "hmac_key_id": "325da75a06a41603",
+        "channel_result": {
+          "status": 200,
+          "action": "BLOCKED"
+        },
+        "request_id": "req-1",
+        "checkpoint": "input",
+        "segments": [
+          {
+            "id": 0,
+            "role": "user",
+            "source": "user",
+            "trust": "untrusted",
+            "length": 40
+          }
+        ],
+        "error": {
+          "code": "INPUT_TOO_LARGE"
+        }
+      },
+      "match": "exact"
+    }
+  ]
+}

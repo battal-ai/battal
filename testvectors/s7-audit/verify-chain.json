@@ -1,0 +1,254 @@
+{
+  "format_version": 1,
+  "spec": "S7",
+  "function": "audit.verify_chain",
+  "description": "Kayıt zincirinin doğrulanması (S7 §8).",
+  "cases": [
+    {
+      "id": "saglam-zincir",
+      "description": "Ardışık üç kayıt geçerlidir.",
+      "spec_refs": [
+        "S7-CHN-001",
+        "S7-CHN-003"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:a995bf7bd166056601c4df3fd935df3a60d10b4e50ed6267e8f2449393d941d9\",\"seq\":1},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:1b2610313ca85bd8eda165565e408b2afb65840991674d6ef64df8f49fb443bd\",\"seq\":2},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}"
+        ]
+      },
+      "expected": {
+        "valid": true,
+        "issues": []
+      },
+      "match": "exact"
+    },
+    {
+      "id": "silinmis-kayit",
+      "description": "Aradan silinen kayıt sıra boşluğu olarak bulunur.",
+      "spec_refs": [
+        "S7-CHN-003"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:1b2610313ca85bd8eda165565e408b2afb65840991674d6ef64df8f49fb443bd\",\"seq\":2},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}"
+        ]
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          {
+            "line": 2,
+            "code": "SEQ_GAP"
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "degistirilmis-kayit",
+      "description": "Değiştirilen kayıt, sonraki kaydın prev_hash'i tutmadığı için bulunur.",
+      "spec_refs": [
+        "S7-CHN-002",
+        "S7-CHN-003"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:a995bf7bd166056601c4df3fd935df3a60d10b4e50ed6267e8f2449393d941d9\",\"seq\":1},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"block\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:1b2610313ca85bd8eda165565e408b2afb65840991674d6ef64df8f49fb443bd\",\"seq\":2},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}"
+        ]
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          {
+            "line": 3,
+            "code": "PREV_HASH_MISMATCH"
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "son-kayit-degisimi",
+      "description": "Son kayıttaki değişiklik zincirle bulunamaz (bilinen sınır).",
+      "spec_refs": [
+        "S7-CHN-004"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:a995bf7bd166056601c4df3fd935df3a60d10b4e50ed6267e8f2449393d941d9\",\"seq\":1},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"block\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}"
+        ]
+      },
+      "expected": {
+        "valid": true,
+        "issues": []
+      },
+      "match": "exact"
+    },
+    {
+      "id": "yer-degistirme",
+      "description": "Sırası değişen kayıtlar bulunur.",
+      "spec_refs": [
+        "S7-CHN-003"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:1b2610313ca85bd8eda165565e408b2afb65840991674d6ef64df8f49fb443bd\",\"seq\":2},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:a995bf7bd166056601c4df3fd935df3a60d10b4e50ed6267e8f2449393d941d9\",\"seq\":1},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}"
+        ]
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          {
+            "line": 2,
+            "code": "SEQ_GAP"
+          },
+          {
+            "line": 3,
+            "code": "SEQ_GAP"
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "tekrarlanan-kayit",
+      "description": "Tekrarlanan kayıt bulunur.",
+      "spec_refs": [
+        "S7-CHN-003"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:a995bf7bd166056601c4df3fd935df3a60d10b4e50ed6267e8f2449393d941d9\",\"seq\":1},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:a995bf7bd166056601c4df3fd935df3a60d10b4e50ed6267e8f2449393d941d9\",\"seq\":1},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}"
+        ]
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          {
+            "line": 3,
+            "code": "SEQ_GAP"
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "kanonik-degil",
+      "description": "JCS biçiminde olmayan satır bulunur.",
+      "spec_refs": [
+        "S7-WRT-001"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{  \"battal_version\": \"0.1.0\",  \"chain\": {   \"id\": \"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",   \"prev_hash\": \"sha256:a995bf7bd166056601c4df3fd935df3a60d10b4e50ed6267e8f2449393d941d9\",   \"seq\": 1  },  \"channel\": \"sdk\",  \"checkpoint\": \"input\",  \"decision\": {   \"action\": \"allow\",   \"bundle_hash\": \"sha256:1111111111111111111111111111111111111111111111111111111111111111\",   \"decided_by\": {    \"binding\": null,    \"kind\": \"default\"   },   \"degraded\": false,   \"fail_mode\": \"closed\",   \"matched_bindings\": [    \"global\"   ],   \"policy\": {    \"id\": \"taban\",    \"version\": \"1.0.0\"   },   \"rule_id\": null  },  \"detections\": [],  \"edits\": [],  \"hmac_key_id\": \"325da75a06a41603\",  \"record_version\": 1,  \"request_id\": \"req-1\",  \"segments\": [   {    \"hmac\": \"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",    \"id\": 0,    \"length\": 40,    \"role\": \"user\",    \"source\": \"user\",    \"trust\": \"untrusted\"   }  ],  \"timestamp\": \"2026-11-18T09:30:00.125Z\",  \"timing_ms\": {   \"normalize\": 0.2,   \"total\": 1.5  },  \"type\": \"battal.decision\" }"
+        ]
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          {
+            "line": 2,
+            "code": "NOT_CANONICAL"
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "json-degil",
+      "description": "JSON olmayan satır bulunur.",
+      "spec_refs": [
+        "S7-CHN-003"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{bozuk"
+        ]
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          {
+            "line": 2,
+            "code": "LINE_NOT_JSON"
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "sema-disi",
+      "description": "Şemaya uymayan kayıt (örneğin text alanı) bulunur.",
+      "spec_refs": [
+        "S7-REC-001"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:a995bf7bd166056601c4df3fd935df3a60d10b4e50ed6267e8f2449393d941d9\",\"seq\":1},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"text\":\"TC'm 10000000146, e-postam ali@ornek.com\",\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}"
+        ]
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          {
+            "line": 2,
+            "code": "SCHEMA_INVALID"
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "ic-ice-zincirler",
+      "description": "Farklı chain.id'li kayıtlar ayrı zincirler olarak doğrulanır.",
+      "spec_refs": [
+        "S7-CHN-001"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"prev_hash\":null,\"seq\":0},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:a995bf7bd166056601c4df3fd935df3a60d10b4e50ed6267e8f2449393d941d9\",\"seq\":1},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"prev_hash\":\"sha256:a7644d8915b20bb3d999ee8ab3b54583a59f2ed4e6350a109999205d68d85e28\",\"seq\":1},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:1b2610313ca85bd8eda165565e408b2afb65840991674d6ef64df8f49fb443bd\",\"seq\":2},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}"
+        ]
+      },
+      "expected": {
+        "valid": true,
+        "issues": []
+      },
+      "match": "exact"
+    },
+    {
+      "id": "ortadan-baslayan",
+      "description": "Rotasyon nedeniyle ortadan başlayan zincir geçerlidir.",
+      "spec_refs": [
+        "S7-CHN-004"
+      ],
+      "input": {
+        "lines": [
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:abababababababababababababababababababababababababababababababab\",\"seq\":7},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}",
+          "{\"battal_version\":\"0.1.0\",\"chain\":{\"id\":\"0f1e2d3c4b5a69788796a5b4c3d2e1f0\",\"prev_hash\":\"sha256:154cc7f0de27cf40a74200b01edc8311b4168e437a41e6ce7c25f15e6e7395f6\",\"seq\":8},\"channel\":\"sdk\",\"checkpoint\":\"input\",\"decision\":{\"action\":\"allow\",\"bundle_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"decided_by\":{\"binding\":null,\"kind\":\"default\"},\"degraded\":false,\"fail_mode\":\"closed\",\"matched_bindings\":[\"global\"],\"policy\":{\"id\":\"taban\",\"version\":\"1.0.0\"},\"rule_id\":null},\"detections\":[],\"edits\":[],\"hmac_key_id\":\"325da75a06a41603\",\"record_version\":1,\"request_id\":\"req-1\",\"segments\":[{\"hmac\":\"hmac-sha256:b53a9c2d4f58ae630ead2499de6fc1be48d89c274aebfc527a3f1d471f808267\",\"id\":0,\"length\":40,\"role\":\"user\",\"source\":\"user\",\"trust\":\"untrusted\"}],\"timestamp\":\"2026-11-18T09:30:00.125Z\",\"timing_ms\":{\"normalize\":0.2,\"total\":1.5},\"type\":\"battal.decision\"}"
+        ]
+      },
+      "expected": {
+        "valid": true,
+        "issues": []
+      },
+      "match": "exact"
+    }
+  ]
+}

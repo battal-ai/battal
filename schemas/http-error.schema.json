@@ -4,16 +4,31 @@
   "title": "HttpError",
   "description": "S6: Battal Server'ın evaluation dışındaki HTTP hataları. Biçim EvaluationError ile aynıdır, kodlar farklıdır.",
   "type": "object",
-  "required": ["error"],
+  "required": [
+    "error"
+  ],
   "additionalProperties": false,
   "properties": {
     "error": {
       "type": "object",
-      "required": ["code", "message"],
+      "required": [
+        "code",
+        "message"
+      ],
       "additionalProperties": false,
       "properties": {
-        "code": {"enum": ["UNAUTHORIZED", "NOT_FOUND", "METHOD_NOT_ALLOWED", "INTERNAL"]},
-        "message": {"type": "string"}
+        "code": {
+          "enum": [
+            "UNAUTHORIZED",
+            "NOT_FOUND",
+            "METHOD_NOT_ALLOWED",
+            "INTERNAL",
+            "AUDIT_UNAVAILABLE"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
       }
     }
   }

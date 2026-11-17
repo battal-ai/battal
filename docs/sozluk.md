@@ -185,9 +185,19 @@ _Kaçın_: dry run, test modu
 ## Kayıt
 
 **Karar kaydı**:
-Her decision için tutulan, ham içerik içermeyen yapılandırılmış kayıt: kimlikler, span'ler,
-skorlar, sürümler, `bundle_hash` ve içeriğin HMAC'i.
+Her evaluation (karar ya da hata) için tutulan, ham içerik içermeyen yapılandırılmış kayıt:
+kimlikler, span'ler, skorlar, sürümler, `bundle_hash` ve içeriğin HMAC'i (S7).
 _Kaçın_: audit log (tek başına), log
+
+**Kayıt zinciri**:
+Bir sink'e yazılan karar kayıtlarını `seq` ve önceki kaydın hash'iyle (`prev_hash`) birbirine
+bağlayan dizi; silinen ya da değiştirilen kaydı tespit eder, engellemez (S7).
+_Kaçın_: blockchain, imzalı log
+
+**HMAC anahtarı (kayıt)**:
+Karar kaydında segment metinlerinin ve `user_id`'nin yerine yazılan HMAC'lerin gizli anahtarı;
+kimliği `hmac_key_id` ile kayda yazılır (S7).
+_Kaçın_: tuz (salt), şifreleme anahtarı
 
 ## Spec ve test
 
