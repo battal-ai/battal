@@ -6,8 +6,9 @@ Ayrıntılar ve gerekçeler [araştırma raporunda](research/index.md) ve
 Bu sayfa ile bir ADR çelişirse ADR geçerlidir.
 
 !!! warning "Durum"
-    Tasarım aşaması. Kararlar verildi, kod henüz yazılmadı. Sıradaki adım, backlog'daki E0
-    (repo iskeleti) ve E1'dir (değerlendirme sözleşmesi).
+    Tasarım aşaması tamamlandı. Kararlar verildi ve MVP'nin davranışı sekiz spec'te (S0–S7)
+    tanımlandı; kod henüz yazılmadı. Sıradaki adım backlog'daki E0'dır (repo iskeleti).
+    Spec listesi: [Spec'ler](spec/index.md).
 
 ## Battal nedir?
 

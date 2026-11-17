@@ -33,7 +33,8 @@ API arkasında birleştirir.
 
 Planlanan dağıtım: Python SDK (`pip install battal`) ve Battal Server (container/Helm).
 
-> **Durum:** erken araştırma ve tasarım aşaması. Henüz kullanılabilir bir sürüm yok.
+> **Durum:** tasarım aşaması tamamlandı; MVP'nin sekiz spec'i (S0–S7) kabul edildi. Kod henüz
+> yazılmadı, kullanılabilir bir sürüm yok.
 
 ## Lisans
 

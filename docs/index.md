@@ -12,7 +12,8 @@ secret, prompt injection, içerik güvenliği) deterministik policy uygulamasıy
 API arkasında birleştirir.
 
 !!! warning "Durum"
-    Erken araştırma ve tasarım aşaması. Henüz kullanılabilir bir sürüm yok.
+    Tasarım aşaması tamamlandı: MVP'nin sekiz spec'i (S0–S7) kabul edildi. Kod henüz yazılmadı;
+    kullanılabilir bir sürüm yok. Sıradaki adım kodlamadır (backlog E0).
 
 ## İlkeler
 

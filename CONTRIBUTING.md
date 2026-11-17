@@ -14,7 +14,7 @@ ve tasarım geri bildirimi memnuniyetle karşılanır.
 - Teknik terimler İngilizce bırakılır (örneğin guardrail, prompt injection, policy, tool call).
 - Kod **İngilizcedir**: isimler (değişken, fonksiyon, sınıf, API alanları), yorumlar,
   docstring'ler, log mesajları ve test adları. Büyük bir modülün Türkçe anlatımı gerekiyorsa
-  docs sitesine yazılır ([ADR 0005](docs/decisions/0005-code-language-english.md)).
+  docs sitesine yazılır ([ADR 0005](https://github.com/battal-ai/battal/blob/main/docs/decisions/0005-code-language-english.md)).
 
 ## Kapsam kuralları
 
