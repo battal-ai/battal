@@ -1,0 +1,187 @@
+{
+  "format_version": 1,
+  "spec": "S0",
+  "function": "testvector.lint_escapes",
+  "description": "Görünmez karakter kuralı (S0 §3.4).",
+  "cases": [
+    {
+      "id": "ham-zero-width-space",
+      "description": "Ham ZWSP (U+200B, Cf) ihlaldir.",
+      "spec_refs": [
+        "S0-ESC-001"
+      ],
+      "input": {
+        "raw": "{\"t\": \"100\u200b00000146\"}"
+      },
+      "expected": {
+        "violations": [
+          "U+200B"
+        ]
+      }
+    },
+    {
+      "id": "kacisli-zero-width-space",
+      "description": "Kaçışla yazılmış ZWSP ihlal değildir.",
+      "spec_refs": [
+        "S0-ESC-001"
+      ],
+      "input": {
+        "raw": "{\"t\": \"100\\u200b00000146\"}"
+      },
+      "expected": {
+        "violations": []
+      }
+    },
+    {
+      "id": "ham-nbsp",
+      "description": "Ham NBSP (U+00A0, Zs) ihlaldir.",
+      "spec_refs": [
+        "S0-ESC-001"
+      ],
+      "input": {
+        "raw": "{\"t\": \"a\u00a0b\"}"
+      },
+      "expected": {
+        "violations": [
+          "U+00A0"
+        ]
+      }
+    },
+    {
+      "id": "ham-birlesen-nokta",
+      "description": "Ham birleşen nokta (U+0307, Mn) ihlaldir.",
+      "spec_refs": [
+        "S0-ESC-001"
+      ],
+      "input": {
+        "raw": "{\"t\": \"i\u0307\"}"
+      },
+      "expected": {
+        "violations": [
+          "U+0307"
+        ]
+      }
+    },
+    {
+      "id": "ham-bidi",
+      "description": "Ham RLO (U+202E, Cf) ihlaldir.",
+      "spec_refs": [
+        "S0-ESC-001"
+      ],
+      "input": {
+        "raw": "{\"t\": \"a\u202eb\"}"
+      },
+      "expected": {
+        "violations": [
+          "U+202E"
+        ]
+      }
+    },
+    {
+      "id": "ham-tag-karakteri",
+      "description": "Ham tag karakteri (U+E0041, Cf) ihlaldir.",
+      "spec_refs": [
+        "S0-ESC-001"
+      ],
+      "input": {
+        "raw": "{\"t\": \"a\udb40\udc41\"}"
+      },
+      "expected": {
+        "violations": [
+          "U+E0041"
+        ]
+      }
+    },
+    {
+      "id": "ham-variation-selector",
+      "description": "Ham variation selector (U+FE0F, Mn) ihlaldir.",
+      "spec_refs": [
+        "S0-ESC-001"
+      ],
+      "input": {
+        "raw": "{\"t\": \"❤\ufe0f\"}"
+      },
+      "expected": {
+        "violations": [
+          "U+FE0F"
+        ]
+      }
+    },
+    {
+      "id": "ham-carriage-return",
+      "description": "CR (U+000D, Cc) ihlaldir; satır sonu yalnızca LF'dir.",
+      "spec_refs": [
+        "S0-ESC-001"
+      ],
+      "input": {
+        "raw": "{\"a\": 1}\r\n"
+      },
+      "expected": {
+        "violations": [
+          "U+000D"
+        ]
+      }
+    },
+    {
+      "id": "birden-fazla-ihlal-sirasi",
+      "description": "İhlaller dosyadaki görünme sırasıyla raporlanır.",
+      "spec_refs": [
+        "S0-ESC-001"
+      ],
+      "input": {
+        "raw": "{\"t\": \"a\u200db\u200bc\"}"
+      },
+      "expected": {
+        "violations": [
+          "U+200D",
+          "U+200B"
+        ]
+      }
+    },
+    {
+      "id": "turkce-harfler",
+      "description": "Türkçe harfler ham yazılabilir.",
+      "spec_refs": [
+        "S0-ESC-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "raw": "{\"t\": \"çğıİöşü ÇĞIÖŞÜ\"}"
+      },
+      "expected": {
+        "violations": []
+      }
+    },
+    {
+      "id": "bayrak-emojisi",
+      "description": "Bayrak emojisi (regional indicator, So) ham yazılabilir.",
+      "spec_refs": [
+        "S0-ESC-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "raw": "{\"t\": \"🇹🇷\"}"
+      },
+      "expected": {
+        "violations": []
+      }
+    },
+    {
+      "id": "json-girinti-ve-satir-sonu",
+      "description": "JSON girintisi (boşluk, tab) ve LF ihlal değildir.",
+      "spec_refs": [
+        "S0-ESC-001"
+      ],
+      "input": {
+        "raw": "{\n\t\"a\": 1,\n  \"b\": 2\n}\n"
+      },
+      "expected": {
+        "violations": []
+      }
+    }
+  ]
+}

@@ -45,8 +45,11 @@ markdown_extensions:
 nav:
   - Ana sayfa: index.md
   - Ürüne genel bakış: urun.md
+  - Mimari: mimari.md
+  - Sözlük: sozluk.md
   - Spec:
       - "Spec listesi ve plan": spec/index.md
+      - "S0: Test vektörü formatı (taslak)": spec/s0-test-vektorleri.md
   - Araştırma:
       - "Araştırma raporu v0.1": research/index.md
       - Ekler:
@@ -61,6 +64,7 @@ nav:
       - "0002: MVP kapsamı": decisions/0002-mvp-scope.md
       - "0003: Önce Python, sonra Rust": decisions/0003-language-python-then-rust.md
       - "0004: Policy binding ve playground": decisions/0004-policy-binding-and-playground.md
+      - "0005: Kod ve kod dokümantasyonu İngilizce": decisions/0005-code-language-english.md
   - Proje:
       - Lisanslama: proje/lisanslama.md
       - Katkı: proje/katki.md

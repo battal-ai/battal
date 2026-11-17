@@ -1,0 +1,559 @@
+{
+  "format_version": 1,
+  "spec": "S0",
+  "function": "testvector.match",
+  "description": "Karşılaştırma kuralları (S0 §4).",
+  "cases": [
+    {
+      "id": "subset-fazla-anahtar",
+      "description": "Subset modunda actual'daki fazladan anahtar yok sayılır.",
+      "spec_refs": [
+        "S0-CMP-001"
+      ],
+      "input": {
+        "expected": {
+          "a": 1
+        },
+        "actual": {
+          "a": 1,
+          "b": 2
+        }
+      },
+      "expected": {
+        "pass": true
+      }
+    },
+    {
+      "id": "subset-eksik-anahtar",
+      "description": "Expected'daki anahtar actual'da yoksa eşleşme başarısız olur.",
+      "spec_refs": [
+        "S0-CMP-001"
+      ],
+      "input": {
+        "expected": {
+          "a": 1,
+          "b": 2
+        },
+        "actual": {
+          "a": 1
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "subset-ic-ice-nesne",
+      "description": "İç içe nesneler de subset kuralıyla karşılaştırılır.",
+      "spec_refs": [
+        "S0-CMP-001"
+      ],
+      "input": {
+        "expected": {
+          "d": {
+            "x": 1
+          }
+        },
+        "actual": {
+          "d": {
+            "x": 1,
+            "y": 2
+          }
+        }
+      },
+      "expected": {
+        "pass": true
+      }
+    },
+    {
+      "id": "null-ve-eksik-anahtar",
+      "description": "Değeri null olan anahtar, eksik anahtarla eşleşmez.",
+      "spec_refs": [
+        "S0-CMP-002"
+      ],
+      "input": {
+        "expected": {
+          "a": null
+        },
+        "actual": {}
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "null-ve-null",
+      "description": "Değeri null olan anahtar, aynı anahtar null ise eşleşir.",
+      "spec_refs": [
+        "S0-CMP-002"
+      ],
+      "input": {
+        "expected": {
+          "a": null
+        },
+        "actual": {
+          "a": null,
+          "b": 1
+        }
+      },
+      "expected": {
+        "pass": true
+      }
+    },
+    {
+      "id": "dizi-uzunluk-farki",
+      "description": "Diziler subset modunda da aynı uzunlukta olmalıdır.",
+      "spec_refs": [
+        "S0-CMP-003"
+      ],
+      "input": {
+        "expected": {
+          "l": [
+            1,
+            2
+          ]
+        },
+        "actual": {
+          "l": [
+            1,
+            2,
+            3
+          ]
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "dizi-sira-farki",
+      "description": "Dizi elemanları sırayla karşılaştırılır.",
+      "spec_refs": [
+        "S0-CMP-003"
+      ],
+      "input": {
+        "expected": {
+          "l": [
+            1,
+            2
+          ]
+        },
+        "actual": {
+          "l": [
+            2,
+            1
+          ]
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "dizideki-nesne-subset",
+      "description": "Dizideki nesneler subset modunda fazladan anahtar taşıyabilir.",
+      "spec_refs": [
+        "S0-CMP-003",
+        "S0-CMP-001"
+      ],
+      "input": {
+        "expected": {
+          "l": [
+            {
+              "t": "TCKN"
+            }
+          ]
+        },
+        "actual": {
+          "l": [
+            {
+              "t": "TCKN",
+              "score": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "pass": true
+      }
+    },
+    {
+      "id": "exact-fazla-anahtar",
+      "description": "Exact modunda fazladan anahtar eşleşmeyi bozar.",
+      "spec_refs": [
+        "S0-CMP-004"
+      ],
+      "input": {
+        "expected": {
+          "a": 1
+        },
+        "actual": {
+          "a": 1,
+          "b": 2
+        },
+        "match": "exact"
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "exact-dizideki-nesne",
+      "description": "Exact modunda dizideki nesneler de tam eşleşmelidir.",
+      "spec_refs": [
+        "S0-CMP-004",
+        "S0-CMP-003"
+      ],
+      "input": {
+        "expected": {
+          "l": [
+            {
+              "t": 1
+            }
+          ]
+        },
+        "actual": {
+          "l": [
+            {
+              "t": 1,
+              "u": 2
+            }
+          ]
+        },
+        "match": "exact"
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "exact-esit",
+      "description": "Exact modunda aynı değerler eşleşir.",
+      "spec_refs": [
+        "S0-CMP-004"
+      ],
+      "input": {
+        "expected": {
+          "a": [
+            1,
+            {
+              "b": null
+            }
+          ]
+        },
+        "actual": {
+          "a": [
+            1,
+            {
+              "b": null
+            }
+          ]
+        },
+        "match": "exact"
+      },
+      "expected": {
+        "pass": true
+      }
+    },
+    {
+      "id": "sayi-tam-ve-ondalik",
+      "description": "1 ile 1.0 değer olarak eşittir.",
+      "spec_refs": [
+        "S0-CMP-005"
+      ],
+      "input": {
+        "expected": {
+          "n": 1
+        },
+        "actual": {
+          "n": 1.0
+        }
+      },
+      "expected": {
+        "pass": true
+      }
+    },
+    {
+      "id": "sayi-tolerans-yok",
+      "description": "Sayılarda tolerans uygulanmaz.",
+      "spec_refs": [
+        "S0-CMP-005"
+      ],
+      "input": {
+        "expected": {
+          "n": 0.8
+        },
+        "actual": {
+          "n": 0.8000001
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "tip-string-sayi",
+      "description": "\"1\" ile 1 eşleşmez.",
+      "spec_refs": [
+        "S0-CMP-006"
+      ],
+      "input": {
+        "expected": {
+          "v": "1"
+        },
+        "actual": {
+          "v": 1
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "tip-true-bir",
+      "description": "true ile 1 eşleşmez.",
+      "spec_refs": [
+        "S0-CMP-006"
+      ],
+      "input": {
+        "expected": {
+          "v": true
+        },
+        "actual": {
+          "v": 1
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "tip-false-sifir",
+      "description": "false ile 0 eşleşmez.",
+      "spec_refs": [
+        "S0-CMP-006"
+      ],
+      "input": {
+        "expected": {
+          "v": false
+        },
+        "actual": {
+          "v": 0
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "tip-null-false",
+      "description": "null ile false eşleşmez.",
+      "spec_refs": [
+        "S0-CMP-006"
+      ],
+      "input": {
+        "expected": {
+          "v": null
+        },
+        "actual": {
+          "v": false
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "string-normalizasyon-yok",
+      "description": "Runner Unicode normalizasyonu yapmaz: NFC é ile NFD e+◌\u0301 eşleşmez.",
+      "spec_refs": [
+        "S0-CMP-007"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "expected": {
+          "s": "é"
+        },
+        "actual": {
+          "s": "e\u0301"
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "string-buyuk-kucuk-harf",
+      "description": "Runner büyük/küçük harf dönüşümü yapmaz.",
+      "spec_refs": [
+        "S0-CMP-007"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "expected": {
+          "s": "İstanbul"
+        },
+        "actual": {
+          "s": "istanbul"
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "string-bosluk",
+      "description": "Runner boşluk temizliği yapmaz.",
+      "spec_refs": [
+        "S0-CMP-007"
+      ],
+      "input": {
+        "expected": {
+          "s": "a"
+        },
+        "actual": {
+          "s": "a "
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "string-turkce-esit",
+      "description": "Türkçe karakterli aynı string'ler eşleşir.",
+      "spec_refs": [
+        "S0-CMP-007"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "expected": {
+          "s": "ışık IŞIK İğdır"
+        },
+        "actual": {
+          "s": "ışık IŞIK İğdır"
+        }
+      },
+      "expected": {
+        "pass": true
+      }
+    },
+    {
+      "id": "hata-ayni-kod-farkli-mesaj",
+      "description": "Hata kodu aynıysa mesaj farkı önemsizdir.",
+      "spec_refs": [
+        "S0-CMP-008"
+      ],
+      "input": {
+        "expected_error": {
+          "code": "INPUT_TOO_LARGE"
+        },
+        "actual_error": {
+          "code": "INPUT_TOO_LARGE",
+          "message": "Girdi çok büyük"
+        }
+      },
+      "expected": {
+        "pass": true
+      }
+    },
+    {
+      "id": "hata-farkli-kod",
+      "description": "Farklı hata kodu eşleşmez.",
+      "spec_refs": [
+        "S0-CMP-008"
+      ],
+      "input": {
+        "expected_error": {
+          "code": "INPUT_TOO_LARGE"
+        },
+        "actual_error": {
+          "code": "INVALID_INPUT",
+          "message": "x"
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "hata-beklenirken-sonuc",
+      "description": "Hata beklenirken target sonuç döndürürse case başarısız olur.",
+      "spec_refs": [
+        "S0-CMP-008"
+      ],
+      "input": {
+        "expected_error": {
+          "code": "INPUT_TOO_LARGE"
+        },
+        "actual": {
+          "ok": true
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "sonuc-beklenirken-hata",
+      "description": "Sonuç beklenirken target hata verirse case başarısız olur.",
+      "spec_refs": [
+        "S0-CMP-008"
+      ],
+      "input": {
+        "expected": {
+          "ok": true
+        },
+        "actual_error": {
+          "code": "INTERNAL",
+          "message": "x"
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "operator-yok-gte",
+      "description": "\"$gte\" gibi değerler operatör değil, literal string'dir.",
+      "spec_refs": [
+        "S0-CMP-009"
+      ],
+      "input": {
+        "expected": {
+          "n": "$gte:1"
+        },
+        "actual": {
+          "n": 5
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    },
+    {
+      "id": "operator-yok-joker",
+      "description": "\"*\" joker karakter değildir.",
+      "spec_refs": [
+        "S0-CMP-009"
+      ],
+      "input": {
+        "expected": {
+          "s": "*"
+        },
+        "actual": {
+          "s": "x"
+        }
+      },
+      "expected": {
+        "pass": false
+      }
+    }
+  ]
+}

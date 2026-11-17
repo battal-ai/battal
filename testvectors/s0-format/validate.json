@@ -1,0 +1,332 @@
+{
+  "format_version": 1,
+  "spec": "S0",
+  "function": "testvector.validate",
+  "description": "Suite doğrulaması (S0 §3).",
+  "cases": [
+    {
+      "id": "gecerli-suite",
+      "description": "Asgari alanlarla yazılmış suite geçerlidir.",
+      "spec_refs": [
+        "S0-FMT-003"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S9-ORN-001"
+              ],
+              "input": {},
+              "expected": {
+                "ok": true
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": true,
+        "issues": []
+      }
+    },
+    {
+      "id": "expected-ve-expected-error",
+      "description": "Case expected ile expected_error'ı birlikte içeremez.",
+      "spec_refs": [
+        "S0-FMT-007"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S9-ORN-001"
+              ],
+              "input": {},
+              "expected": {
+                "ok": true
+              },
+              "expected_error": {
+                "code": "X"
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "expected-yok",
+      "description": "Case expected ya da expected_error içermelidir.",
+      "spec_refs": [
+        "S0-FMT-007"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S9-ORN-001"
+              ],
+              "input": {}
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "tekrarlanan-id",
+      "description": "Aynı id suite'te iki kez kullanılamaz.",
+      "spec_refs": [
+        "S0-FMT-008"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S9-ORN-001"
+              ],
+              "input": {},
+              "expected": {
+                "ok": true
+              }
+            },
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S9-ORN-001"
+              ],
+              "input": {},
+              "expected": {
+                "ok": true
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "CASE_ID_DUPLICATE"
+        ]
+      }
+    },
+    {
+      "id": "spec-ref-bicimi",
+      "description": "spec_refs değerleri S<sayı>-<ALAN>-<üç hane> biçiminde olmalıdır.",
+      "spec_refs": [
+        "S0-FMT-010"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S3-PII-12"
+              ],
+              "input": {},
+              "expected": {
+                "ok": true
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "spec-refs-bos",
+      "description": "spec_refs en az bir değer içermelidir.",
+      "spec_refs": [
+        "S0-FMT-010"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [],
+              "input": {},
+              "expected": {
+                "ok": true
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "bos-cases",
+      "description": "Suite en az bir case içermelidir.",
+      "spec_refs": [
+        "S0-FMT-003"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": []
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "bilinmeyen-alan",
+      "description": "Şemada olmayan bir case alanı geçersizdir.",
+      "spec_refs": [
+        "S0-FMT-003"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S9-ORN-001"
+              ],
+              "input": {},
+              "expected": {
+                "ok": true
+              },
+              "note": "x"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "gecersiz-match",
+      "description": "match yalnızca subset veya exact olabilir.",
+      "spec_refs": [
+        "S0-FMT-003"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S9-ORN-001"
+              ],
+              "input": {},
+              "expected": {
+                "ok": true
+              },
+              "match": "fuzzy"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "desteklenmeyen-format-surumu",
+      "description": "Desteklenmeyen format_version'da suite doğrulanmadan hata verilir.",
+      "spec_refs": [
+        "S0-FMT-006"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 2,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S9-ORN-001"
+              ],
+              "input": {},
+              "expected": {
+                "ok": true
+              }
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "UNSUPPORTED_FORMAT_VERSION"
+      }
+    }
+  ]
+}
