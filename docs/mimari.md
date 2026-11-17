@@ -140,7 +140,7 @@ Presidio kullananlar için isteğe bağlı bir adapter E17'de gelir (ADR 0006).
 |---|---|
 | `contract` | [S1](spec/s1-evaluation-api.md) |
 | `core/normalize` | [S2](spec/s2-turkce-normalizasyon.md) |
-| `core/pii`, `core/actions` | S3 |
+| `core/pii`, `core/actions` | [S3](spec/s3-turkce-pii.md) |
 | `core/rules`, `detectors` | S4 |
 | `core/policy`, `bundle`, `cli` | [S5](spec/s5-policy-binding-bundle.md) |
 | `server`, `adapters` | S6 |

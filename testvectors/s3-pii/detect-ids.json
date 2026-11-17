@@ -1,0 +1,484 @@
+{
+  "format_version": 1,
+  "spec": "S3",
+  "function": "pii.detect",
+  "description": "TCKN ve VKN adayları ve bağlam (S3 §5.1, §6).",
+  "cases": [
+    {
+      "id": "tckn-baglamli",
+      "description": "Bağlam kelimeli geçerli TCKN.",
+      "spec_refs": [
+        "S3-CAND-002",
+        "S3-CAND-004",
+        "S3-CTX-002"
+      ],
+      "input": {
+        "text": "TC kimlik numaram: 10000000146"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              19,
+              30
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "tckn-ek",
+      "description": "Kesme işaretsiz ek span'e dahil edilmez.",
+      "spec_refs": [
+        "S3-CAND-003"
+      ],
+      "input": {
+        "text": "Numaram 10000000146dır"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              8,
+              19
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "tckn-kesme-isareti",
+      "description": "Kesme işaretli ek span'e dahil edilmez.",
+      "spec_refs": [
+        "S3-CAND-003"
+      ],
+      "input": {
+        "text": "Numaram 10000000146'dır"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              8,
+              19
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "tckn-bosluk-gruplu",
+      "description": "Boşlukla gruplanmış TCKN adaydır; span ayırıcıları içerir.",
+      "spec_refs": [
+        "S3-CAND-001",
+        "S3-CAND-004"
+      ],
+      "input": {
+        "text": "Kimlik no 100 000 001 46 olarak kayıtlı"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              10,
+              24
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "tckn-tire-gruplu",
+      "description": "Tireyle gruplanmış TCKN adaydır.",
+      "spec_refs": [
+        "S3-CAND-001"
+      ],
+      "input": {
+        "text": "100-000-001-46"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              0,
+              14
+            ],
+            "checksum_valid": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "noktali-para-tutari",
+      "description": "Nokta TCKN ayırıcısı değildir: para tutarı aday olmaz.",
+      "spec_refs": [
+        "S3-CAND-001"
+      ],
+      "input": {
+        "text": "Toplam 10.000.000.146 TL ödendi"
+      },
+      "expected": {
+        "detections": []
+      }
+    },
+    {
+      "id": "tam-genislik-rakam",
+      "description": "Tam genişlik rakamlı TCKN bulunur; span orijinal metindedir.",
+      "spec_refs": [
+        "S3-GEN-003"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "TC: １０００００００１４６"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              4,
+              15
+            ],
+            "checksum_valid": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "zero-width-bolunmus",
+      "description": "Zero-width ile bölünmüş TCKN bulunur; span görünmez karakteri içerir.",
+      "spec_refs": [
+        "S3-GEN-003"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "TC: 100\u200b00000146"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              4,
+              16
+            ],
+            "checksum_valid": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "arapca-hint-rakam",
+      "description": "Arapça-Hint rakamlı TCKN bulunur.",
+      "spec_refs": [
+        "S3-GEN-003"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "TC ١٠٠٠٠٠٠٠١٤٦"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              3,
+              14
+            ],
+            "checksum_valid": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "uzun-sayi-parcasi",
+      "description": "Daha uzun bir sayının parçası aday olmaz.",
+      "spec_refs": [
+        "S3-CAND-002"
+      ],
+      "input": {
+        "text": "Sipariş 1000000014600 kodlu"
+      },
+      "expected": {
+        "detections": []
+      }
+    },
+    {
+      "id": "sifirla-baslayan",
+      "description": "0 ile başlayan 11 haneli koşu TCKN adayı değildir.",
+      "spec_refs": [
+        "S3-CAND-002"
+      ],
+      "input": {
+        "text": "Kod 01000000146"
+      },
+      "expected": {
+        "detections": []
+      }
+    },
+    {
+      "id": "gecersiz-checksum-uretilir",
+      "description": "Checksum'ı geçersiz aday da detection olur.",
+      "spec_refs": [
+        "S3-CAND-004"
+      ],
+      "input": {
+        "text": "TC 12345678952"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              3,
+              14
+            ],
+            "checksum_valid": false,
+            "context_hit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "baglam-penceresi-disi",
+      "description": "Bağlam kelimesi 5 token uzaktaysa context_hit false olur.",
+      "spec_refs": [
+        "S3-CTX-001"
+      ],
+      "input": {
+        "text": "kimlik bir iki üç dört 10000000146"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              23,
+              34
+            ],
+            "context_hit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "baglam-penceresi-ici",
+      "description": "Bağlam kelimesi 4 token içindeyse context_hit true olur.",
+      "spec_refs": [
+        "S3-CTX-001",
+        "S3-CTX-002"
+      ],
+      "input": {
+        "text": "kimlik iki üç dört 10000000146"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              19,
+              30
+            ],
+            "context_hit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "baglam-sonra",
+      "description": "Adaydan sonra gelen bağlam kelimesi de sayılır.",
+      "spec_refs": [
+        "S3-CTX-001"
+      ],
+      "input": {
+        "text": "10000000146 numaralı kimlik kartı"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              0,
+              11
+            ],
+            "context_hit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "unsuz-yumusamasi",
+      "description": "Kimliğim, kimlig kökü ile eşleşir.",
+      "spec_refs": [
+        "S3-CTX-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "Kimliğim 10000000146"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              9,
+              20
+            ],
+            "context_hit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-c-ifadesi",
+      "description": "T.C. iki ardışık token olarak eşleşir.",
+      "spec_refs": [
+        "S3-CTX-002"
+      ],
+      "input": {
+        "text": "T.C. 10000000146"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              5,
+              16
+            ],
+            "context_hit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "tc-birebir",
+      "description": "=tc girdisi birebir eşleşir: tcp eşleşmez.",
+      "spec_refs": [
+        "S3-CTX-002"
+      ],
+      "input": {
+        "text": "tcp portu 10000000146"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "span": [
+              10,
+              21
+            ],
+            "context_hit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "vkn-baglamli",
+      "description": "Vergi kelimesiyle VKN.",
+      "spec_refs": [
+        "S3-CAND-002",
+        "S3-CTX-002"
+      ],
+      "input": {
+        "text": "Vergi No: 1234567890"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.vkn",
+            "span": [
+              10,
+              20
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "vkn-baglamsiz",
+      "description": "Bağlamsız VKN de üretilir; context_hit false olur.",
+      "spec_refs": [
+        "S3-CAND-002"
+      ],
+      "input": {
+        "text": "Referans 1234567890"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.vkn",
+            "span": [
+              9,
+              19
+            ],
+            "checksum_valid": true,
+            "context_hit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "vkn-11-hane-degil",
+      "description": "11 haneli koşunun içinden VKN çıkarılmaz.",
+      "spec_refs": [
+        "S3-CAND-002"
+      ],
+      "input": {
+        "text": "Hesap 12345678905"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn"
+          }
+        ]
+      }
+    },
+    {
+      "id": "alan-yoklugu",
+      "description": "TCKN detection'ında yalnızca tanımlı alanlar bulunur.",
+      "spec_refs": [
+        "S3-GEN-002"
+      ],
+      "input": {
+        "text": "TC kimlik numaram: 10000000146"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "1.0.0",
+            "segment": 0,
+            "span": [
+              19,
+              30
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "match": "exact"
+    }
+  ]
+}

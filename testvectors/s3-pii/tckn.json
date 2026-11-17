@@ -1,0 +1,125 @@
+{
+  "format_version": 1,
+  "spec": "S3",
+  "function": "pii.tckn.validate",
+  "description": "TCKN checksum (S3-CHK-001).",
+  "cases": [
+    {
+      "id": "gecerli-test-numarasi",
+      "description": "10000000146 geçerlidir.",
+      "spec_refs": [
+        "S3-CHK-001"
+      ],
+      "input": {
+        "value": "10000000146"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "gecerli-sentetik",
+      "description": "Algoritmayla hesaplanmış sentetik TCKN geçerlidir.",
+      "spec_refs": [
+        "S3-CHK-001"
+      ],
+      "input": {
+        "value": "12345678950"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "negatif-ara-sonuc",
+      "description": "7·O − E negatif olduğunda matematiksel mod kullanılır.",
+      "spec_refs": [
+        "S3-CHK-001"
+      ],
+      "input": {
+        "value": "10090909008"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "onuncu-hane-yanlis",
+      "description": "10. hane yanlışsa geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-001"
+      ],
+      "input": {
+        "value": "12345678960"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "on-birinci-hane-yanlis",
+      "description": "11. hane yanlışsa geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-001"
+      ],
+      "input": {
+        "value": "12345678952"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "sifirla-baslar",
+      "description": "İlk hanesi 0 olan dizi geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-001"
+      ],
+      "input": {
+        "value": "00000000146"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "on-hane",
+      "description": "10 haneli dizi geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-001"
+      ],
+      "input": {
+        "value": "1000000014"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "harf-iceren",
+      "description": "Rakam dışı karakter içeren dizi hata değil, geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-001"
+      ],
+      "input": {
+        "value": "1000000014a"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "bosluklu",
+      "description": "Doğrulama fonksiyonu boşluklu girdiyi kabul etmez; boşluk temizliği aday bulmanın işidir.",
+      "spec_refs": [
+        "S3-CHK-001"
+      ],
+      "input": {
+        "value": "100 000 001 46"
+      },
+      "expected": {
+        "valid": false
+      }
+    }
+  ]
+}

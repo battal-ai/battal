@@ -1,0 +1,73 @@
+{
+  "format_version": 1,
+  "spec": "S3",
+  "function": "pii.luhn.validate",
+  "description": "Luhn (S3-CHK-004).",
+  "cases": [
+    {
+      "id": "klasik-gecerli",
+      "description": "79927398713 geçerlidir.",
+      "spec_refs": [
+        "S3-CHK-004"
+      ],
+      "input": {
+        "value": "79927398713"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "klasik-gecersiz",
+      "description": "79927398710 geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-004"
+      ],
+      "input": {
+        "value": "79927398710"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "kart-test-numarasi",
+      "description": "4111111111111111 geçerlidir.",
+      "spec_refs": [
+        "S3-CHK-004"
+      ],
+      "input": {
+        "value": "4111111111111111"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "tek-hane",
+      "description": "Tek haneli girdi geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-004"
+      ],
+      "input": {
+        "value": "0"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "harfli",
+      "description": "Harf içeren girdi geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-004"
+      ],
+      "input": {
+        "value": "7992739871a"
+      },
+      "expected": {
+        "valid": false
+      }
+    }
+  ]
+}

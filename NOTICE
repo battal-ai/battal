@@ -7,3 +7,8 @@ This product includes data derived from the Unicode Character Database and
 Unicode Security Mechanisms (UTS #39, confusables.txt 15.1.0), Copyright (c)
 1991-2026 Unicode, Inc., distributed under the Unicode License V3. See
 data/unicode/LICENSE.
+
+The Turkish telephone numbering patterns in docs/spec/s3-turkce-pii.md are
+taken from the libphonenumber metadata as distributed in the phonenumbers
+Python package 9.0.43 (Copyright (C) The Libphonenumber Authors), licensed
+under the Apache License, Version 2.0.

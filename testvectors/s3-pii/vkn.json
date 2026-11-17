@@ -1,0 +1,73 @@
+{
+  "format_version": 1,
+  "spec": "S3",
+  "function": "pii.vkn.validate",
+  "description": "VKN checksum (S3-CHK-002).",
+  "cases": [
+    {
+      "id": "gecerli-1",
+      "description": "Algoritmayla hesaplanmış VKN geçerlidir.",
+      "spec_refs": [
+        "S3-CHK-002"
+      ],
+      "input": {
+        "value": "1234567890"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "gecerli-sifirlar",
+      "description": "Baştaki sıfırlar geçerlidir; c1 = 0 durumları atlanır.",
+      "spec_refs": [
+        "S3-CHK-002"
+      ],
+      "input": {
+        "value": "0000000019"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "gecerli-2",
+      "description": "İkinci sentetik VKN geçerlidir.",
+      "spec_refs": [
+        "S3-CHK-002"
+      ],
+      "input": {
+        "value": "9876543217"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "kontrol-hanesi-yanlis",
+      "description": "Kontrol hanesi yanlışsa geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-002"
+      ],
+      "input": {
+        "value": "1234567891"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "dokuz-hane",
+      "description": "9 haneli dizi geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-002"
+      ],
+      "input": {
+        "value": "123456789"
+      },
+      "expected": {
+        "valid": false
+      }
+    }
+  ]
+}

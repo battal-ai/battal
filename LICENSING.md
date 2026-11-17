@@ -28,3 +28,6 @@ bulunur. Bu dosyalar Apache-2.0 değil, kendi MIT lisanslarıyla dağıtılır.
 türetilmiştir ve [Unicode License V3](https://www.unicode.org/license.txt) ile dağıtılır
 (`data/unicode/LICENSE`). Türetme kuralı S2 §5.2'de, türetme script'i
 `scripts/derive_confusables.py` dosyasındadır.
+
+S3'teki Türkiye telefon numaralandırma desenleri, `phonenumbers` 9.0.43 paketindeki
+libphonenumber metadata'sından (Apache-2.0) alınmıştır; atıf `NOTICE` dosyasındadır.

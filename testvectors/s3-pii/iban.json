@@ -1,0 +1,112 @@
+{
+  "format_version": 1,
+  "spec": "S3",
+  "function": "pii.iban.validate",
+  "description": "IBAN-TR checksum (S3-CHK-003).",
+  "cases": [
+    {
+      "id": "gecerli-bitisik",
+      "description": "Bitişik yazılmış sentetik IBAN geçerlidir.",
+      "spec_refs": [
+        "S3-CHK-003"
+      ],
+      "input": {
+        "value": "TR400000001234567890123456"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "gecerli-gruplu",
+      "description": "Boşluklar silinerek doğrulanır.",
+      "spec_refs": [
+        "S3-CHK-003"
+      ],
+      "input": {
+        "value": "TR40 0000 0012 3456 7890 1234 56"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "gecerli-kucuk-harf",
+      "description": "Harfler büyütülerek doğrulanır.",
+      "spec_refs": [
+        "S3-CHK-003"
+      ],
+      "input": {
+        "value": "tr400000001234567890123456"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "gecerli-alfanumerik-hesap",
+      "description": "Hesap kısmında harf olabilir.",
+      "spec_refs": [
+        "S3-CHK-003"
+      ],
+      "input": {
+        "value": "TR92000000ABCD123456789012"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "kontrol-hanesi-yanlis",
+      "description": "Kontrol haneleri yanlışsa geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-003"
+      ],
+      "input": {
+        "value": "TR410000001234567890123456"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "eksik-uzunluk",
+      "description": "25 karakterlik dizi geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-003"
+      ],
+      "input": {
+        "value": "TR40000000123456789012345"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "tr-degil",
+      "description": "TR ile başlamayan IBAN bu fonksiyonda geçersizdir.",
+      "spec_refs": [
+        "S3-CHK-003"
+      ],
+      "input": {
+        "value": "DE400000001234567890123456"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "banka-kodunda-harf",
+      "description": "Banka kodunda harf olamaz.",
+      "spec_refs": [
+        "S3-CHK-003"
+      ],
+      "input": {
+        "value": "TR40A000001234567890123456"
+      },
+      "expected": {
+        "valid": false
+      }
+    }
+  ]
+}

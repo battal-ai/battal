@@ -96,6 +96,16 @@ Görünüm üretirken bir karakteri eşdeğer kabul edilen başka bir karaktere 
 katlama (`а → a`), leet katlama (`3 → e`), diakritik düşürme (`ş → s`).
 _Kaçın_: normalizasyon (genel süreç için ayrılmıştır), dönüştürme
 
+**Aday (candidate)**:
+Bir PII detector'ının biçimine uyan metin parçası; checksum'ı geçmesi gerekmez. Her aday bir
+detection olur; checksum sonucu `checksum_valid` alanında taşınır (S3).
+_Kaçın_: eşleşme, potansiyel PII
+
+**Bağlam kelimesi**:
+Bir adayın yakınında geçtiğinde adayın gerçekten o türden olma olasılığını artıran kelime
+(`kimlik`, `vergi`, `cep`); sonucu `context_hit` alanında taşınır.
+_Kaçın_: anahtar kelime (injection kurallarıyla karışır), keyword
+
 **Checksum doğrulaması**:
 TCKN, VKN, IBAN ve Luhn için numaranın kendi kontrol hanesiyle tutarlılığının hesaplanması.
 _Kaçın_: validasyon (tek başına)

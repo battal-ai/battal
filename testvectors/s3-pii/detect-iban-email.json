@@ -1,0 +1,333 @@
+{
+  "format_version": 1,
+  "spec": "S3",
+  "function": "pii.detect",
+  "description": "IBAN ve e-posta adayları (S3 §5.2, §5.4).",
+  "cases": [
+    {
+      "id": "iban-gruplu-ek",
+      "description": "Gruplu IBAN ve kesme işaretli ek.",
+      "spec_refs": [
+        "S3-IBAN-001",
+        "S3-IBAN-004"
+      ],
+      "input": {
+        "text": "IBAN: TR40 0000 0012 3456 7890 1234 56'ya yatırın"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.iban",
+            "span": [
+              6,
+              38
+            ],
+            "checksum_valid": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "iban-kucuk-harf",
+      "description": "Küçük harfle yazılmış IBAN adaydır.",
+      "spec_refs": [
+        "S3-IBAN-001",
+        "S3-IBAN-004"
+      ],
+      "input": {
+        "text": "hesap tr400000001234567890123456 lütfen"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.iban",
+            "span": [
+              6,
+              32
+            ],
+            "checksum_valid": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "iban-kesmesiz-ek",
+      "description": "Son karakteri rakam olan IBAN'dan sonra gelen ek kabul edilir.",
+      "spec_refs": [
+        "S3-IBAN-003"
+      ],
+      "input": {
+        "text": "IBAN TR400000001234567890123456ye"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.iban",
+            "span": [
+              5,
+              31
+            ],
+            "checksum_valid": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "iban-gecersiz-checksum",
+      "description": "Checksum'ı geçersiz IBAN adayı da üretilir.",
+      "spec_refs": [
+        "S3-IBAN-004"
+      ],
+      "input": {
+        "text": "IBAN TR410000001234567890123456"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.iban",
+            "span": [
+              5,
+              31
+            ],
+            "checksum_valid": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "iban-banka-kodunda-harf",
+      "description": "İlk 8 karakteri rakam olmayan dizi aday değildir.",
+      "spec_refs": [
+        "S3-IBAN-002"
+      ],
+      "input": {
+        "text": "IBAN TR4000AB001234567890123456"
+      },
+      "expected": {
+        "detections": []
+      }
+    },
+    {
+      "id": "iban-onunde-harf",
+      "description": "TR'nin önünde harf varsa aday yoktur.",
+      "spec_refs": [
+        "S3-IBAN-001"
+      ],
+      "input": {
+        "text": "XTR400000001234567890123456"
+      },
+      "expected": {
+        "detections": []
+      }
+    },
+    {
+      "id": "iban-eksik",
+      "description": "24 karakteri tamamlanmayan dizi aday değildir.",
+      "spec_refs": [
+        "S3-IBAN-001"
+      ],
+      "input": {
+        "text": "IBAN TR40000000123456789012345"
+      },
+      "expected": {
+        "detections": []
+      }
+    },
+    {
+      "id": "iban-alan-yoklugu",
+      "description": "IBAN detection'ında context_hit alanı yoktur.",
+      "spec_refs": [
+        "S3-GEN-002"
+      ],
+      "input": {
+        "text": "IBAN TR400000001234567890123456"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.iban",
+            "version": "1.0.0",
+            "segment": 0,
+            "span": [
+              5,
+              31
+            ],
+            "checksum_valid": true
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "eposta-turkce",
+      "description": "Türkçe karakterli yerel kısım ve alan adı; sondaki nokta dahil edilmez.",
+      "spec_refs": [
+        "S3-EML-001",
+        "S3-EML-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "Bana ali.yılmaz@örnek.com.tr adresinden ulaşın."
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.email",
+            "span": [
+              5,
+              28
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "eposta-iki-adet-ek",
+      "description": "Kesme işaretli ek dışarıda kalır; iki e-posta da bulunur.",
+      "spec_refs": [
+        "S3-EML-001",
+        "S3-EML-002"
+      ],
+      "input": {
+        "text": "E-posta: ayse@ornek.com'a yazın, kopyası veli@ornek.org."
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.email",
+            "span": [
+              9,
+              23
+            ]
+          },
+          {
+            "detector": "pii.email",
+            "span": [
+              41,
+              55
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "eposta-kesmesiz-ek",
+      "description": "Kesme işaretsiz Türkçe ek, listedeki TLD'den ayrılır.",
+      "spec_refs": [
+        "S3-EML-003"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "Mesajı ali@ornek.comdan aldım, cevabı veli@ornek.com.trye yazdım."
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.email",
+            "span": [
+              7,
+              20
+            ]
+          },
+          {
+            "detector": "pii.email",
+            "span": [
+              38,
+              55
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "eposta-kesmesiz-ek-buyuk-harf",
+      "description": "Ek ayırma Türkçe küçük harf hâli üzerinden yapılır.",
+      "spec_refs": [
+        "S3-EML-003"
+      ],
+      "input": {
+        "text": "ALI@ORNEK.COMDAN"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.email",
+            "span": [
+              0,
+              13
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "eposta-gercek-uzun-tld",
+      "description": "TLD + ek biçiminde olmayan uzun etiketler ayrılmaz.",
+      "spec_refs": [
+        "S3-EML-003"
+      ],
+      "input": {
+        "text": "Adresler: ali@ornek.community ve veli@ornek.travel"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.email",
+            "span": [
+              10,
+              29
+            ]
+          },
+          {
+            "detector": "pii.email",
+            "span": [
+              33,
+              50
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "eposta-noktasiz-alan",
+      "description": "Tek etiketli alan adı aday değildir.",
+      "spec_refs": [
+        "S3-EML-001"
+      ],
+      "input": {
+        "text": "ali@localhost"
+      },
+      "expected": {
+        "detections": []
+      }
+    },
+    {
+      "id": "eposta-alan-yoklugu",
+      "description": "E-posta detection'ında checksum_valid ve context_hit yoktur.",
+      "spec_refs": [
+        "S3-GEN-002"
+      ],
+      "input": {
+        "text": "a@b.co"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.email",
+            "version": "1.0.0",
+            "segment": 0,
+            "span": [
+              0,
+              6
+            ]
+          }
+        ]
+      },
+      "match": "exact"
+    }
+  ]
+}

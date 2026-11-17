@@ -1,0 +1,299 @@
+{
+  "format_version": 1,
+  "spec": "S3",
+  "function": "pii.detect",
+  "description": "Telefon biçimleri (S3 §5.3).",
+  "cases": [
+    {
+      "id": "f1-arti-90",
+      "description": "+90 öneki; span + işaretinden başlar.",
+      "spec_refs": [
+        "S3-PHN-001",
+        "S3-PHN-003"
+      ],
+      "input": {
+        "text": "+90 532 123 45 67"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.phone",
+            "span": [
+              0,
+              17
+            ],
+            "context_hit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "f2-0090",
+      "description": "0090 öneki.",
+      "spec_refs": [
+        "S3-PHN-001"
+      ],
+      "input": {
+        "text": "0090 532 1234567"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.phone",
+            "span": [
+              0,
+              16
+            ],
+            "context_hit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "f3-sifir-baglamli",
+      "description": "0 öneki ve cep bağlamı.",
+      "spec_refs": [
+        "S3-PHN-001",
+        "S3-CTX-002"
+      ],
+      "input": {
+        "text": "Cep: 0532 123 45 67"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.phone",
+            "span": [
+              5,
+              19
+            ],
+            "context_hit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "f3-noktali",
+      "description": "Telefonda nokta ayırıcıdır.",
+      "spec_refs": [
+        "S3-PHN-001"
+      ],
+      "input": {
+        "text": "0532.123.45.67"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.phone",
+            "span": [
+              0,
+              14
+            ],
+            "context_hit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "f4-parantezli-sifir",
+      "description": "(0532) biçimi; span parantezden başlar.",
+      "spec_refs": [
+        "S3-PHN-001",
+        "S3-PHN-003"
+      ],
+      "input": {
+        "text": "(0532) 123 45 67"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.phone",
+            "span": [
+              0,
+              16
+            ],
+            "context_hit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "f3-parantezli-alan",
+      "description": "0 (532) biçimi.",
+      "spec_refs": [
+        "S3-PHN-001"
+      ],
+      "input": {
+        "text": "0 (532) 123-45-67"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.phone",
+            "span": [
+              0,
+              17
+            ],
+            "context_hit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "f5-oneksiz-mobil",
+      "description": "Öneksiz mobil numara telefondur; aynı koşu VKN adayıdır.",
+      "spec_refs": [
+        "S3-PHN-002",
+        "S3-GEN-005"
+      ],
+      "input": {
+        "text": "532 123 45 67"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.phone",
+            "span": [
+              0,
+              13
+            ],
+            "context_hit": false
+          },
+          {
+            "detector": "pii.vkn",
+            "span": [
+              0,
+              13
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "sabit-hat",
+      "description": "Önekli sabit hat numarası telefondur.",
+      "spec_refs": [
+        "S3-PHN-002"
+      ],
+      "input": {
+        "text": "Ofis 0212 345 67 89"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.phone",
+            "span": [
+              5,
+              19
+            ],
+            "context_hit": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "oneksiz-sabit-hat-degil",
+      "description": "Öneksiz sabit hat numarası telefon değildir (yalnızca VKN adayı).",
+      "spec_refs": [
+        "S3-PHN-002"
+      ],
+      "input": {
+        "text": "212 345 67 89"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.vkn"
+          }
+        ]
+      }
+    },
+    {
+      "id": "gecersiz-mobil-onek",
+      "description": "Numaralandırma planında olmayan 521 öneki telefon değildir.",
+      "spec_refs": [
+        "S3-PHN-002"
+      ],
+      "input": {
+        "text": "0521 123 45 67"
+      },
+      "expected": {
+        "detections": []
+      }
+    },
+    {
+      "id": "ekli-telefon",
+      "description": "Ek almış telefon bulunur; sonraki ara kelimesi bağlamdır.",
+      "spec_refs": [
+        "S3-PHN-001",
+        "S3-CTX-001"
+      ],
+      "input": {
+        "text": "Beni 0532 123 4567den ara"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.phone",
+            "span": [
+              5,
+              18
+            ],
+            "context_hit": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "uzun-sayi",
+      "description": "Arkasında ayırıcı + rakam olan dizi telefon değildir.",
+      "spec_refs": [
+        "S3-PHN-001"
+      ],
+      "input": {
+        "text": "0532 123 45 678"
+      },
+      "expected": {
+        "detections": []
+      }
+    },
+    {
+      "id": "kisa-numara",
+      "description": "444 ile başlayan kısa numaralar aday değildir.",
+      "spec_refs": [
+        "S3-PHN-003"
+      ],
+      "input": {
+        "text": "444 1 234"
+      },
+      "expected": {
+        "detections": []
+      }
+    },
+    {
+      "id": "telefon-alan-yoklugu",
+      "description": "Telefon detection'ında checksum_valid yoktur.",
+      "spec_refs": [
+        "S3-GEN-002"
+      ],
+      "input": {
+        "text": "+90 532 123 45 67"
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "pii.phone",
+            "version": "1.0.0",
+            "segment": 0,
+            "span": [
+              0,
+              17
+            ],
+            "context_hit": false
+          }
+        ]
+      },
+      "match": "exact"
+    }
+  ]
+}
