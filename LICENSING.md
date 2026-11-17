@@ -17,3 +17,9 @@ bunları kendi lisans anlaşmanız kapsamında takabilirsiniz.
 
 "Battal" adı ve ilgili logolar proje sahibinin markasıdır. Apache License bunları kullanma izni
 vermez (lisansın 6. maddesi). Fork'lar farklı bir ad kullanmalıdır.
+
+## Üçüncü taraf dosyalar
+
+`.claude/skills/` altındaki bazı Claude Code skill'leri üçüncü taraf projelerden, MIT lisansıyla
+alınmıştır. Her birinin dizininde orijinal `LICENSE` dosyası ve kaynağını belirten bir `SOURCE.md`
+bulunur. Bu dosyalar Apache-2.0 değil, kendi MIT lisanslarıyla dağıtılır.
