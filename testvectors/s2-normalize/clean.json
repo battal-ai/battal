@@ -1,0 +1,376 @@
+{
+  "format_version": 1,
+  "spec": "S2",
+  "function": "normalize.text",
+  "description": "clean ve pii görünümleri (S2 §4, §6).",
+  "cases": [
+    {
+      "id": "bos-metin",
+      "description": "Boş metinde bütün görünümler boştur; sinyal ve çözülmüş parça yoktur.",
+      "spec_refs": [
+        "S2-GEN-003"
+      ],
+      "input": {
+        "text": ""
+      },
+      "expected": {
+        "views": {
+          "orig": "",
+          "clean": "",
+          "pii": "",
+          "match": "",
+          "match_ascii": ""
+        },
+        "signals": {},
+        "decoded": []
+      },
+      "match": "exact"
+    },
+    {
+      "id": "orig-degismez",
+      "description": "orig görünümü girdi metninin kendisidir; görünmez karakterler orada kalır.",
+      "spec_refs": [
+        "S2-GEN-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ig\u200bnore"
+      },
+      "expected": {
+        "views": {
+          "orig": "ig\u200bnore",
+          "clean": "ignore"
+        }
+      }
+    },
+    {
+      "id": "zero-width-silinir",
+      "description": "Kelime içindeki zero-width space silinir.",
+      "spec_refs": [
+        "S2-CLN-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ig\u200bnore"
+      },
+      "expected": {
+        "views": {
+          "clean": "ignore"
+        }
+      }
+    },
+    {
+      "id": "bidi-silinir",
+      "description": "Bidi kontrol karakteri silinir.",
+      "spec_refs": [
+        "S2-CLN-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "a\u202eb\u2066c"
+      },
+      "expected": {
+        "views": {
+          "clean": "abc"
+        }
+      }
+    },
+    {
+      "id": "soft-hyphen-silinir",
+      "description": "Soft hyphen silinir.",
+      "spec_refs": [
+        "S2-CLN-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "şif\u00adre"
+      },
+      "expected": {
+        "views": {
+          "clean": "şifre"
+        }
+      }
+    },
+    {
+      "id": "tag-karakterleri-silinir",
+      "description": "Tag karakterleri clean görünümünden silinir.",
+      "spec_refs": [
+        "S2-CLN-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "a\udb40\udc69\udb40\udc67b"
+      },
+      "expected": {
+        "views": {
+          "clean": "ab"
+        }
+      }
+    },
+    {
+      "id": "kontrol-karakteri-silinir",
+      "description": "TAB, LF ve CR dışındaki kontrol karakterleri silinir.",
+      "spec_refs": [
+        "S2-CLN-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "a\u0007b\tc\nd\re\u001b"
+      },
+      "expected": {
+        "views": {
+          "clean": "ab\tc\nd\re"
+        }
+      }
+    },
+    {
+      "id": "ozel-kullanim-silinir",
+      "description": "Özel kullanım (Co) ve atanmamış (Cn) code point'ler silinir.",
+      "spec_refs": [
+        "S2-CLN-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "a\ue000b\u0378c"
+      },
+      "expected": {
+        "views": {
+          "clean": "abc"
+        }
+      }
+    },
+    {
+      "id": "variation-selector-silinir",
+      "description": "Variation selector silinir.",
+      "spec_refs": [
+        "S2-CLN-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "❤\ufe0f"
+      },
+      "expected": {
+        "views": {
+          "clean": "❤"
+        }
+      }
+    },
+    {
+      "id": "birlesen-isaret-korunur",
+      "description": "Birleşen işaret silinmez; NFKC onu harfle birleştirir.",
+      "spec_refs": [
+        "S2-CLN-002",
+        "S2-NFK-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "e\u0301"
+      },
+      "expected": {
+        "views": {
+          "clean": "é"
+        }
+      }
+    },
+    {
+      "id": "silmeden-sonra-birlesir",
+      "description": "Aradaki zero-width silindikten sonra harf ve birleşen işaret birleşir.",
+      "spec_refs": [
+        "S2-NFK-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "e\u200b\u0301"
+      },
+      "expected": {
+        "views": {
+          "clean": "é"
+        }
+      }
+    },
+    {
+      "id": "noktali-i-birlesir",
+      "description": "I + U+0307 dizisi NFKC ile İ olur.",
+      "spec_refs": [
+        "S2-NFK-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "I\u0307stanbul"
+      },
+      "expected": {
+        "views": {
+          "clean": "İstanbul"
+        }
+      }
+    },
+    {
+      "id": "tam-genislik",
+      "description": "Tam genişlik harfler NFKC ile ASCII olur.",
+      "spec_refs": [
+        "S2-NFK-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ｉｇｎｏｒｅ"
+      },
+      "expected": {
+        "views": {
+          "clean": "ignore"
+        }
+      }
+    },
+    {
+      "id": "matematiksel-kalin",
+      "description": "Matematiksel kalın harfler NFKC ile ASCII olur.",
+      "spec_refs": [
+        "S2-NFK-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "𝐢𝐠𝐧𝐨𝐫𝐞"
+      },
+      "expected": {
+        "views": {
+          "clean": "ignore"
+        }
+      }
+    },
+    {
+      "id": "ligatur",
+      "description": "Ligatür NFKC ile açılır.",
+      "spec_refs": [
+        "S2-NFK-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ﬁle"
+      },
+      "expected": {
+        "views": {
+          "clean": "file"
+        }
+      }
+    },
+    {
+      "id": "turkce-harfler-korunur",
+      "description": "NFKC Türkçe harfleri değiştirmez.",
+      "spec_refs": [
+        "S2-NFK-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ışık İĞDIR çöğüş"
+      },
+      "expected": {
+        "views": {
+          "clean": "ışık İĞDIR çöğüş"
+        }
+      }
+    },
+    {
+      "id": "pii-arapca-hint-rakam",
+      "description": "pii görünümünde Arapça-Hint rakamlar ASCII olur; clean'de kalır.",
+      "spec_refs": [
+        "S2-PII-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "TC: ١٠٠٠٠٠٠٠١٤٦"
+      },
+      "expected": {
+        "views": {
+          "clean": "TC: ١٠٠٠٠٠٠٠١٤٦",
+          "pii": "TC: 10000000146"
+        }
+      }
+    },
+    {
+      "id": "pii-devanagari-rakam",
+      "description": "Devanagari rakamlar pii görünümünde ASCII olur.",
+      "spec_refs": [
+        "S2-PII-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "१२३"
+      },
+      "expected": {
+        "views": {
+          "clean": "१२३",
+          "pii": "123"
+        }
+      }
+    },
+    {
+      "id": "pii-tam-genislik-rakam",
+      "description": "Tam genişlik rakamlar NFKC ile zaten ASCII olur.",
+      "spec_refs": [
+        "S2-PII-001",
+        "S2-NFK-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "１２３"
+      },
+      "expected": {
+        "views": {
+          "clean": "123",
+          "pii": "123"
+        }
+      }
+    },
+    {
+      "id": "pii-harf-donusumu-yok",
+      "description": "pii görünümünde harfler değişmez.",
+      "spec_refs": [
+        "S2-PII-001"
+      ],
+      "input": {
+        "text": "TCKN Iğdır"
+      },
+      "expected": {
+        "views": {
+          "clean": "TCKN Iğdır",
+          "pii": "TCKN Iğdır"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,399 @@
+{
+  "format_version": 1,
+  "spec": "S2",
+  "function": "normalize.signals",
+  "description": "Sinyal sayıları (S2 §7).",
+  "cases": [
+    {
+      "id": "sinyal-yok",
+      "description": "Düz Türkçe metin sinyal üretmez.",
+      "spec_refs": [
+        "S2-SIG-001"
+      ],
+      "input": {
+        "text": "Merhaba dünya"
+      },
+      "expected": {
+        "signals": {}
+      },
+      "match": "exact"
+    },
+    {
+      "id": "zero-width-hepsi",
+      "description": "Altı zero-width karakteri sayılır.",
+      "spec_refs": [
+        "S2-SIG-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "a\u200b\u200c\u200d\u2060\ufeff\u180eb"
+      },
+      "expected": {
+        "signals": {
+          "zero_width": 6
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "soft-hyphen",
+      "description": "Soft hyphen ayrı sayılır.",
+      "spec_refs": [
+        "S2-SIG-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "şif\u00adre"
+      },
+      "expected": {
+        "signals": {
+          "soft_hyphen": 1
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "bidi",
+      "description": "Bidi kontrol karakterleri sayılır.",
+      "spec_refs": [
+        "S2-SIG-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "\u202ea\u2066b\u200fc\u061c"
+      },
+      "expected": {
+        "signals": {
+          "bidi_control": 4
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "tag-ve-cozum",
+      "description": "Tag karakterleri sayılır ve çözülmüş parça üretir.",
+      "spec_refs": [
+        "S2-SIG-001",
+        "S2-DEC-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "x\udb40\udc41\udb40\udc42"
+      },
+      "expected": {
+        "signals": {
+          "unicode_tag": 2,
+          "encoded_tag": 1
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "bayrak-sayilmaz",
+      "description": "İskoçya bayrağının tag karakterleri sinyal üretmez.",
+      "spec_refs": [
+        "S2-SIG-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "🏴\udb40\udc67\udb40\udc62\udb40\udc73\udb40\udc63\udb40\udc74\udb40\udc7f"
+      },
+      "expected": {
+        "signals": {}
+      },
+      "match": "exact"
+    },
+    {
+      "id": "bayrak-ve-ek-tag",
+      "description": "Bayraktan sonra gelen bağımsız tag karakteri sayılır.",
+      "spec_refs": [
+        "S2-SIG-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "🏴\udb40\udc67\udb40\udc62\udb40\udc73\udb40\udc63\udb40\udc74\udb40\udc7f\udb40\udc41"
+      },
+      "expected": {
+        "signals": {
+          "unicode_tag": 1,
+          "encoded_tag": 1
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "eksik-bayrak-sayilir",
+      "description": "Cancel tag ile bitmeyen dizi bayrak değildir; tag'leri sayılır.",
+      "spec_refs": [
+        "S2-SIG-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "🏴\udb40\udc67\udb40\udc62"
+      },
+      "expected": {
+        "signals": {
+          "unicode_tag": 2,
+          "encoded_tag": 1
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "diger-format",
+      "description": "Listelerde olmayan Cf karakteri other_format sayılır.",
+      "spec_refs": [
+        "S2-SIG-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "f\u2061x"
+      },
+      "expected": {
+        "signals": {
+          "other_format": 1
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "variation-selector",
+      "description": "Emoji dışındaki variation selector sayılır.",
+      "spec_refs": [
+        "S2-SIG-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "x\ufe0e"
+      },
+      "expected": {
+        "signals": {
+          "variation_selector": 1
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "kontrol-karakteri",
+      "description": "TAB, LF ve CR sayılmaz; diğer kontrol karakterleri sayılır.",
+      "spec_refs": [
+        "S2-SIG-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "a\tb\nc\rd\u0007\u001b"
+      },
+      "expected": {
+        "signals": {
+          "control_char": 2
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "ozel-kullanim-ve-atanmamis",
+      "description": "Co ve Cn ayrı sinyallerdir.",
+      "spec_refs": [
+        "S2-SIG-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "\ue000\u0378"
+      },
+      "expected": {
+        "signals": {
+          "private_use": 1,
+          "unassigned": 1
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "nfkc-degisti",
+      "description": "NFKC'nin değiştirdiği her chunk sayılır.",
+      "spec_refs": [
+        "S2-SIG-001",
+        "S2-NFK-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ｉｇ a"
+      },
+      "expected": {
+        "signals": {
+          "nfkc_changed": 2
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "karisik-script-sayisi",
+      "description": "Her karışık script token bir kez sayılır.",
+      "spec_refs": [
+        "S2-SIG-001",
+        "S2-TOK-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "іgnore and ѕtop"
+      },
+      "expected": {
+        "signals": {
+          "mixed_script": 2
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "aile-emojisi-zwj",
+      "description": "Emoji dizisindeki ZWJ sinyal üretmez.",
+      "spec_refs": [
+        "S2-SIG-004"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "👨\u200d👩\u200d👧"
+      },
+      "expected": {
+        "signals": {}
+      },
+      "match": "exact"
+    },
+    {
+      "id": "ten-rengi-zwj",
+      "description": "Ten rengi modifier'ı atlanarak emoji dizisindeki ZWJ tanınır.",
+      "spec_refs": [
+        "S2-SIG-004"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "👩🏽\u200d💻"
+      },
+      "expected": {
+        "signals": {}
+      },
+      "match": "exact"
+    },
+    {
+      "id": "kalp-variation-selector",
+      "description": "Emoji'den sonraki variation selector sinyal üretmez.",
+      "spec_refs": [
+        "S2-SIG-004"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "Teşekkürler ❤\ufe0f"
+      },
+      "expected": {
+        "signals": {}
+      },
+      "match": "exact"
+    },
+    {
+      "id": "keycap",
+      "description": "Keycap dizisindeki variation selector sinyal üretmez.",
+      "spec_refs": [
+        "S2-SIG-004"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "1\ufe0f\u20e3"
+      },
+      "expected": {
+        "signals": {}
+      },
+      "match": "exact"
+    },
+    {
+      "id": "harfler-arasi-zwj",
+      "description": "İki harf arasındaki ZWJ emoji dizisi değildir; sayılır.",
+      "spec_refs": [
+        "S2-SIG-004"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ig\u200dnore"
+      },
+      "expected": {
+        "signals": {
+          "zero_width": 1
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "harften-sonra-variation-selector",
+      "description": "Harften sonraki variation selector sayılır.",
+      "spec_refs": [
+        "S2-SIG-004"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "a\ufe0fb"
+      },
+      "expected": {
+        "signals": {
+          "variation_selector": 1
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "tek-sinyal-onceligi",
+      "description": "BOM (U+FEFF) hem Cf hem zero-width'tir; yalnızca zero_width sayılır.",
+      "spec_refs": [
+        "S2-SIG-003"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "\ufeffa"
+      },
+      "expected": {
+        "signals": {
+          "zero_width": 1
+        }
+      },
+      "match": "exact"
+    }
+  ]
+}

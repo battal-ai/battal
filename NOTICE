@@ -2,3 +2,8 @@ Battal
 Copyright 2026 The Battal Authors
 
 This product includes software licensed under the Apache License, Version 2.0.
+
+This product includes data derived from the Unicode Character Database and
+Unicode Security Mechanisms (UTS #39, confusables.txt 15.1.0), Copyright (c)
+1991-2026 Unicode, Inc., distributed under the Unicode License V3. See
+data/unicode/LICENSE.

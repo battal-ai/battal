@@ -1,0 +1,93 @@
+{
+  "format_version": 1,
+  "spec": "S2",
+  "function": "text.tr_lower",
+  "description": "Türkçe küçük harf (S2 §5.4).",
+  "cases": [
+    {
+      "id": "istanbul",
+      "description": "İ, i olur; birleşen üst nokta üretilmez.",
+      "spec_refs": [
+        "S2-LOW-002"
+      ],
+      "input": {
+        "text": "İSTANBUL"
+      },
+      "expected": {
+        "text": "istanbul"
+      }
+    },
+    {
+      "id": "igdir",
+      "description": "I, ı olur.",
+      "spec_refs": [
+        "S2-LOW-001",
+        "S2-LOW-002"
+      ],
+      "input": {
+        "text": "IĞDIR"
+      },
+      "expected": {
+        "text": "ığdır"
+      }
+    },
+    {
+      "id": "turkce-buyukler",
+      "description": "Türkçe büyük harfler küçülür.",
+      "spec_refs": [
+        "S2-LOW-001"
+      ],
+      "input": {
+        "text": "ÇÖĞÜŞ"
+      },
+      "expected": {
+        "text": "çöğüş"
+      }
+    },
+    {
+      "id": "kucukler-degismez",
+      "description": "Küçük harfler değişmez; ı ve i korunur.",
+      "spec_refs": [
+        "S2-LOW-001"
+      ],
+      "input": {
+        "text": "ışık için"
+      },
+      "expected": {
+        "text": "ışık için"
+      }
+    },
+    {
+      "id": "sigma-baglamsiz",
+      "description": "Son sigma kuralı uygulanmaz.",
+      "spec_refs": [
+        "S2-LOW-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ΣΟΦΟΣ"
+      },
+      "expected": {
+        "text": "σοφοσ"
+      }
+    },
+    {
+      "id": "buyuk-eszet",
+      "description": "Büyük ẞ, ß olur.",
+      "spec_refs": [
+        "S2-LOW-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ẞ"
+      },
+      "expected": {
+        "text": "ß"
+      }
+    }
+  ]
+}

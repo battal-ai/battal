@@ -78,7 +78,14 @@ battal/
 
 - global state yoktur, I/O yoktur, saat ve rastgelelik kullanılmaz;
 - girdi ve çıktı `battal.contract` tipleri ya da çekirdeğin kendi değer tipleridir;
-- davranışı tamamen S2, S3, S4 (kural kısmı) ve S5 vektörleriyle tanımlıdır.
+- davranışı tamamen S2, S3, S4 (kural kısmı) ve S5 vektörleriyle tanımlıdır;
+- statik veri tabloları (örneğin `data/unicode/confusables-fold-15.1.0.json`) paketle birlikte
+  gelen sabitlerdir: Python'da paket verisi olarak bir kez yüklenir, Rust'ta derleme anında
+  gömülür (`include_str!`). Çalışma anında dosya sisteminden okunmaz ve config ile değiştirilmez.
+
+Çekirdeğin dış bağımlılıkları bilinçli olarak az tutulur: Unicode Script özelliği için `regex`
+(Python) / `unicode-script` (Rust), NFKC için standart kütüphane (Python) /
+`unicode-normalization` (Rust). ICU, deasciifier ve mojibake onarımı kullanılmaz (S2 §1).
 
 Rust `battal-core` (E11) bu modülün yerine geçer. Seam, `battal.core`'un public interface'idir;
 Python ve Rust motorları aynı interface'i aynı vektörlerle karşılar ve config ile seçilir.
@@ -132,7 +139,7 @@ kullanılır ve spaCy modeli gerektirmez.
 | Modül | Davranışı tanımlayan spec |
 |---|---|
 | `contract` | [S1](spec/s1-evaluation-api.md) |
-| `core/normalize` | S2 |
+| `core/normalize` | [S2](spec/s2-turkce-normalizasyon.md) |
 | `core/pii`, `core/actions` | S3 |
 | `core/rules`, `detectors` | S4 |
 | `core/policy`, `bundle`, `cli` | [S5](spec/s5-policy-binding-bundle.md) |

@@ -1,0 +1,256 @@
+{
+  "format_version": 1,
+  "spec": "S2",
+  "function": "normalize.map_span",
+  "description": "Görünümden orijinal metne geri eşleme (S2 §9).",
+  "cases": [
+    {
+      "id": "orig-kimlik",
+      "description": "orig görünümünde eşleme birebirdir.",
+      "spec_refs": [
+        "S2-MAP-001"
+      ],
+      "input": {
+        "text": "abcdef",
+        "view": "orig",
+        "span": [
+          1,
+          4
+        ]
+      },
+      "expected": {
+        "span": [
+          1,
+          4
+        ]
+      }
+    },
+    {
+      "id": "clean-kimlik",
+      "description": "Değişmeyen metinde clean eşlemesi birebirdir.",
+      "spec_refs": [
+        "S2-MAP-001"
+      ],
+      "input": {
+        "text": "abc",
+        "view": "clean",
+        "span": [
+          1,
+          2
+        ]
+      },
+      "expected": {
+        "span": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "silinen-karakter-icerde",
+      "description": "Arada silinmiş zero-width karakter orijinal aralığa dahil olur.",
+      "spec_refs": [
+        "S2-MAP-001",
+        "S2-NFK-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "100\u200b00000146",
+        "view": "clean",
+        "span": [
+          0,
+          11
+        ]
+      },
+      "expected": {
+        "span": [
+          0,
+          12
+        ]
+      }
+    },
+    {
+      "id": "silinen-karakter-basta",
+      "description": "Baştaki silinmiş karakter aralığa dahil olmaz.",
+      "spec_refs": [
+        "S2-MAP-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "\u200babc",
+        "view": "clean",
+        "span": [
+          0,
+          1
+        ]
+      },
+      "expected": {
+        "span": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "ligatur-genisleme",
+      "description": "Ligatürden çıkan her harf ligatürün aralığına eşlenir.",
+      "spec_refs": [
+        "S2-NFK-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ﬁle",
+        "view": "clean",
+        "span": [
+          1,
+          2
+        ]
+      },
+      "expected": {
+        "span": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "birlesme",
+      "description": "Birleşen işaretle oluşan harf iki code point'lik aralığa eşlenir.",
+      "spec_refs": [
+        "S2-NFK-002"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "e\u0301x",
+        "view": "clean",
+        "span": [
+          0,
+          1
+        ]
+      },
+      "expected": {
+        "span": [
+          0,
+          2
+        ]
+      }
+    },
+    {
+      "id": "cok-harfli-hedef-eslemesi",
+      "description": "Confusable hedefinin harfleri kaynak code point'e eşlenir.",
+      "spec_refs": [
+        "S2-CNF-003",
+        "S2-MAP-003"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "aӕb",
+        "view": "match",
+        "span": [
+          1,
+          3
+        ]
+      },
+      "expected": {
+        "span": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "pii-rakam-eslemesi",
+      "description": "pii görünümündeki rakam orijinal rakamın aralığına eşlenir.",
+      "spec_refs": [
+        "S2-MAP-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "TC ١٢",
+        "view": "pii",
+        "span": [
+          3,
+          5
+        ]
+      },
+      "expected": {
+        "span": [
+          3,
+          5
+        ]
+      }
+    },
+    {
+      "id": "match-ascii-eslemesi",
+      "description": "match_ascii eşlemesi de orijinal metne döner.",
+      "spec_refs": [
+        "S2-MAP-003"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "ＩＧ şu",
+        "view": "match_ascii",
+        "span": [
+          3,
+          5
+        ]
+      },
+      "expected": {
+        "span": [
+          3,
+          5
+        ]
+      }
+    },
+    {
+      "id": "bos-span",
+      "description": "Boş span geçersizdir.",
+      "spec_refs": [
+        "S2-MAP-002"
+      ],
+      "input": {
+        "text": "abc",
+        "view": "clean",
+        "span": [
+          2,
+          2
+        ]
+      },
+      "expected_error": {
+        "code": "INVALID_SPAN"
+      }
+    },
+    {
+      "id": "tasan-span",
+      "description": "Görünüm uzunluğunu aşan span geçersizdir.",
+      "spec_refs": [
+        "S2-MAP-002"
+      ],
+      "input": {
+        "text": "abc",
+        "view": "clean",
+        "span": [
+          0,
+          4
+        ]
+      },
+      "expected_error": {
+        "code": "INVALID_SPAN"
+      }
+    }
+  ]
+}

@@ -522,17 +522,18 @@ Takvim ve sprint ataması yapılmamıştır. MVP epic'leri ayrıntılı, sonraki
 ### E2 Türkçe normalizasyon çekirdeği
 
 - **PBI 2.1 Sinyal çıkarma.** Tag, zero-width, bidi, karışık script ve Co/Cn karakterleri sayılır.
-  *DoD:* Her sinyal türü için en az 10 test vektörü vardır; bayrak emoji dizileri yanlış pozitif
-  üretmez.
+  *DoD:* S2 vektörlerinin tamamı geçer; her sinyal türü için S2 vektörleri ve implementasyonun
+  birim testleri birlikte en az 10 test içerir; bayrak ve diğer emoji dizileri yanlış pozitif üretmez.
 - **PBI 2.2 Offset haritalı temizleme ve NFKC.**
   *DoD:* Round-trip testi geçer (her bulgu orijinal metindeki doğru span'e eşlenir).
 - **PBI 2.3 Türkçe-farkında casing ve confusable katlama.**
   *DoD:* `İSTANBUL` → `istanbul`, `IĞDIR` → `ığdır`. `ışık` ve `IŞIK` bozulmaz (vektörlerle
   doğrulanır).
-- **PBI 2.4 Diakritik görünümleri.** Deasciify ve diakritik düşürme formları üretilir.
+- **PBI 2.4 Diakritik görünümleri.** `match_ascii` görünümü (diakritik düşürme) üretilir; deasciifier
+  MVP'de yoktur (S2).
   *DoD:* `onceki talimatlari` ile `önceki talimatları` aynı kurala eşleşir.
-- **PBI 2.5 Çözücüler.** base64, hex, rot13, URL encoding ve tag→ASCII; özyineleme derinliği en
-  fazla 2, boyut sınırlı.
+- **PBI 2.5 Çözücüler.** base64, hex, URL encoding ve tag→ASCII (rot13 MVP'de yoktur, S2);
+  özyineleme derinliği en fazla 2, boyut sınırlı.
   *DoD:* Decode bombası testi (çok büyük girdi ya da iç içe kodlama) sınırlar içinde kalır.
 
 ### E3 Türkçe PII

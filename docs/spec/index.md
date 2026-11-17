@@ -35,7 +35,7 @@ Spec'ler Türkçedir. Zorunluluk seviyeleri RFC 2119 anahtar kelimeleriyle yazı
 |---|---|---|---|---|
 | S0 | [Spec ve test vektörü formatı](s0-test-vektorleri.md) | E0.2 | — | kabul edildi (1.1.0) |
 | S1 | [Evaluation API sözleşmesi](s1-evaluation-api.md) | E1 | S0 | kabul edildi (1.0.0) |
-| S2 | Türkçe normalizasyon | E2 | S0, S1 | planlandı |
+| S2 | [Türkçe normalizasyon](s2-turkce-normalizasyon.md) | E2 | S0, S1 | kabul edildi (1.0.0) |
 | S3 | Türkçe PII | E3 | S0, S1, S2 | planlandı |
 | S4 | Injection tespiti | E4 | S0, S1, S2 | planlandı |
 | S5 | [Policy, binding ve bundle](s5-policy-binding-bundle.md) | E5 | S0, S1 | kabul edildi (1.0.0) |

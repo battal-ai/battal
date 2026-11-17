@@ -23,3 +23,8 @@ vermez (lisansın 6. maddesi). Fork'lar farklı bir ad kullanmalıdır.
 `.claude/skills/` altındaki bazı Claude Code skill'leri üçüncü taraf projelerden, MIT lisansıyla
 alınmıştır. Her birinin dizininde orijinal `LICENSE` dosyası ve kaynağını belirten bir `SOURCE.md`
 bulunur. Bu dosyalar Apache-2.0 değil, kendi MIT lisanslarıyla dağıtılır.
+
+`data/unicode/` altındaki veri dosyaları Unicode'un `confusables.txt` (UTS #39, 15.1.0) dosyasından
+türetilmiştir ve [Unicode License V3](https://www.unicode.org/license.txt) ile dağıtılır
+(`data/unicode/LICENSE`). Türetme kuralı S2 §5.2'de, türetme script'i
+`scripts/derive_confusables.py` dosyasındadır.

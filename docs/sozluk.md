@@ -67,14 +67,34 @@ Orijinal metinde Unicode code point cinsinden, yarı açık `[start, end)` aral�
 _Kaçın_: offset (tek başına), konum, range
 
 **Görünüm (view)**:
-Normalizasyonun aynı metinden ürettiği farklı biçimlerden biri (`orig`, `v_pii`, `v_match`,
-`v_decoded`); her görünüm orijinal metne offset haritasıyla bağlıdır.
-_Kaçın_: normalize edilmiş metin (tek bir metin varmış gibi)
+Normalizasyonun aynı metinden ürettiği, offset haritasıyla orijinal metne bağlı biçimlerden biri:
+`orig`, `clean`, `pii`, `match`, `match_ascii` (S2).
+_Kaçın_: normalize edilmiş metin (tek bir metin varmış gibi), `v_pii`/`v_match` (eski adlar)
+
+**Offset haritası**:
+Bir görünümün her code point'ini orijinal metindeki aralığa bağlayan eşleme; görünümde bulunan
+bir span'i orijinal metne geri çevirmeyi sağlar.
+_Kaçın_: index map, hizalama
 
 **Sinyal**:
-Normalizasyon sırasında sayılan şüpheli özellik; örneğin zero-width karakter, bidi karakteri,
-karışık script.
+Normalizasyon sırasında sayılan, adı sabit şüpheli özellik; örneğin `zero_width`,
+`bidi_control`, `mixed_script` (tam liste: S2 §7). Policy koşullarında adıyla kullanılır.
 _Kaçın_: uyarı, flag
+
+**Çözülmüş parça**:
+Metindeki base64, hex, URL-encoded ya da tag karakterleriyle kodlanmış bir parçanın çözülmüş
+hâli; kaynak parçanın orijinal aralığını taşır.
+_Kaçın_: decoded view (tek bir görünüm varmış gibi), payload
+
+**Karışık script token**:
+Hem Latin hem Kiril ya da Yunan harf içeren token; confusable katlama yalnızca bu token'lara
+uygulanır.
+_Kaçın_: homoglyph kelime
+
+**Katlama (folding)**:
+Görünüm üretirken bir karakteri eşdeğer kabul edilen başka bir karaktere çevirme: confusable
+katlama (`а → a`), leet katlama (`3 → e`), diakritik düşürme (`ş → s`).
+_Kaçın_: normalizasyon (genel süreç için ayrılmıştır), dönüştürme
 
 **Checksum doğrulaması**:
 TCKN, VKN, IBAN ve Luhn için numaranın kendi kontrol hanesiyle tutarlılığının hesaplanması.

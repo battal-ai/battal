@@ -1,0 +1,79 @@
+{
+  "format_version": 1,
+  "spec": "S2",
+  "function": "text.fold_diacritics",
+  "description": "Diakritik düşürme (S2 §5.5).",
+  "cases": [
+    {
+      "id": "isik",
+      "description": "ı, i olur.",
+      "spec_refs": [
+        "S2-ASC-001"
+      ],
+      "input": {
+        "text": "ışık"
+      },
+      "expected": {
+        "text": "isik"
+      }
+    },
+    {
+      "id": "turkce-harfler",
+      "description": "Türkçe diakritikler düşer.",
+      "spec_refs": [
+        "S2-ASC-001"
+      ],
+      "input": {
+        "text": "çöğüşâ"
+      },
+      "expected": {
+        "text": "cogusa"
+      }
+    },
+    {
+      "id": "ayrismayan",
+      "description": "Ayrışmayan harf değişmez.",
+      "spec_refs": [
+        "S2-ASC-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "łø"
+      },
+      "expected": {
+        "text": "łø"
+      }
+    },
+    {
+      "id": "aksan",
+      "description": "Fransızca aksanlar düşer.",
+      "spec_refs": [
+        "S2-ASC-001"
+      ],
+      "input": {
+        "text": "élève"
+      },
+      "expected": {
+        "text": "eleve"
+      }
+    },
+    {
+      "id": "kiril-degismez",
+      "description": "Kiril harfler değişmez; й ayrışır ve kısa işareti düşer.",
+      "spec_refs": [
+        "S2-ASC-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "text": "привет й"
+      },
+      "expected": {
+        "text": "привет и"
+      }
+    }
+  ]
+}
