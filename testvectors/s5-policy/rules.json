@@ -1,0 +1,1367 @@
+{
+  "format_version": 1,
+  "spec": "S5",
+  "function": "policy.evaluate",
+  "description": "Koşullar ve segment başına değerlendirme (S5 §6).",
+  "cases": [
+    {
+      "id": "tek-detection-butun-alanlar",
+      "description": "Detection koşulunun bütün alanlarını aynı detection sağlamalıdır.",
+      "spec_refs": [
+        "S5-RUL-002"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true,
+                    "context_hit": true
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": false
+          },
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": false,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "allow",
+          "decided_by": {
+            "kind": "default",
+            "binding": null
+          }
+        }
+      }
+    },
+    {
+      "id": "detection-alani-eksik",
+      "description": "Detection'da olmayan alan koşulu sağlamaz.",
+      "spec_refs": [
+        "S5-RUL-002"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "allow"
+        }
+      }
+    },
+    {
+      "id": "detector-glob",
+      "description": "pii.* deseni pii.iban ile eşleşir.",
+      "spec_refs": [
+        "S5-RUL-002"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "detector": "pii.*"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.iban",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              4
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block",
+          "rule_id": "r"
+        }
+      }
+    },
+    {
+      "id": "segmentler-arasi-eslesme-yok",
+      "description": "Injection güvenilir segment'te, untrusted başka segment'te ise kural eşleşmez.",
+      "spec_refs": [
+        "S5-RUL-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "trust": "untrusted",
+              "role": "user"
+            },
+            {
+              "id": 1,
+              "text": "Sistem talimatı",
+              "trust": "trusted",
+              "role": "system"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "tr-injection",
+            "version": "0.1.0",
+            "segment": 1,
+            "span": [
+              0,
+              5
+            ],
+            "raw_score": 0.9,
+            "calibrated": false,
+            "threshold": 0.8
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "allow"
+        }
+      }
+    },
+    {
+      "id": "ayni-segmentte-eslesme",
+      "description": "Injection ve untrusted aynı segment'teyse kural eşleşir.",
+      "spec_refs": [
+        "S5-RUL-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "trust": "untrusted",
+              "role": "user"
+            },
+            {
+              "id": 1,
+              "text": "Sistem talimatı",
+              "trust": "trusted",
+              "role": "system"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "tr-injection",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              5
+            ],
+            "raw_score": 0.9,
+            "calibrated": false,
+            "threshold": 0.8
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block",
+          "rule_id": "r"
+        }
+      }
+    },
+    {
+      "id": "trust-varsayilan-untrusted",
+      "description": "trust verilmemiş segment untrusted sayılır.",
+      "spec_refs": [
+        "S5-RUL-003",
+        "S1-SEG-003"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "tr-injection",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              5
+            ],
+            "raw_score": 0.9,
+            "calibrated": false,
+            "threshold": 0.8
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block"
+        }
+      }
+    },
+    {
+      "id": "role-yoksa-eslesmez",
+      "description": "Gönderilmemiş role hiçbir değerle eşleşmez.",
+      "spec_refs": [
+        "S5-RUL-003",
+        "S1-SEG-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "role": [
+                      "user",
+                      "system",
+                      "assistant",
+                      "tool"
+                    ]
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "x"
+            }
+          ]
+        },
+        "detections": []
+      },
+      "expected": {
+        "decision": {
+          "action": "allow"
+        }
+      }
+    },
+    {
+      "id": "source-liste-or",
+      "description": "source listesinden biri eşleşmesi yeterlidir.",
+      "spec_refs": [
+        "S5-RUL-003"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "source": [
+                      "tool",
+                      "retrieval"
+                    ]
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "x",
+              "source": "retrieval"
+            }
+          ]
+        },
+        "detections": []
+      },
+      "expected": {
+        "decision": {
+          "action": "block"
+        }
+      }
+    },
+    {
+      "id": "sinyal-min-count",
+      "description": "Sinyal sayısı min_count'a eşitse koşul sağlanır.",
+      "spec_refs": [
+        "S5-RUL-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "signal": "zero_width",
+                    "min_count": 2
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [],
+        "signals": [
+          {
+            "segment": 0,
+            "signal": "zero_width",
+            "count": 2
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block"
+        }
+      }
+    },
+    {
+      "id": "sinyal-min-count-alti",
+      "description": "Sinyal sayısı min_count'un altındaysa koşul sağlanmaz.",
+      "spec_refs": [
+        "S5-RUL-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "signal": "zero_width",
+                    "min_count": 2
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [],
+        "signals": [
+          {
+            "segment": 0,
+            "signal": "zero_width",
+            "count": 1
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "allow"
+        }
+      }
+    },
+    {
+      "id": "sinyal-varsayilan-bir",
+      "description": "min_count verilmezse 1 kabul edilir.",
+      "spec_refs": [
+        "S5-RUL-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "signal": "bidi"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [],
+        "signals": [
+          {
+            "segment": 0,
+            "signal": "bidi",
+            "count": 1
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block"
+        }
+      }
+    },
+    {
+      "id": "not-detection-yok",
+      "description": "not, segment'te ilgili detection yoksa doğrudur.",
+      "spec_refs": [
+        "S5-RUL-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "pii.tckn"
+                      },
+                      {
+                        "not": {
+                          "detector": "consent.given"
+                        }
+                      }
+                    ]
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block"
+        }
+      }
+    },
+    {
+      "id": "not-detection-var",
+      "description": "not, segment'te ilgili detection varsa yanlıştır.",
+      "spec_refs": [
+        "S5-RUL-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "pii.tckn"
+                      },
+                      {
+                        "not": {
+                          "detector": "consent.given"
+                        }
+                      }
+                    ]
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ]
+          },
+          {
+            "detector": "consent.given",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              4
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "allow"
+        }
+      }
+    },
+    {
+      "id": "any-birinden-biri",
+      "description": "any, alt koşullardan biri doğruysa doğrudur.",
+      "spec_refs": [
+        "S5-RUL-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "any": [
+                      {
+                        "detector": "pii.iban"
+                      },
+                      {
+                        "detector": "pii.tckn"
+                      }
+                    ]
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block"
+        }
+      }
+    },
+    {
+      "id": "min-score-esit",
+      "description": "raw_score min_score'a eşitse koşul sağlanır.",
+      "spec_refs": [
+        "S5-RUL-002"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "detector": "tr-injection",
+                    "min_score": 0.85
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "tr-injection",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              5
+            ],
+            "raw_score": 0.85,
+            "calibrated": false,
+            "threshold": 0.8
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block"
+        }
+      }
+    },
+    {
+      "id": "min-score-raw-score-yok",
+      "description": "raw_score'u olmayan detection min_score koşulunu sağlamaz.",
+      "spec_refs": [
+        "S5-RUL-006"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "min_score": 0.1
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "allow"
+        }
+      }
+    },
+    {
+      "id": "above-threshold-esit",
+      "description": "raw_score detector eşiğine eşitse above_threshold sağlanır.",
+      "spec_refs": [
+        "S5-RUL-002"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "detector": "tr-injection",
+                    "above_threshold": true
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "tr-injection",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              5
+            ],
+            "raw_score": 0.8,
+            "calibrated": false,
+            "threshold": 0.8
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block"
+        }
+      }
+    },
+    {
+      "id": "above-threshold-alti",
+      "description": "raw_score detector eşiğinin altındaysa above_threshold sağlanmaz.",
+      "spec_refs": [
+        "S5-RUL-002"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "detector": "tr-injection",
+                    "above_threshold": true
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "tr-injection",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              5
+            ],
+            "raw_score": 0.79,
+            "calibrated": false,
+            "threshold": 0.8
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "allow"
+        }
+      }
+    },
+    {
+      "id": "kural-checkpoint-filtresi",
+      "description": "checkpoints listesinde olmayan checkpoint'te kural değerlendirilmez.",
+      "spec_refs": [
+        "S5-POL-003"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "output",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "allow"
+        }
+      }
+    }
+  ]
+}

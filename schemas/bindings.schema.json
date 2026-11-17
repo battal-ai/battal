@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://battal-ai.github.io/battal/schemas/bindings.schema.json",
+  "title": "bindings.yaml",
+  "description": "S5: Policy, binding ve bundle. Şema bütün eşleşme alanlarını tanır; MVP'de çalışmayanlar yüklemede BINDING_FIELD_NOT_SUPPORTED ile reddedilir.",
+  "type": "object",
+  "required": ["bindings"],
+  "additionalProperties": false,
+  "properties": {
+    "bindings": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/binding"}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*$", "maxLength": 128},
+    "value": {
+      "oneOf": [
+        {"type": "string", "minLength": 1},
+        {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      ]
+    },
+    "binding": {
+      "type": "object",
+      "required": ["id", "policy", "match"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "policy": {"$ref": "#/$defs/id"},
+        "match": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "checkpoint": {
+              "oneOf": [
+                {"$ref": "#/$defs/checkpoint"},
+                {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/checkpoint"}}
+              ]
+            },
+            "tenant": {"$ref": "#/$defs/value"},
+            "team": {"$ref": "#/$defs/value"},
+            "key": {"$ref": "#/$defs/value"},
+            "model": {"$ref": "#/$defs/value"},
+            "user": {"$ref": "#/$defs/value"},
+            "surface": {"$ref": "#/$defs/value"},
+            "agent": {"$ref": "#/$defs/value"},
+            "tool": {"$ref": "#/$defs/value"}
+          }
+        },
+        "selectable": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+      }
+    },
+    "checkpoint": {"enum": ["input", "output", "retrieval", "tool_call", "tool_result", "memory_write"]}
+  }
+}

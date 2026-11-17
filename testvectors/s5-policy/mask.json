@@ -1,0 +1,1381 @@
+{
+  "format_version": 1,
+  "spec": "S5",
+  "function": "policy.evaluate",
+  "description": "Maskeleme, yer tutucular ve span birleştirme (S5 §7.3).",
+  "cases": [
+    {
+      "id": "tek-tckn",
+      "description": "TCKN, varsayılan <TCKN> yer tutucusuyla maskelenir.",
+      "spec_refs": [
+        "S5-ACT-001",
+        "S5-ACT-003",
+        "S5-ACT-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "mask"
+        },
+        "transforms": [
+          {
+            "segment": 0,
+            "text": "TC'm <TCKN>",
+            "edits": [
+              {
+                "span": [
+                  5,
+                  16
+                ],
+                "replacement": "<TCKN>"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "iki-ayri-detection",
+      "description": "Çakışmayan iki detection iki edit üretir, span sırasıyla.",
+      "spec_refs": [
+        "S5-ACT-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TCKN 10000000146, e-posta ali@ornek.com"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              26,
+              39
+            ]
+          },
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true
+          }
+        ]
+      },
+      "expected": {
+        "transforms": [
+          {
+            "segment": 0,
+            "text": "TCKN <TCKN>, e-posta <EMAIL>",
+            "edits": [
+              {
+                "span": [
+                  5,
+                  16
+                ],
+                "replacement": "<TCKN>"
+              },
+              {
+                "span": [
+                  26,
+                  39
+                ],
+                "replacement": "<EMAIL>"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cakisan-spanler-birlesir",
+      "description": "Çakışan span'ler tek edit olur; en solda başlayanın yer tutucusu kullanılır.",
+      "spec_refs": [
+        "S5-ACT-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "m",
+                  "when": {
+                    "detector": "pii.*"
+                  },
+                  "action": "mask"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "abcdefghij"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.b",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              3,
+              8
+            ]
+          },
+          {
+            "detector": "pii.a",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              1,
+              5
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "transforms": [
+          {
+            "segment": 0,
+            "text": "a<A>ij",
+            "edits": [
+              {
+                "span": [
+                  1,
+                  8
+                ],
+                "replacement": "<A>"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ayni-baslangic-en-uzun",
+      "description": "Aynı noktada başlayan span'lerde en uzun olanın yer tutucusu kullanılır.",
+      "spec_refs": [
+        "S5-ACT-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "m",
+                  "when": {
+                    "detector": "pii.*"
+                  },
+                  "action": "mask"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "abcdefghij"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.kisa",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              2,
+              4
+            ]
+          },
+          {
+            "detector": "pii.uzun",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              2,
+              7
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "transforms": [
+          {
+            "segment": 0,
+            "text": "ab<UZUN>hij",
+            "edits": [
+              {
+                "span": [
+                  2,
+                  7
+                ],
+                "replacement": "<UZUN>"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "bitisik-spanler-birlesmez",
+      "description": "Bitişik ama çakışmayan span'ler ayrı edit kalır.",
+      "spec_refs": [
+        "S5-ACT-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "m",
+                  "when": {
+                    "detector": "pii.*"
+                  },
+                  "action": "mask"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "abcdef"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.a",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              3
+            ]
+          },
+          {
+            "detector": "pii.b",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              3,
+              6
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "transforms": [
+          {
+            "segment": 0,
+            "text": "<A><B>",
+            "edits": [
+              {
+                "span": [
+                  0,
+                  3
+                ],
+                "replacement": "<A>"
+              },
+              {
+                "span": [
+                  3,
+                  6
+                ],
+                "replacement": "<B>"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "ozel-yer-tutucu",
+      "description": "Kuralın placeholder alanı varsayılanın yerine geçer.",
+      "spec_refs": [
+        "S5-ACT-003"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "m",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask",
+                  "placeholder": "[KIMLIK]"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "transforms": [
+          {
+            "segment": 0,
+            "text": "TC'm [KIMLIK]"
+          }
+        ]
+      }
+    },
+    {
+      "id": "katmanlarin-maskeleri-birlesir",
+      "description": "Taban e-postayı, spesifik katman TCKN'yi maskeliyorsa ikisi de maskelenir.",
+      "spec_refs": [
+        "S5-ACT-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {}
+              },
+              {
+                "id": "ekip",
+                "policy": "ekip",
+                "match": {
+                  "team": "t1"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "t.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                }
+              ]
+            },
+            {
+              "id": "ekip",
+              "version": "2.1.0",
+              "rules": [
+                {
+                  "id": "e.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TCKN 10000000146, e-posta ali@ornek.com"
+            }
+          ],
+          "principal": {
+            "team_id": "t1"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true
+          },
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              26,
+              39
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "mask",
+          "rule_id": "e.mask_tckn"
+        },
+        "transforms": [
+          {
+            "segment": 0,
+            "text": "TCKN <TCKN>, e-posta <EMAIL>"
+          }
+        ]
+      }
+    },
+    {
+      "id": "block-varsa-transform-yok",
+      "description": "Son eylem block ise mask kuralları eşleşse de transform üretilmez.",
+      "spec_refs": [
+        "S5-ACT-001",
+        "S1-TRF-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {}
+              },
+              {
+                "id": "ekip",
+                "policy": "ekip",
+                "match": {
+                  "team": "t1"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "t.mask",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                }
+              ]
+            },
+            {
+              "id": "ekip",
+              "version": "2.1.0",
+              "rules": [
+                {
+                  "id": "e.block",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TCKN 10000000146, e-posta ali@ornek.com"
+            }
+          ],
+          "principal": {
+            "team_id": "t1"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true
+          },
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              26,
+              39
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block"
+        },
+        "transforms": []
+      }
+    },
+    {
+      "id": "olumsuzlanan-detection-maskelenmez",
+      "description": "not altındaki detection koşulunun detection'ı maskelenmez.",
+      "spec_refs": [
+        "S5-ACT-002"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "m",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "pii.tckn"
+                      },
+                      {
+                        "not": {
+                          "detector": "pii.email",
+                          "context_hit": true
+                        }
+                      }
+                    ]
+                  },
+                  "action": "mask"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TCKN 10000000146, e-posta ali@ornek.com"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ]
+          },
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              26,
+              39
+            ],
+            "context_hit": false
+          }
+        ]
+      },
+      "expected": {
+        "transforms": [
+          {
+            "segment": 0,
+            "text": "TCKN <TCKN>, e-posta ali@ornek.com"
+          }
+        ]
+      }
+    },
+    {
+      "id": "yalniz-degisen-segmentler",
+      "description": "Yalnızca metni değişen segment'ler transforms'ta yer alır, id sırasıyla.",
+      "spec_refs": [
+        "S5-ACT-005",
+        "S1-TRF-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 2,
+              "text": "ali@ornek.com"
+            },
+            {
+              "id": 0,
+              "text": "Merhaba"
+            },
+            {
+              "id": 1,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 2,
+            "span": [
+              0,
+              13
+            ]
+          },
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 1,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true
+          }
+        ]
+      },
+      "expected": {
+        "transforms": [
+          {
+            "segment": 1,
+            "text": "TC'm <TCKN>"
+          },
+          {
+            "segment": 2,
+            "text": "<EMAIL>"
+          }
+        ]
+      }
+    },
+    {
+      "id": "turkce-metin-code-point",
+      "description": "Span'ler code point cinsindendir: Türkçe karakterler tek karakter sayılır.",
+      "spec_refs": [
+        "S5-ACT-005",
+        "S0-SPAN-001"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Kimliğim şu: 10000000146, teşekkürler"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              13,
+              24
+            ],
+            "checksum_valid": true
+          }
+        ]
+      },
+      "expected": {
+        "transforms": [
+          {
+            "segment": 0,
+            "text": "Kimliğim şu: <TCKN>, teşekkürler",
+            "edits": [
+              {
+                "span": [
+                  13,
+                  24
+                ],
+                "replacement": "<TCKN>"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "baska-segmentteki-detection",
+      "description": "Kuralın sağlanmadığı segment'teki detection maskelenmez.",
+      "spec_refs": [
+        "S5-ACT-002",
+        "S5-RUL-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "m",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "pii.email"
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "mask"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "ali@ornek.com"
+            },
+            {
+              "id": 1,
+              "text": "veli@ornek.com",
+              "trust": "trusted"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              13
+            ]
+          },
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 1,
+            "span": [
+              0,
+              14
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "transforms": [
+          {
+            "segment": 0,
+            "text": "<EMAIL>"
+          }
+        ]
+      }
+    }
+  ]
+}

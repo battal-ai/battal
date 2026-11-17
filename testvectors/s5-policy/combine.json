@@ -1,0 +1,1064 @@
+{
+  "format_version": 1,
+  "spec": "S5",
+  "function": "policy.evaluate",
+  "description": "Katman birleştirme, varsayılan karar ve rationale (S5 §7).",
+  "cases": [
+    {
+      "id": "varsayilan-allow-taban",
+      "description": "Hiçbir kural eşleşmezse allow; spesifik katman yoksa policy tabandır, rationale yoktur.",
+      "spec_refs": [
+        "S5-DEC-003",
+        "S5-RAT-002"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {}
+              },
+              {
+                "id": "ekip",
+                "policy": "ekip",
+                "match": {
+                  "team": "t1"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "ekip",
+              "version": "2.1.0",
+              "rules": []
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": []
+      },
+      "expected": {
+        "decision": {
+          "action": "allow",
+          "rule_id": null,
+          "policy": {
+            "id": "taban",
+            "version": "1.0.0"
+          },
+          "decided_by": {
+            "kind": "default",
+            "binding": null
+          },
+          "degraded": false
+        },
+        "transforms": []
+      }
+    },
+    {
+      "id": "varsayilan-allow-spesifik",
+      "description": "Spesifik katman varsa varsayılan kararın policy'si spesifik policy'dir.",
+      "spec_refs": [
+        "S5-DEC-003"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {}
+              },
+              {
+                "id": "ekip",
+                "policy": "ekip",
+                "match": {
+                  "team": "t1"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": []
+            },
+            {
+              "id": "ekip",
+              "version": "2.1.0",
+              "rules": []
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "principal": {
+            "team_id": "t1"
+          }
+        },
+        "detections": []
+      },
+      "expected": {
+        "decision": {
+          "action": "allow",
+          "policy": {
+            "id": "ekip",
+            "version": "2.1.0"
+          },
+          "matched_bindings": [
+            "global",
+            "ekip"
+          ]
+        }
+      }
+    },
+    {
+      "id": "katman-ici-oncelik",
+      "description": "Katman içinde block, dosyada sonra yazılsa da mask'i geçer.",
+      "spec_refs": [
+        "S5-DEC-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "m",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "b",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "x.det",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block",
+          "rule_id": "b"
+        }
+      }
+    },
+    {
+      "id": "katman-ici-esitlikte-ilk-kural",
+      "description": "Aynı öncelikte dosyada önce yazılan kural kazanır.",
+      "spec_refs": [
+        "S5-DEC-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "b1",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "block"
+                },
+                {
+                  "id": "b2",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "x.det",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "rule_id": "b1"
+        }
+      }
+    },
+    {
+      "id": "katmanlar-arasi-esitlikte-spesifik",
+      "description": "İki katman aynı eylemi verirse spesifik katmanın kuralı kazanır.",
+      "spec_refs": [
+        "S5-DEC-002",
+        "S5-DEC-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {}
+              },
+              {
+                "id": "ekip",
+                "policy": "ekip",
+                "match": {
+                  "team": "t1"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "t.block",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "ekip",
+              "version": "2.1.0",
+              "rules": [
+                {
+                  "id": "e.block",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "principal": {
+            "team_id": "t1"
+          }
+        },
+        "detections": [
+          {
+            "detector": "x.det",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block",
+          "rule_id": "e.block",
+          "policy": {
+            "id": "ekip",
+            "version": "2.1.0"
+          },
+          "decided_by": {
+            "kind": "rule",
+            "binding": "ekip"
+          }
+        }
+      }
+    },
+    {
+      "id": "taban-block-gevsetilemez",
+      "description": "Spesifik katmanın allow kuralı tabanın block kararını gevşetemez.",
+      "spec_refs": [
+        "S5-DEC-005",
+        "S5-SEL-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "taban",
+                "match": {}
+              },
+              {
+                "id": "ekip",
+                "policy": "ekip",
+                "match": {
+                  "team": "t1"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "taban",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "t.block",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "ekip",
+              "version": "2.1.0",
+              "rules": [
+                {
+                  "id": "e.allow",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "principal": {
+            "team_id": "t1"
+          }
+        },
+        "detections": [
+          {
+            "detector": "x.det",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block",
+          "rule_id": "t.block",
+          "decided_by": {
+            "kind": "rule",
+            "binding": "global"
+          }
+        }
+      }
+    },
+    {
+      "id": "acik-allow-kurali",
+      "description": "Eşleşen allow kuralı kararı kural kaynaklı yapar; rationale yoktur.",
+      "spec_refs": [
+        "S5-DEC-004",
+        "S5-RAT-002"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "izin",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "x.det",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "allow",
+          "rule_id": "izin",
+          "decided_by": {
+            "kind": "rule",
+            "binding": "global"
+          }
+        },
+        "transforms": []
+      }
+    },
+    {
+      "id": "ozel-rationale",
+      "description": "Kuralın rationale alanı varsa o kullanılır.",
+      "spec_refs": [
+        "S5-RAT-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "tr-injection",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              5
+            ],
+            "raw_score": 0.9,
+            "calibrated": false,
+            "threshold": 0.8
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block",
+          "rule_id": "pi.block_untrusted"
+        },
+        "rationale": {
+          "code": "PROMPT_INJECTION",
+          "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+        }
+      }
+    },
+    {
+      "id": "varsayilan-rationale-block",
+      "description": "rationale alanı olmayan block kuralı varsayılan rationale'ı kullanır.",
+      "spec_refs": [
+        "S5-RAT-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "b",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "x.det",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "rationale": {
+          "code": "POLICY_BLOCKED",
+          "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+        }
+      }
+    },
+    {
+      "id": "varsayilan-rationale-mask",
+      "description": "rationale alanı olmayan mask kuralı varsayılan rationale'ı kullanır.",
+      "spec_refs": [
+        "S5-RAT-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "rationale": {
+          "code": "POLICY_MASKED",
+          "message_tr": "İstekteki bazı bilgiler gizlendi."
+        }
+      }
+    },
+    {
+      "id": "varsayilan-rationale-ask",
+      "description": "ask kararının varsayılan rationale'ı onay ister.",
+      "spec_refs": [
+        "S5-RAT-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "a",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "ask"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "x.det",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "ask"
+        },
+        "rationale": {
+          "code": "CONFIRMATION_REQUIRED",
+          "message_tr": "Bu işlem için onay gerekiyor."
+        }
+      }
+    },
+    {
+      "id": "ask-mask-ustunde",
+      "description": "ask önceliği mask'ten yüksektir; transform üretilmez.",
+      "spec_refs": [
+        "S5-DEC-001",
+        "S5-ACT-001"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "m",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "a",
+                  "when": {
+                    "detector": "x.det"
+                  },
+                  "action": "ask"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "x.det",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "ask"
+        },
+        "transforms": []
+      }
+    }
+  ]
+}

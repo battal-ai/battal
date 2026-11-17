@@ -1,7 +1,7 @@
 # S0: Spec ve test vektörü formatı
 
 - Durum: kabul edildi
-- Sürüm: 1.0.0
+- Sürüm: 1.1.0
 - İlgili ADR'ler: [ADR 0003](../decisions/0003-language-python-then-rust.md),
   [ADR 0004](../decisions/0004-policy-binding-and-playground.md)
 - İlgili backlog: E0 (PBI 0.2)
@@ -14,6 +14,7 @@
 |---|---|---|
 | 0.1.0 | 2026-11-17 | İlk taslak |
 | 1.0.0 | 2026-11-17 | Kabul edildi |
+| 1.1.0 | 2026-11-17 | Suite'e isteğe bağlı `kind` alanı (`policy_test`) ve `rule_refs` eklendi (S5 ile birlikte) |
 
 ## 1. Amaç ve kapsam
 
@@ -44,7 +45,7 @@ implementasyonları aynı vektörleri bu kurallarla çalıştırır.
 
 ### 3.1 Yerleşim
 
-- **S0-FMT-001.** Vektör suite'leri **MUST** `testvectors/<spec-dizini>/<suite>.json` yolunda
+- **S0-FMT-001.** Spec vektörü suite'leri (`kind: spec`) **MUST** `testvectors/<spec-dizini>/<suite>.json` yolunda
   bulunmalıdır. `<spec-dizini>` spec kimliği ile kısa bir addan oluşur (`s3-pii`), `<suite>`
   küçük harf, rakam ve tire içerir. *[doğrulama: lint]*
 - **S0-FMT-002.** Suite dosyaları **MUST** UTF-8 kodlu, BOM içermeyen geçerli JSON olmalıdır.
@@ -60,11 +61,17 @@ implementasyonları aynı vektörleri bu kurallarla çalıştırır.
 | Alan | Tip | Zorunlu | Açıklama |
 |---|---|---|---|
 | `format_version` | integer | evet | Bu spec'in format sürümü. Şu an `1` |
-| `spec` | string | evet | Suite'in ait olduğu spec kimliği, örneğin `S3` |
+| `kind` | `"spec"` \| `"policy_test"` | hayır | Suite türü; varsayılan `spec` (1.1.0) |
+| `spec` | string | `kind: spec` ise evet | Suite'in ait olduğu spec kimliği, örneğin `S3` |
 | `function` | string | evet | Test edilen fonksiyon; küçük harf, rakam, `_` ve `.` |
 | `description` | string | hayır | Suite'in Türkçe açıklaması |
 | `cases` | array | evet | En az bir case |
 
+- **S0-FMT-012.** `kind: policy_test` suite'leri kullanıcıların policy testleridir (S5). Bu
+  suite'lerde `spec` alanı ve case'lerde `spec_refs` alanı **MUST NOT** zorunlu tutulmamalıdır;
+  case'ler bunların yerine isteğe bağlı `rule_refs` (test edilen kural kimlikleri) içerebilir.
+  Bu suite'ler bundle'ın `tests/` dizininde durur, S0-FMT-001 yerleşim kuralına ve kapsam
+  denetimine (§7) tabi değildir.
 - **S0-FMT-005.** Bir suite'teki bütün case'ler **MUST** aynı function'ı test etmelidir.
   *[doğrulama: şema]*
 - **S0-FMT-006.** `format_version` değeri runner'ın desteklediği sürümden farklıysa runner

@@ -1,0 +1,2194 @@
+{
+  "format_version": 1,
+  "spec": "S5",
+  "function": "policy.evaluate",
+  "description": "Binding eşleşmesi ve katman seçimi (S5 §4).",
+  "cases": [
+    {
+      "id": "yalniz-taban",
+      "description": "Taban dışında binding eşleşmezse yalnızca taban policy uygulanır.",
+      "spec_refs": [
+        "S5-SEL-001",
+        "S5-SEL-002",
+        "S5-SEL-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "mask",
+          "rule_id": "pii.mask_tckn",
+          "matched_bindings": [
+            "global"
+          ],
+          "decided_by": {
+            "kind": "rule",
+            "binding": "global"
+          }
+        }
+      }
+    },
+    {
+      "id": "ekip-binding-eslesir",
+      "description": "team ve checkpoint eşleşen binding spesifik katman olur; block, tabanın mask'ini geçer.",
+      "spec_refs": [
+        "S5-BIN-004",
+        "S5-SEL-002",
+        "S5-SEL-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "principal": {
+            "team_id": "finans"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block",
+          "rule_id": "strict.block_tckn",
+          "matched_bindings": [
+            "global",
+            "finans"
+          ],
+          "decided_by": {
+            "kind": "rule",
+            "binding": "finans"
+          }
+        }
+      }
+    },
+    {
+      "id": "checkpoint-listede-yok",
+      "description": "Binding'in checkpoint listesinde olmayan checkpoint'te binding eşleşmez.",
+      "spec_refs": [
+        "S5-BIN-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": "input"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "output",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "principal": {
+            "team_id": "finans"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "mask",
+          "matched_bindings": [
+            "global"
+          ]
+        }
+      }
+    },
+    {
+      "id": "liste-degeri-or",
+      "description": "Liste değerlerinden biri eşleşmesi yeterlidir.",
+      "spec_refs": [
+        "S5-BIN-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": [
+                    "hazine",
+                    "finans"
+                  ]
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "principal": {
+            "team_id": "finans"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block",
+          "matched_bindings": [
+            "global",
+            "finans"
+          ]
+        }
+      }
+    },
+    {
+      "id": "istekte-alan-yok",
+      "description": "İstekte principal yoksa team alanlı binding eşleşmez.",
+      "spec_refs": [
+        "S5-BIN-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ]
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "matched_bindings": [
+            "global"
+          ]
+        }
+      }
+    },
+    {
+      "id": "buyuk-kucuk-harf-duyarli",
+      "description": "Eşleşme büyük/küçük harfe duyarlıdır: Finans, finans ile eşleşmez.",
+      "spec_refs": [
+        "S5-BIN-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "principal": {
+            "team_id": "Finans"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "mask",
+          "matched_bindings": [
+            "global"
+          ]
+        }
+      }
+    },
+    {
+      "id": "model-glob-yildiz",
+      "description": "qwen3-* deseni qwen3-32b ile eşleşir.",
+      "spec_refs": [
+        "S5-BIN-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "qwen",
+                "policy": "qwen",
+                "match": {
+                  "model": "qwen3-*"
+                }
+              },
+              {
+                "id": "ekip-model",
+                "policy": "ekip-model",
+                "match": {
+                  "team": "ar-ge",
+                  "model": "qwen3-?b"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "qwen",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "qwen.block_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "ekip-model",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "em.block_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "ali@ornek.com"
+            }
+          ],
+          "target": {
+            "model": "qwen3-32b"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              13
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block",
+          "rule_id": "qwen.block_email",
+          "matched_bindings": [
+            "global",
+            "qwen"
+          ]
+        }
+      }
+    },
+    {
+      "id": "model-glob-tamami-eslesmeli",
+      "description": "Desen değerin tamamıyla eşleşmelidir: qwen3-* deseni qwen2.5-7b ile eşleşmez.",
+      "spec_refs": [
+        "S5-BIN-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "qwen",
+                "policy": "qwen",
+                "match": {
+                  "model": "qwen3-*"
+                }
+              },
+              {
+                "id": "ekip-model",
+                "policy": "ekip-model",
+                "match": {
+                  "team": "ar-ge",
+                  "model": "qwen3-?b"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "qwen",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "qwen.block_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "ekip-model",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "em.block_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "ali@ornek.com"
+            }
+          ],
+          "target": {
+            "model": "qwen2.5-7b"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              13
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "mask",
+          "matched_bindings": [
+            "global"
+          ]
+        }
+      }
+    },
+    {
+      "id": "en-spesifik-binding",
+      "description": "İki binding eşleşirse alan sayısı fazla olan spesifik katman olur; ? tek karakterle eşleşir.",
+      "spec_refs": [
+        "S5-SEL-002",
+        "S5-BIN-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "qwen",
+                "policy": "qwen",
+                "match": {
+                  "model": "qwen3-*"
+                }
+              },
+              {
+                "id": "ekip-model",
+                "policy": "ekip-model",
+                "match": {
+                  "team": "ar-ge",
+                  "model": "qwen3-?b"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "qwen",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "qwen.block_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "ekip-model",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "em.block_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "ali@ornek.com"
+            }
+          ],
+          "principal": {
+            "team_id": "ar-ge"
+          },
+          "target": {
+            "model": "qwen3-8b"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              13
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "block",
+          "rule_id": "em.block_email",
+          "matched_bindings": [
+            "global",
+            "ekip-model"
+          ],
+          "decided_by": {
+            "kind": "rule",
+            "binding": "ekip-model"
+          }
+        }
+      }
+    },
+    {
+      "id": "soru-isareti-tek-karakter",
+      "description": "? tam olarak bir karakterle eşleşir: qwen3-?b deseni qwen3-32b ile eşleşmez.",
+      "spec_refs": [
+        "S5-BIN-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "qwen",
+                "policy": "qwen",
+                "match": {
+                  "model": "qwen3-*"
+                }
+              },
+              {
+                "id": "ekip-model",
+                "policy": "ekip-model",
+                "match": {
+                  "team": "ar-ge",
+                  "model": "qwen3-?b"
+                }
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "qwen",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "qwen.block_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "ekip-model",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "em.block_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "ali@ornek.com"
+            }
+          ],
+          "principal": {
+            "team_id": "ar-ge"
+          },
+          "target": {
+            "model": "qwen3-32b"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.email",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              0,
+              13
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "rule_id": "qwen.block_email",
+          "matched_bindings": [
+            "global",
+            "qwen"
+          ]
+        }
+      }
+    },
+    {
+      "id": "policy-secimi-izinli",
+      "description": "selectable listesindeki policy seçilebilir ve spesifik katman olur; taban yine uygulanır.",
+      "spec_refs": [
+        "S5-SEL-003",
+        "S5-SEL-004"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "principal": {
+            "team_id": "finans"
+          },
+          "policy": {
+            "id": "lenient"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "mask",
+          "rule_id": "pii.mask_tckn",
+          "matched_bindings": [
+            "global",
+            "finans"
+          ],
+          "decided_by": {
+            "kind": "rule",
+            "binding": "global"
+          }
+        }
+      }
+    },
+    {
+      "id": "policy-secimi-izinsiz",
+      "description": "selectable listesinde olmayan policy seçilemez.",
+      "spec_refs": [
+        "S5-SEL-003"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "principal": {
+            "team_id": "finans"
+          },
+          "policy": {
+            "id": "default-tr"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected_error": {
+        "code": "POLICY_NOT_ALLOWED"
+      }
+    },
+    {
+      "id": "policy-secimi-olmayan-policy",
+      "description": "Var olmayan policy de aynı kodla reddedilir.",
+      "spec_refs": [
+        "S5-SEL-003",
+        "S1-ERR-002"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "principal": {
+            "team_id": "finans"
+          },
+          "policy": {
+            "id": "yok-boyle"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected_error": {
+        "code": "POLICY_NOT_ALLOWED"
+      }
+    },
+    {
+      "id": "policy-secimi-tabanda-selectable-yok",
+      "description": "Yalnızca taban eşleşiyor ve tabanda selectable yoksa seçim reddedilir.",
+      "spec_refs": [
+        "S5-SEL-003"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "policy": {
+            "id": "lenient"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected_error": {
+        "code": "POLICY_NOT_ALLOWED"
+      }
+    },
+    {
+      "id": "session-agent-etkisiz",
+      "description": "session ve agent alanları kararı etkilemez.",
+      "spec_refs": [
+        "S5-FLT-004",
+        "S1-REQ-006"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "TC'm 10000000146"
+            }
+          ],
+          "session": {
+            "id": "s-1",
+            "turn": 9
+          },
+          "agent": {
+            "id": "a-1"
+          }
+        },
+        "detections": [
+          {
+            "detector": "pii.tckn",
+            "version": "0.1.0",
+            "segment": 0,
+            "span": [
+              5,
+              16
+            ],
+            "checksum_valid": true,
+            "context_hit": true
+          }
+        ]
+      },
+      "expected": {
+        "decision": {
+          "action": "mask",
+          "rule_id": "pii.mask_tckn",
+          "matched_bindings": [
+            "global"
+          ]
+        }
+      }
+    }
+  ]
+}

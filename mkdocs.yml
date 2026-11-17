@@ -51,6 +51,7 @@ nav:
       - "Spec listesi ve plan": spec/index.md
       - "S0: Test vektörü formatı": spec/s0-test-vektorleri.md
       - "S1: Evaluation API": spec/s1-evaluation-api.md
+      - "S5: Policy, binding ve bundle": spec/s5-policy-binding-bundle.md
   - Araştırma:
       - "Araştırma raporu v0.1": research/index.md
       - Ekler:

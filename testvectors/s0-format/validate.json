@@ -299,6 +299,106 @@
       }
     },
     {
+      "id": "policy-test-spec-alanlari-yok",
+      "description": "kind policy_test suite'inde spec ve spec_refs zorunlu değildir; rule_refs kullanılabilir.",
+      "spec_refs": [
+        "S0-FMT-012"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "function": "policy.evaluate",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "input": {},
+              "expected": {
+                "ok": true
+              },
+              "rule_refs": [
+                "pii.block_tckn"
+              ]
+            }
+          ],
+          "kind": "policy_test"
+        }
+      },
+      "expected": {
+        "valid": true,
+        "issues": []
+      }
+    },
+    {
+      "id": "spec-suite-spec-alani-zorunlu",
+      "description": "kind verilmemiş (spec) suite'te spec alanı zorunludur.",
+      "spec_refs": [
+        "S0-FMT-012",
+        "S0-FMT-003"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S9-ORN-001"
+              ],
+              "input": {},
+              "expected": {
+                "ok": true
+              }
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "spec-suite-rule-refs-yok",
+      "description": "rule_refs yalnızca policy_test suite'lerinde kullanılabilir.",
+      "spec_refs": [
+        "S0-FMT-012"
+      ],
+      "input": {
+        "suite": {
+          "format_version": 1,
+          "spec": "S9",
+          "function": "ornek.hedef",
+          "cases": [
+            {
+              "id": "bir",
+              "description": "Örnek.",
+              "spec_refs": [
+                "S9-ORN-001"
+              ],
+              "input": {},
+              "expected": {
+                "ok": true
+              },
+              "rule_refs": [
+                "x"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
       "id": "desteklenmeyen-format-surumu",
       "description": "Desteklenmeyen format_version'da suite doğrulanmadan hata verilir.",
       "spec_refs": [

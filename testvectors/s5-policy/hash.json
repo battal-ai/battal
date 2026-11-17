@@ -1,0 +1,550 @@
+{
+  "format_version": 1,
+  "spec": "S5",
+  "function": "bundle.hash",
+  "description": "Kanonik bundle hash'i (S5 §3.3).",
+  "cases": [
+    {
+      "id": "ornek-bundle-hash",
+      "description": "Örnek bundle'ın hash'i sabittir.",
+      "spec_refs": [
+        "S5-BND-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "bundle_hash": "sha256:f77d4b060198d974dabce918f4a81d89d6e24a4831096a898299ce8d8f814f94"
+      }
+    },
+    {
+      "id": "anahtar-sirasi-etkisiz",
+      "description": "Anahtar sırası hash'i değiştirmez.",
+      "spec_refs": [
+        "S5-BND-005"
+      ],
+      "input": {
+        "bundle": {
+          "policies": [
+            {
+              "rules": [
+                {
+                  "action": "mask",
+                  "when": {
+                    "checksum_valid": true,
+                    "detector": "pii.tckn"
+                  },
+                  "id": "pii.mask_tckn"
+                },
+                {
+                  "action": "mask",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "id": "pii.mask_email"
+                },
+                {
+                  "rationale": {
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi.",
+                    "code": "PROMPT_INJECTION"
+                  },
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "action": "block",
+                  "when": {
+                    "all": [
+                      {
+                        "above_threshold": true,
+                        "detector": "tr-injection"
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "id": "pi.block_untrusted"
+                }
+              ],
+              "version": "1.0.0",
+              "id": "default-tr"
+            },
+            {
+              "rules": [
+                {
+                  "action": "block",
+                  "when": {
+                    "checksum_valid": true,
+                    "detector": "pii.tckn"
+                  },
+                  "id": "strict.block_tckn"
+                }
+              ],
+              "version": "1.0.0",
+              "id": "strict-pii"
+            },
+            {
+              "rules": [
+                {
+                  "action": "allow",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "id": "lenient.allow_tckn"
+                }
+              ],
+              "version": "1.0.0",
+              "id": "lenient"
+            }
+          ],
+          "bindings": {
+            "bindings": [
+              {
+                "match": {},
+                "policy": "default-tr",
+                "id": "global"
+              },
+              {
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ],
+                "match": {
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ],
+                  "team": "finans"
+                },
+                "policy": "strict-pii",
+                "id": "finans"
+              }
+            ]
+          },
+          "bundle": {
+            "version": "1.0.0",
+            "name": "ornek"
+          }
+        }
+      },
+      "expected": {
+        "bundle_hash": "sha256:f77d4b060198d974dabce918f4a81d89d6e24a4831096a898299ce8d8f814f94"
+      }
+    },
+    {
+      "id": "policy-sirasi-etkisiz",
+      "description": "Policy'lerin sırası hash'i değiştirmez.",
+      "spec_refs": [
+        "S5-BND-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "bundle_hash": "sha256:f77d4b060198d974dabce918f4a81d89d6e24a4831096a898299ce8d8f814f94"
+      }
+    },
+    {
+      "id": "kural-degisikligi-hashi-degistirir",
+      "description": "Bir kuralın eylemini değiştirmek hash'i değiştirir.",
+      "spec_refs": [
+        "S5-BND-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "default-tr",
+                "match": {}
+              },
+              {
+                "id": "finans",
+                "policy": "strict-pii",
+                "match": {
+                  "team": "finans",
+                  "checkpoint": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "selectable": [
+                  "strict-pii",
+                  "lenient"
+                ]
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "default-tr",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "pii.mask_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                },
+                {
+                  "id": "pii.mask_email",
+                  "when": {
+                    "detector": "pii.email"
+                  },
+                  "action": "mask"
+                },
+                {
+                  "id": "pi.block_untrusted",
+                  "when": {
+                    "all": [
+                      {
+                        "detector": "tr-injection",
+                        "above_threshold": true
+                      },
+                      {
+                        "trust": "untrusted"
+                      }
+                    ]
+                  },
+                  "action": "block",
+                  "checkpoints": [
+                    "input"
+                  ],
+                  "rationale": {
+                    "code": "PROMPT_INJECTION",
+                    "message_tr": "İstek güvenlik politikası nedeniyle engellendi."
+                  }
+                }
+              ]
+            },
+            {
+              "id": "strict-pii",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "strict.block_tckn",
+                  "when": {
+                    "detector": "pii.tckn",
+                    "checksum_valid": true
+                  },
+                  "action": "block"
+                }
+              ]
+            },
+            {
+              "id": "lenient",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "lenient.allow_tckn",
+                  "when": {
+                    "detector": "pii.tckn"
+                  },
+                  "action": "allow"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "bundle_hash": "sha256:842f1e9e0f3e6a21e3a527c03bbfdf7de58a5dcf4de86328859f56b764ab07c0"
+      }
+    },
+    {
+      "id": "tam-sayi-ondalik-esit",
+      "description": "JCS'ye göre 1 ile 1.0 aynı biçimde yazılır; hash değişmez.",
+      "spec_refs": [
+        "S5-BND-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "detector": "x",
+                    "min_score": 1.0
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "bundle_hash": "sha256:22a5eb41bd093c2a2265c6f939bf44f0d24c6341e321809cdaf7a9c4bcefb0b5"
+      }
+    },
+    {
+      "id": "tam-sayi-ondalik-esit-2",
+      "description": "min_score: 1 ile min_score: 1.0 aynı hash'i verir.",
+      "spec_refs": [
+        "S5-BND-005"
+      ],
+      "input": {
+        "bundle": {
+          "bundle": {
+            "name": "ornek",
+            "version": "1.0.0"
+          },
+          "bindings": {
+            "bindings": [
+              {
+                "id": "global",
+                "policy": "p",
+                "match": {}
+              }
+            ]
+          },
+          "policies": [
+            {
+              "id": "p",
+              "version": "1.0.0",
+              "rules": [
+                {
+                  "id": "r",
+                  "when": {
+                    "detector": "x",
+                    "min_score": 1
+                  },
+                  "action": "block"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "bundle_hash": "sha256:22a5eb41bd093c2a2265c6f939bf44f0d24c6341e321809cdaf7a9c4bcefb0b5"
+      }
+    }
+  ]
+}

@@ -135,7 +135,7 @@ kullanılır ve spaCy modeli gerektirmez.
 | `core/normalize` | S2 |
 | `core/pii`, `core/actions` | S3 |
 | `core/rules`, `detectors` | S4 |
-| `core/policy`, `bundle`, `cli` | S5 |
+| `core/policy`, `bundle`, `cli` | [S5](spec/s5-policy-binding-bundle.md) |
 | `server`, `adapters` | S6 |
 | `audit` | S7 |
 | `testing` | [S0](spec/s0-test-vektorleri.md) |

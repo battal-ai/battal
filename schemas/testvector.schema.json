@@ -2,50 +2,251 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://battal-ai.github.io/battal/schemas/testvector.schema.json",
   "title": "Battal test vektörü suite'i",
-  "description": "S0: Spec ve test vektörü formatı, format_version 1.",
+  "description": "S0: Spec ve test vektörü formatı 1.1.0, format_version 1.",
   "type": "object",
-  "required": ["format_version", "spec", "function", "cases"],
+  "required": [
+    "format_version",
+    "function",
+    "cases"
+  ],
   "additionalProperties": false,
   "properties": {
-    "format_version": {"const": 1},
-    "spec": {"type": "string", "pattern": "^S[0-9]+$"},
-    "function": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$"},
-    "description": {"type": "string", "minLength": 1},
-    "cases": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/case"}}
+    "format_version": {
+      "const": 1
+    },
+    "kind": {
+      "enum": [
+        "spec",
+        "policy_test"
+      ],
+      "default": "spec"
+    },
+    "spec": {
+      "type": "string",
+      "pattern": "^S[0-9]+$"
+    },
+    "function": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1
+    }
   },
   "$defs": {
     "case": {
       "type": "object",
-      "required": ["id", "description", "spec_refs", "input"],
+      "required": [
+        "id",
+        "description",
+        "spec_refs",
+        "input"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"},
-        "description": {"type": "string", "minLength": 1},
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
         "spec_refs": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": {"type": "string", "pattern": "^S[0-9]+-[A-Z]+-[0-9]{3}$"}
+          "items": {
+            "type": "string",
+            "pattern": "^S[0-9]+-[A-Z]+-[0-9]{3}$"
+          }
         },
         "tags": {
           "type": "array",
           "uniqueItems": true,
-          "items": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"}
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
         },
-        "input": {"type": "object"},
+        "input": {
+          "type": "object"
+        },
         "expected": true,
         "expected_error": {
           "type": "object",
-          "required": ["code"],
+          "required": [
+            "code"
+          ],
           "additionalProperties": false,
-          "properties": {"code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"}}
+          "properties": {
+            "code": {
+              "type": "string",
+              "pattern": "^[A-Z][A-Z0-9_]*$"
+            }
+          }
         },
-        "match": {"enum": ["subset", "exact"], "default": "subset"}
+        "match": {
+          "enum": [
+            "subset",
+            "exact"
+          ],
+          "default": "subset"
+        }
       },
       "oneOf": [
-        {"required": ["expected"], "not": {"required": ["expected_error"]}},
-        {"required": ["expected_error"], "not": {"required": ["expected"]}}
+        {
+          "required": [
+            "expected"
+          ],
+          "not": {
+            "required": [
+              "expected_error"
+            ]
+          }
+        },
+        {
+          "required": [
+            "expected_error"
+          ],
+          "not": {
+            "required": [
+              "expected"
+            ]
+          }
+        }
+      ]
+    },
+    "policy_case": {
+      "type": "object",
+      "required": [
+        "id",
+        "description",
+        "input"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "spec_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^S[0-9]+-[A-Z]+-[0-9]{3}$"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          }
+        },
+        "input": {
+          "type": "object"
+        },
+        "expected": true,
+        "expected_error": {
+          "type": "object",
+          "required": [
+            "code"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "type": "string",
+              "pattern": "^[A-Z][A-Z0-9_]*$"
+            }
+          }
+        },
+        "match": {
+          "enum": [
+            "subset",
+            "exact"
+          ],
+          "default": "subset"
+        },
+        "rule_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "expected"
+          ],
+          "not": {
+            "required": [
+              "expected_error"
+            ]
+          }
+        },
+        {
+          "required": [
+            "expected_error"
+          ],
+          "not": {
+            "required": [
+              "expected"
+            ]
+          }
+        }
       ]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "policy_test"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cases": {
+            "items": {
+              "$ref": "#/$defs/policy_case"
+            }
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "spec"
+        ],
+        "properties": {
+          "cases": {
+            "items": {
+              "$ref": "#/$defs/case"
+            }
+          }
+        }
+      }
+    }
+  ]
 }
