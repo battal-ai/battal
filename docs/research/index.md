@@ -462,7 +462,7 @@ süresi kararı.
 
 ## 8. İlk ürün kapsamı (MVP)
 
-ADR 0002 ve ADR 0003 ile tutarlıdır.
+ADR 0002, ADR 0003 ve ADR 0004 ile tutarlıdır.
 
 **Kapsamda:**
 - Python çekirdek kütüphane + FastAPI sunucu.
@@ -471,6 +471,7 @@ ADR 0002 ve ADR 0003 ile tutarlıdır.
 - TCKN, IBAN, telefon ve e-posta tespiti, bağlam skoru ve maskeleme.
 - TR ve TR-EN injection tespiti: kurallar + kalibre edilmiş ONNX sınıflandırıcı.
 - YAML policy; checkpoint bazında fail modu.
+- Policy binding (`bindings.yaml`, global taban policy), policy test formatı ve CLI (ADR 0004).
 - Ham veri içermeyen karar kaydı.
 - LiteLLM Generic Guardrail API adapter'ı.
 - `docker compose` demosu.
@@ -567,6 +568,18 @@ Takvim ve sprint ataması yapılmamıştır. MVP epic'leri ayrıntılı, sonraki
 - **PBI 5.2 Fail modları ve degraded karar.**
   *DoD:* Dedektör çökmesi, timeout ve geçersiz policy senaryoları için beklenen davranış testlerle
   doğrulanır.
+- **PBI 5.3 Policy binding ve katmanlı birleştirme** (ADR 0004). `bindings.yaml`; MVP boyutları
+  `checkpoint`, `tenant`/`team`/`key`, `model` (glob); global taban policy + en spesifik policy.
+  *DoD:* Aynı spesifiklikte çakışma yüklemede hata verir; alt katmanın tabanı gevşetemediği ve
+  istek içindeki `policy.id`'nin tabanı atlatamadığı testlerle doğrulanır; yanıtta
+  `matched_bindings` vardır.
+- **PBI 5.4 Policy bundle ve hot reload.** Semver + içerik hash'i; validate → atomik değiştirme.
+  *DoD:* Geçersiz bundle'da eski bundle çalışmaya devam eder ve alarm üretilir; her kararda
+  `bundle_hash` vardır.
+- **PBI 5.5 Policy test formatı ve CLI.** `*.test.yaml` (`context`, `input`, `expect`);
+  `battal policy validate`, `test`, `diff`.
+  *DoD:* Şema test vektörleriyle ortaktır; `tags: [model]` testleri CI'da ayrı job'da koşar;
+  `diff` kararı değişen case'leri listeler.
 
 ### E6 Sunucu ve LiteLLM adapter'ı
 
@@ -618,6 +631,7 @@ Takvim ve sprint ataması yapılmamıştır. MVP epic'leri ayrıntılı, sonraki
 | E15 MCP gateway, ContextForge ve agentgateway adapter'ları; FMS Detector API | E12 |
 | E16 Content safety (Qwen3Guard adapter → distillation) | E7 |
 | E17 Secret detection, telekom tanımlayıcıları, isim/adres NER | E3 |
+| E18 Policy playground (yerel, `--playground`, htmx; ADR 0004) | E5, E6 |
 
 ---
 

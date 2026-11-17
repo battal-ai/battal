@@ -2,6 +2,7 @@
 
 - Durum: kabul edildi
 - Tarih: 2026-11-16
+- Güncelleme: 2026-11-17 (policy binding ve policy testleri, ADR 0004)
 
 ## Bağlam
 
@@ -29,10 +30,13 @@ kanıtlanması gerekiyor.
    - Kapsam dışı: streaming denetimi, tool call güvenliği, RAG denetimi.
 5. **Policy.** Basit bir YAML policy, tespit sonucunu bir eyleme bağlar: izin ver, maskele, engelle.
    Policy engine bir interface'in arkasında durur. OPA/Rego veya Cedar, tool call yetkilendirmesi
-   geldiğinde değerlendirilir.
-6. **Hata davranışı.** Fail-open veya fail-closed davranışı her kontrol noktası için policy ile
+   geldiğinde değerlendirilir. Policy'ler `bindings.yaml` ile checkpoint, tenant/team/key ve
+   model düzeyinde bağlanır; global taban policy her zaman çalışır (ADR 0004).
+6. **Policy testleri.** Policy test formatı (`*.test.yaml`) ve CLI (`battal policy validate`,
+   `test`, `diff`) MVP'dedir. Görsel policy playground MVP'den hemen sonra gelir (ADR 0004).
+7. **Hata davranışı.** Fail-open veya fail-closed davranışı her kontrol noktası için policy ile
    belirlenir.
-7. **Kanıt.** İlk sürümün kanıtı iki şeydir: herkese açık, yeniden üretilebilir bir Türkçe
+8. **Kanıt.** İlk sürümün kanıtı iki şeydir: herkese açık, yeniden üretilebilir bir Türkçe
    benchmark ve `docker compose up` ile çalışan bir LiteLLM + Battal demosu.
 
 ## Başarı ölçütleri

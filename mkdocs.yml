@@ -57,6 +57,7 @@ nav:
       - "0001: Ürün biçimi ve lisanslama": decisions/0001-product-shape-and-licensing.md
       - "0002: MVP kapsamı": decisions/0002-mvp-scope.md
       - "0003: Önce Python, sonra Rust": decisions/0003-language-python-then-rust.md
+      - "0004: Policy binding ve playground": decisions/0004-policy-binding-and-playground.md
   - Proje:
       - Lisanslama: proje/lisanslama.md
       - Katkı: proje/katki.md
