@@ -68,6 +68,7 @@ nav:
       - "0003: Önce Python, sonra Rust": decisions/0003-language-python-then-rust.md
       - "0004: Policy binding ve playground": decisions/0004-policy-binding-and-playground.md
       - "0005: Kod ve kod dokümantasyonu İngilizce": decisions/0005-code-language-english.md
+      - "0006: PII tanıyıcıları çekirdekte, Presidio'suz": decisions/0006-pii-without-presidio.md
   - Proje:
       - Lisanslama: proje/lisanslama.md
       - Katkı: proje/katki.md

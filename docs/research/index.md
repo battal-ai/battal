@@ -541,12 +541,13 @@ Takvim ve sprint ataması yapılmamıştır. MVP epic'leri ayrıntılı, sonraki
 - **PBI 3.1 Checksum kütüphanesi.** TCKN, VKN, IBAN-TR (mod-97) ve Luhn.
   *DoD:* python-stdnum'a karşı 1 milyon rastgele örnekte sonuçlar birebir aynıdır (dev-dependency
   olarak); FP oranları belgelenir.
-- **PBI 3.2 TCKN, IBAN, telefon ve e-posta tanıyıcıları.** Rakam-lookaround kullanılır; ek ve
-  kesme işareti toleransı vardır; gruplu yazım desteklenir; Presidio registry'ye kaydedilir.
+- **PBI 3.2 TCKN, IBAN, telefon ve e-posta tanıyıcıları.** Rakam sınırı koşulları kullanılır
+  (S3); ek ve kesme işareti toleransı vardır; gruplu yazım desteklenir. Presidio adapter'ı E17'ye
+  taşındı (ADR 0006).
   *DoD:* `…146dır`, `100 000 001 46`, tam genişlikli rakamlar ve ZWSP'li TCKN yakalanır;
   `0532 123 4567den` yakalanır.
-- **PBI 3.3 Bağlam skoru ve maskeleme.** Bağlam kelimeleri stem üzerinde aranır; tip etiketli
-  yer tutucular (`<TCKN>`) kullanılır.
+- **PBI 3.3 Bağlam skoru ve maskeleme.** Bağlam kelimeleri S3'teki kök listesiyle aranır; tip
+  etiketli yer tutucular (`<TCKN>`) kullanılır.
   *DoD:* Checksum'ı geçersiz distractor'larda over-mask oranı raporlanır; bağlamsız TCKN düşük
   güvenle işaretlenir.
 

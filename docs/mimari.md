@@ -131,8 +131,8 @@ MVP yalnızca deterministik ve küçük model tabanlı tespit içerir:
 | Injection sınıflandırıcı | Küçük ONNX model (CPU) | `detectors` |
 
 İsim ve adres tanıma (NER, örneğin spaCy ile) MVP'de yoktur; E17'de, model lisansı ve CPU
-doğruluğu değerlendirildikten sonra eklenir. Presidio MVP'de yalnızca orkestratör olarak
-kullanılır ve spaCy modeli gerektirmez.
+doğruluğu değerlendirildikten sonra eklenir. Presidio Battal'ın bir bağımlılığı değildir;
+Presidio kullananlar için isteğe bağlı bir adapter E17'de gelir (ADR 0006).
 
 ## 6. Spec eşlemesi
 

@@ -102,7 +102,7 @@ Ayrıntılar: [Üç entegrasyon senaryosu](research/index.md#5-uc-entegrasyon-se
 
 ## Teknik temel
 
-- **Dil.** Önce Python: FastAPI sunucu, ONNX Runtime, orkestratör olarak Presidio. MVP'den sonra
+- **Dil.** Önce Python: FastAPI sunucu, ONNX Runtime; PII tanıyıcıları kendi kodumuz (ADR 0006). MVP'den sonra
   deterministik çekirdek (normalizasyon, PII, policy) Rust'a (PyO3) taşınır. İki motorun aynı
   davrandığını dilden bağımsız JSON test vektörleri kanıtlar; Python implementasyonu referans
   görevi görür. ([ADR 0003](decisions/0003-language-python-then-rust.md))
