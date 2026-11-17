@@ -1,6 +1,6 @@
 # ADR 0001: Ürün biçimi ve lisanslama
 
-- Durum: kabul edildi
+- Durum: kabul edildi; karar 8 (kod yorumlarının dili) ADR 0005 ile değiştirildi
 - Tarih: 2026-11-16
 
 ## Bağlam

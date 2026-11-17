@@ -37,6 +37,8 @@ doğduğunu yansıtır.
 ## Dokümanlar
 
 - [Ürüne genel bakış](urun.md): ürünün bugünkü tasarımının özeti
+- [Mimari](mimari.md): bileşenler, modüller ve bağımlılık kuralları
+- [Sözlük](sozluk.md): projeye özgü terimlerin tek anlamı
 - [Spec'ler](spec/index.md): MVP spec listesi, yazım sırası ve durumu
 - [Kararlar (ADR)](decisions/0001-product-shape-and-licensing.md): ürün biçimi ve lisanslama
 - [Lisanslama](proje/lisanslama.md)

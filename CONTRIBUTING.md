@@ -10,9 +10,11 @@ ve tasarım geri bildirimi memnuniyetle karşılanır.
 
 ## Dil
 
-- Dokümantasyon, issue'lar, kod yorumları ve araştırma raporları **Türkçe** yazılır.
+- Dokümantasyon, issue'lar, ADR'ler, spec'ler ve araştırma raporları **Türkçe** yazılır.
 - Teknik terimler İngilizce bırakılır (örneğin guardrail, prompt injection, policy, tool call).
-- Kod içindeki isimler (değişken, fonksiyon, sınıf, API alanları) İngilizcedir.
+- Kod **İngilizcedir**: isimler (değişken, fonksiyon, sınıf, API alanları), yorumlar,
+  docstring'ler, log mesajları ve test adları. Büyük bir modülün Türkçe anlatımı gerekiyorsa
+  docs sitesine yazılır ([ADR 0005](docs/decisions/0005-code-language-english.md)).
 
 ## Kapsam kuralları
 
