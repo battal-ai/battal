@@ -1,0 +1,465 @@
+{
+ "version": "1.0.0",
+ "description": "Battal injection signatures (S4). Entries are written in the match_ascii form.",
+ "max_detections_per_segment": 32,
+ "signatures": [
+  {
+   "id": "tr.ignore_instructions",
+   "family": "ignore_instructions",
+   "kind": "tokens",
+   "unordered": true,
+   "max_gap": 3,
+   "slots": [
+    {
+     "any": [
+      "talimat",
+      "komut",
+      "kural",
+      "yonerge",
+      "direktif",
+      "emirler",
+      "=emir",
+      "=emri",
+      "istem",
+      "prompt",
+      "yukaridaki",
+      "oncekiler"
+     ]
+    },
+    {
+     "any": [
+      "=yok say",
+      "=yok sayin",
+      "yok saymani",
+      "yok saymalisin",
+      "yok sayacaksin",
+      "=yok sayiniz",
+      "=yoksay",
+      "=yoksayin",
+      "yoksaymani",
+      "yoksaymalisin",
+      "yoksayacaksin",
+      "=unut",
+      "=unutun",
+      "unutmani",
+      "unutmalisin",
+      "unutacaksin",
+      "=unutunuz",
+      "=gormezden gel",
+      "=gormezden gelin",
+      "gormezden gelmeni",
+      "gormezden gelmelisin",
+      "gormezden geleceksin",
+      "=dikkate alma",
+      "=dikkate almayin",
+      "=dikkate almayiniz",
+      "dikkate almamalisin",
+      "dikkate almayacaksin",
+      "dikkate almamani",
+      "=gecersiz say",
+      "=gecersiz sayin",
+      "gecersiz saymani",
+      "gecersiz saymalisin",
+      "gecersiz sayacaksin",
+      "=bosver",
+      "=bosverin",
+      "=bos ver",
+      "=bos verin",
+      "=salla",
+      "=sallayin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr.reveal_system",
+   "family": "reveal_system",
+   "kind": "tokens",
+   "max_gap": 1,
+   "slots": [
+    {
+     "any": [
+      "=sistem",
+      "=sistemin",
+      "gizli"
+     ]
+    },
+    {
+     "any": [
+      "talimat",
+      "istem",
+      "prompt",
+      "yonerge",
+      "komut",
+      "mesaj",
+      "kural"
+     ]
+    },
+    {
+     "any": [
+      "=goster",
+      "=gosterin",
+      "gostermeni",
+      "gostermelisin",
+      "gostereceksin",
+      "=yaz",
+      "=yazin",
+      "yazmani",
+      "yazmalisin",
+      "yazacaksin",
+      "=soyle",
+      "=soyleyin",
+      "soylemeni",
+      "soylemelisin",
+      "soyleyeceksin",
+      "=paylas",
+      "=paylasin",
+      "paylasmani",
+      "paylasmalisin",
+      "paylasacaksin",
+      "=acikla",
+      "=aciklayin",
+      "aciklamani",
+      "aciklamalisin",
+      "aciklayacaksin",
+      "=tekrarla",
+      "=tekrarlayin",
+      "tekrarlamani",
+      "tekrarlamalisin",
+      "tekrarlayacaksin",
+      "=ver",
+      "=verin",
+      "vermeni",
+      "vermelisin",
+      "vereceksin",
+      "=ifsa et",
+      "=ifsa edin",
+      "ifsa etmeni",
+      "ifsa etmelisin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr.role_override",
+   "family": "role_override",
+   "kind": "tokens",
+   "unordered": true,
+   "max_gap": 3,
+   "slots": [
+    {
+     "any": [
+      "kisitlamasiz",
+      "sinirsiz",
+      "filtresiz",
+      "sansursuz",
+      "kuralsiz",
+      "etiksiz"
+     ]
+    },
+    {
+     "any": [
+      "yapay zeka",
+      "=yz",
+      "asistan",
+      "chatbot",
+      "=bot",
+      "=botsun",
+      "=model",
+      "=modelsin",
+      "=ai",
+      "gibi davran"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr.remove_restrictions",
+   "family": "remove_restrictions",
+   "kind": "tokens",
+   "unordered": true,
+   "max_gap": 3,
+   "slots": [
+    {
+     "any": [
+      "kisitlama",
+      "sinirlama",
+      "sansur",
+      "guvenlik filtre",
+      "icerik filtre",
+      "guvenlik onlem",
+      "guvenlik kural",
+      "etik kural"
+     ]
+    },
+    {
+     "any": [
+      "=kaldir",
+      "=kaldirin",
+      "kaldirmani",
+      "kaldirmalisin",
+      "kaldiracaksin",
+      "=kapat",
+      "=kapatin",
+      "kapatmani",
+      "kapatmalisin",
+      "kapatacaksin",
+      "=devre disi birak",
+      "=devre disi birakin",
+      "devre disi birakmani",
+      "devre disi birakmalisin",
+      "devre disi birakacaksin",
+      "=atla",
+      "=atlayin",
+      "atlamani",
+      "atlamalisin",
+      "atlayacaksin",
+      "=es gec",
+      "=es gecin",
+      "es gecmeni",
+      "es gecmelisin",
+      "es geceksin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "en.ignore_instructions",
+   "family": "ignore_instructions",
+   "kind": "tokens",
+   "max_gap": 2,
+   "veto_before": [
+    "=not",
+    "=don",
+    "=dont",
+    "=never",
+    "=doesn",
+    "=didn"
+   ],
+   "slots": [
+    {
+     "any": [
+      "=ignore",
+      "=disregard",
+      "=forget",
+      "=skip",
+      "=override",
+      "=bypass",
+      "=abandon"
+     ]
+    },
+    {
+     "any": [
+      "previous",
+      "prior",
+      "=above",
+      "earlier",
+      "preceding",
+      "=all",
+      "original",
+      "initial",
+      "=system",
+      "=your"
+     ]
+    },
+    {
+     "any": [
+      "instruction",
+      "rule",
+      "direction",
+      "guideline",
+      "=prompt",
+      "=prompts",
+      "constraint"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "en.ignore_above",
+   "family": "ignore_instructions",
+   "kind": "tokens",
+   "max_gap": 1,
+   "veto_before": [
+    "=not",
+    "=don",
+    "=dont",
+    "=never",
+    "=doesn",
+    "=didn"
+   ],
+   "slots": [
+    {
+     "any": [
+      "=ignore",
+      "=disregard",
+      "=forget",
+      "=skip",
+      "=override",
+      "=bypass",
+      "=abandon"
+     ]
+    },
+    {
+     "any": [
+      "=above"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "en.reveal_system",
+   "family": "reveal_system",
+   "kind": "tokens",
+   "max_gap": 2,
+   "veto_before": [
+    "=not",
+    "=don",
+    "=dont",
+    "=never",
+    "=doesn",
+    "=didn"
+   ],
+   "slots": [
+    {
+     "any": [
+      "=reveal",
+      "=show",
+      "=print",
+      "=repeat",
+      "=output",
+      "=display",
+      "=tell",
+      "=leak",
+      "=dump",
+      "=give",
+      "=share"
+     ]
+    },
+    {
+     "any": [
+      "=system",
+      "=hidden",
+      "=secret",
+      "=initial",
+      "=original",
+      "=developer"
+     ]
+    },
+    {
+     "any": [
+      "prompt",
+      "instruction",
+      "=message",
+      "=messages"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "en.role_override",
+   "family": "role_override",
+   "kind": "tokens",
+   "unordered": true,
+   "max_gap": 3,
+   "slots": [
+    {
+     "any": [
+      "=you",
+      "=act",
+      "=pretend",
+      "=behave",
+      "=roleplay",
+      "=become"
+     ]
+    },
+    {
+     "any": [
+      "unrestricted",
+      "unfiltered",
+      "uncensored",
+      "jailbroken",
+      "=no restrictions",
+      "=no rules"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "en.dan",
+   "family": "role_override",
+   "kind": "tokens",
+   "slots": [
+    {
+     "any": [
+      "=do anything now",
+      "=act as dan",
+      "=you are dan",
+      "=dan mode",
+      "=jailbreak mode"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "en.remove_restrictions",
+   "family": "remove_restrictions",
+   "kind": "tokens",
+   "max_gap": 2,
+   "veto_before": [
+    "=not",
+    "=don",
+    "=dont",
+    "=never",
+    "=doesn",
+    "=didn"
+   ],
+   "slots": [
+    {
+     "any": [
+      "=disable",
+      "=bypass",
+      "=remove",
+      "=deactivate",
+      "=turn off",
+      "=lift"
+     ]
+    },
+    {
+     "any": [
+      "safety",
+      "guardrail",
+      "restriction",
+      "censorship",
+      "moderation",
+      "content filter",
+      "safety filter",
+      "content polic"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "any.delimiter",
+   "family": "delimiter",
+   "kind": "literal",
+   "any": [
+    "<|im_start|>",
+    "<|im_end|>",
+    "<|system|>",
+    "<|endoftext|>",
+    "<|begin_of_text|>",
+    "<|start_header_id|>",
+    "<|eot_id|>",
+    "[inst]",
+    "[/inst]",
+    "<<sys>>",
+    "<</sys>>",
+    "<system>",
+    "</system>",
+    "### instruction",
+    "### system"
+   ]
+  }
+ ]
+}

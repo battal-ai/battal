@@ -622,7 +622,7 @@
                   "when": {
                     "all": [
                       {
-                        "detector": "tr-injection",
+                        "detector": "injection.model",
                         "above_threshold": true
                       },
                       {
@@ -683,7 +683,7 @@
         },
         "detections": [
           {
-            "detector": "tr-injection",
+            "detector": "injection.model",
             "version": "0.1.0",
             "segment": 0,
             "span": [
@@ -835,7 +835,7 @@
                   "when": {
                     "all": [
                       {
-                        "detector": "tr-injection",
+                        "detector": "injection.model",
                         "above_threshold": true
                       },
                       {

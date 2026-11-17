@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://battal-ai.github.io/battal/schemas/injection-rules.schema.json",
+  "title": "Injection imza seti",
+  "description": "S4: data/rules/injection.json biçimi.",
+  "type": "object",
+  "required": ["version", "max_detections_per_segment", "signatures"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {"type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "description": {"type": "string"},
+    "max_detections_per_segment": {"type": "integer", "minimum": 1},
+    "signatures": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/signature"}}
+  },
+  "$defs": {
+    "entry": {
+      "$comment": "Boşlukla ayrılmış kelimeler; son kelime dışındakiler birebir, son kelime önek. '=' ile başlarsa hepsi birebir. Önek kelimesi en az 3 karakter.",
+      "type": "string",
+      "pattern": "^(=[a-z0-9@$]+( [a-z0-9@$]+)*|([a-z0-9@$]+ )*[a-z0-9@$]{3,})$"
+    },
+    "slot": {
+      "type": "object",
+      "required": ["any"],
+      "additionalProperties": false,
+      "properties": {
+        "any": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/entry"}},
+        "except": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/entry"}}
+      }
+    },
+    "signature": {
+      "type": "object",
+      "required": ["id", "family", "kind"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^(tr|en|any)\\.[a-z0-9_]+$"},
+        "family": {"enum": ["ignore_instructions", "reveal_system", "role_override", "remove_restrictions", "delimiter"]},
+        "kind": {"enum": ["tokens", "literal"]}
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "id": true, "family": true,
+            "kind": {"const": "tokens"},
+            "slots": {"type": "array", "minItems": 1, "maxItems": 4, "items": {"$ref": "#/$defs/slot"}},
+            "max_gap": {"type": "integer", "minimum": 0, "maximum": 5},
+            "unordered": {"type": "boolean"},
+            "veto_before": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/entry"}}
+          },
+          "required": ["slots"],
+          "additionalProperties": false,
+          "if": {"properties": {"unordered": {"const": true}}, "required": ["unordered"]},
+          "then": {"properties": {"slots": {"minItems": 2, "maxItems": 2}}}
+        },
+        {
+          "properties": {
+            "id": true, "family": true,
+            "kind": {"const": "literal"},
+            "any": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[\\x21-\\x40\\x5b-\\x7e]([\\x20-\\x40\\x5b-\\x7e]*[\\x21-\\x40\\x5b-\\x7e])?$"}}
+          },
+          "required": ["any"],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

@@ -67,7 +67,7 @@
                   "when": {
                     "all": [
                       {
-                        "detector": "tr-injection",
+                        "detector": "injection.model",
                         "above_threshold": true
                       },
                       {
@@ -222,7 +222,7 @@
                   "when": {
                     "all": [
                       {
-                        "detector": "tr-injection",
+                        "detector": "injection.model",
                         "above_threshold": true
                       },
                       {
@@ -1029,7 +1029,7 @@
                   "when": {
                     "all": [
                       {
-                        "detector": "tr-injection",
+                        "detector": "injection.model",
                         "above_threshold": true
                       },
                       {
@@ -1196,7 +1196,7 @@
                   "when": {
                     "all": [
                       {
-                        "detector": "tr-injection",
+                        "detector": "injection.model",
                         "above_threshold": true
                       },
                       {

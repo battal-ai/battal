@@ -553,8 +553,9 @@ Takvim ve sprint ataması yapılmamıştır. MVP epic'leri ayrıntılı, sonraki
 
 ### E4 Injection tespiti
 
-- **PBI 4.1 Kural seti v0.** TR ve EN imzalar, stem ve n-gram ile.
-  *DoD:* Her kural için pozitif ve negatif vektör vardır; kurallar benchmark'ta ayrı raporlanır.
+- **PBI 4.1 Kural seti v0.** TR ve EN token imzaları (S4); stemmer ve n-gram yerine kök
+  listeleri ve emir/2. kişi fiil biçimleri.
+  *DoD:* Her imza için pozitif ve negatif vektör vardır; imzalar benchmark'ta ayrı raporlanır.
 - **PBI 4.2 ONNX detector adapter'ı.** Pencereleme (512–2048 token), int8 desteği.
   *DoD:* Üç aday model aynı interface ile çalışır; model hash'i doğrulanır.
 - **PBI 4.3 Baseline seçimi ve kalibrasyon.** Temperature scaling; eşik calibration split'inde

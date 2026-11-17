@@ -1,0 +1,285 @@
+{
+  "format_version": 1,
+  "spec": "S4",
+  "function": "injection.model.aggregate",
+  "description": "Pencere skorlarından detection üretimi (S4 §7.3).",
+  "cases": [
+    {
+      "id": "en-yuksek-skor",
+      "description": "raw_score en yüksek pencere skorudur; span o pencerenin aralığıdır.",
+      "spec_refs": [
+        "S4-MOD-001"
+      ],
+      "input": {
+        "segment": 0,
+        "model": {
+          "id": "ornek-model",
+          "version": "0.0.1",
+          "threshold": 0.8,
+          "calibrated": false
+        },
+        "windows": [
+          {
+            "span": [
+              0,
+              40
+            ],
+            "score": 0.12
+          },
+          {
+            "span": [
+              30,
+              80
+            ],
+            "score": 0.91
+          },
+          {
+            "span": [
+              70,
+              95
+            ],
+            "score": 0.4
+          }
+        ],
+        "truncated": false
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "injection.model",
+            "version": "0.0.1",
+            "segment": 0,
+            "span": [
+              30,
+              80
+            ],
+            "raw_score": 0.91,
+            "calibrated": false,
+            "threshold": 0.8,
+            "model": "ornek-model",
+            "truncated": false
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "dusuk-skor-da-uretilir",
+      "description": "Skor düşük olsa da detection üretilir.",
+      "spec_refs": [
+        "S4-MOD-002"
+      ],
+      "input": {
+        "segment": 0,
+        "model": {
+          "id": "ornek-model",
+          "version": "0.0.1",
+          "threshold": 0.8,
+          "calibrated": false
+        },
+        "windows": [
+          {
+            "span": [
+              0,
+              10
+            ],
+            "score": 0.01
+          }
+        ],
+        "truncated": false
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "injection.model",
+            "version": "0.0.1",
+            "segment": 0,
+            "span": [
+              0,
+              10
+            ],
+            "raw_score": 0.01,
+            "calibrated": false,
+            "threshold": 0.8,
+            "model": "ornek-model",
+            "truncated": false
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "esitlikte-ilk",
+      "description": "Eşit skorda listedeki ilk pencere seçilir.",
+      "spec_refs": [
+        "S4-MOD-001"
+      ],
+      "input": {
+        "segment": 0,
+        "model": {
+          "id": "ornek-model",
+          "version": "0.0.1",
+          "threshold": 0.8,
+          "calibrated": false
+        },
+        "windows": [
+          {
+            "span": [
+              0,
+              10
+            ],
+            "score": 0.5
+          },
+          {
+            "span": [
+              5,
+              20
+            ],
+            "score": 0.5
+          }
+        ],
+        "truncated": false
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "injection.model",
+            "version": "0.0.1",
+            "segment": 0,
+            "span": [
+              0,
+              10
+            ],
+            "raw_score": 0.5,
+            "calibrated": false,
+            "threshold": 0.8,
+            "model": "ornek-model",
+            "truncated": false
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "cozulmus-parca-kazanir",
+      "description": "Çözülmüş parçanın penceresi kazanırsa encoding alanı eklenir.",
+      "spec_refs": [
+        "S4-MOD-003"
+      ],
+      "input": {
+        "segment": 0,
+        "model": {
+          "id": "ornek-model",
+          "version": "0.0.1",
+          "threshold": 0.8,
+          "calibrated": false
+        },
+        "windows": [
+          {
+            "span": [
+              0,
+              30
+            ],
+            "score": 0.2
+          },
+          {
+            "span": [
+              17,
+              65
+            ],
+            "score": 0.97,
+            "encoding": "base64"
+          }
+        ],
+        "truncated": false
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "injection.model",
+            "version": "0.0.1",
+            "segment": 0,
+            "span": [
+              17,
+              65
+            ],
+            "raw_score": 0.97,
+            "calibrated": false,
+            "threshold": 0.8,
+            "model": "ornek-model",
+            "truncated": false,
+            "encoding": "base64"
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "kesilme-bayragi",
+      "description": "Pencereler kesildiyse truncated true taşınır.",
+      "spec_refs": [
+        "S4-MOD-004"
+      ],
+      "input": {
+        "segment": 0,
+        "model": {
+          "id": "ornek-model",
+          "version": "0.0.1",
+          "threshold": 0.8,
+          "calibrated": false
+        },
+        "windows": [
+          {
+            "span": [
+              0,
+              10
+            ],
+            "score": 0.3
+          }
+        ],
+        "truncated": true
+      },
+      "expected": {
+        "detections": [
+          {
+            "detector": "injection.model",
+            "version": "0.0.1",
+            "segment": 0,
+            "span": [
+              0,
+              10
+            ],
+            "raw_score": 0.3,
+            "calibrated": false,
+            "threshold": 0.8,
+            "model": "ornek-model",
+            "truncated": true
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "pencere-yok",
+      "description": "Pencere yoksa detection yoktur.",
+      "spec_refs": [
+        "S4-MOD-002"
+      ],
+      "input": {
+        "segment": 0,
+        "model": {
+          "id": "ornek-model",
+          "version": "0.0.1",
+          "threshold": 0.8,
+          "calibrated": false
+        },
+        "windows": [],
+        "truncated": false
+      },
+      "expected": {
+        "detections": []
+      },
+      "match": "exact"
+    }
+  ]
+}

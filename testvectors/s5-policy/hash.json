@@ -65,7 +65,7 @@
                   "when": {
                     "all": [
                       {
-                        "detector": "tr-injection",
+                        "detector": "injection.model",
                         "above_threshold": true
                       },
                       {
@@ -115,7 +115,7 @@
         }
       },
       "expected": {
-        "bundle_hash": "sha256:f77d4b060198d974dabce918f4a81d89d6e24a4831096a898299ce8d8f814f94"
+        "bundle_hash": "sha256:455f505dea46a31b31f82edcaa3a53947f20b1f72cad27c3e863ea1cd3961b46"
       }
     },
     {
@@ -157,7 +157,7 @@
                     "all": [
                       {
                         "above_threshold": true,
-                        "detector": "tr-injection"
+                        "detector": "injection.model"
                       },
                       {
                         "trust": "untrusted"
@@ -229,7 +229,7 @@
         }
       },
       "expected": {
-        "bundle_hash": "sha256:f77d4b060198d974dabce918f4a81d89d6e24a4831096a898299ce8d8f814f94"
+        "bundle_hash": "sha256:455f505dea46a31b31f82edcaa3a53947f20b1f72cad27c3e863ea1cd3961b46"
       }
     },
     {
@@ -320,7 +320,7 @@
                   "when": {
                     "all": [
                       {
-                        "detector": "tr-injection",
+                        "detector": "injection.model",
                         "above_threshold": true
                       },
                       {
@@ -343,7 +343,7 @@
         }
       },
       "expected": {
-        "bundle_hash": "sha256:f77d4b060198d974dabce918f4a81d89d6e24a4831096a898299ce8d8f814f94"
+        "bundle_hash": "sha256:455f505dea46a31b31f82edcaa3a53947f20b1f72cad27c3e863ea1cd3961b46"
       }
     },
     {
@@ -407,7 +407,7 @@
                   "when": {
                     "all": [
                       {
-                        "detector": "tr-injection",
+                        "detector": "injection.model",
                         "above_threshold": true
                       },
                       {
@@ -457,7 +457,7 @@
         }
       },
       "expected": {
-        "bundle_hash": "sha256:842f1e9e0f3e6a21e3a527c03bbfdf7de58a5dcf4de86328859f56b764ab07c0"
+        "bundle_hash": "sha256:73e7556e515c8d0465ed7e702c862ee36e0b710cba9f85677b22daa007161f17"
       }
     },
     {

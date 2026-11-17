@@ -79,7 +79,8 @@ battal/
 - global state yoktur, I/O yoktur, saat ve rastgelelik kullanılmaz;
 - girdi ve çıktı `battal.contract` tipleri ya da çekirdeğin kendi değer tipleridir;
 - davranışı tamamen S2, S3, S4 (kural kısmı) ve S5 vektörleriyle tanımlıdır;
-- statik veri tabloları (örneğin `data/unicode/confusables-fold-15.1.0.json`) paketle birlikte
+- statik veri tabloları (örneğin `data/unicode/confusables-fold-15.1.0.json`,
+  `data/rules/injection.json`) paketle birlikte
   gelen sabitlerdir: Python'da paket verisi olarak bir kez yüklenir, Rust'ta derleme anında
   gömülür (`include_str!`). Çalışma anında dosya sisteminden okunmaz ve config ile değiştirilmez.
 
@@ -127,7 +128,7 @@ MVP yalnızca deterministik ve küçük model tabanlı tespit içerir:
 | Detector | Yöntem | Modül |
 |---|---|---|
 | TCKN, VKN, IBAN, telefon, e-posta | Regex, checksum, bağlam sözlüğü | `core/pii` |
-| Injection kuralları | TR ve EN imzalar, stem, n-gram | `core/rules` |
+| Injection kuralları | TR ve EN token imzaları (kök listeleri, stemmer yok) | `core/rules` |
 | Injection sınıflandırıcı | Küçük ONNX model (CPU) | `detectors` |
 
 İsim ve adres tanıma (NER, örneğin spaCy ile) MVP'de yoktur; E17'de, model lisansı ve CPU
@@ -141,7 +142,7 @@ Presidio kullananlar için isteğe bağlı bir adapter E17'de gelir (ADR 0006).
 | `contract` | [S1](spec/s1-evaluation-api.md) |
 | `core/normalize` | [S2](spec/s2-turkce-normalizasyon.md) |
 | `core/pii`, `core/actions` | [S3](spec/s3-turkce-pii.md) |
-| `core/rules`, `detectors` | S4 |
+| `core/rules`, `detectors` | [S4](spec/s4-turkce-injection.md) |
 | `core/policy`, `bundle`, `cli` | [S5](spec/s5-policy-binding-bundle.md) |
 | `server`, `adapters` | [S6](spec/s6-sunucu-litellm.md) |
 | `audit` | [S7](spec/s7-karar-kaydi.md) |

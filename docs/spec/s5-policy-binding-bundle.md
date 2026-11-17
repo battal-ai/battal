@@ -1,7 +1,7 @@
 # S5: Policy, binding ve bundle
 
 - Durum: kabul edildi
-- Sürüm: 1.0.1
+- Sürüm: 1.1.0
 - İlgili ADR'ler: [ADR 0002](../decisions/0002-mvp-scope.md),
   [ADR 0004](../decisions/0004-policy-binding-and-playground.md)
 - İlgili backlog: E5 (PBI 5.1–5.5)
@@ -16,6 +16,7 @@
 | 0.1.0 | 2026-11-17 | İlk taslak |
 | 1.0.0 | 2026-11-17 | Kabul edildi |
 | 1.0.1 | 2026-11-18 | Binding tablosunda `surface` satırının kaynağı S6 yerine E13 olarak düzeltildi |
+| 1.1.0 | 2026-11-18 | S4 için detection koşuluna `signature` ve `truncated`, yeni `detector_unavailable` koşulu; örneklerde `tr-injection` yerine `injection.model` |
 
 ## 1. Amaç ve kapsam
 
@@ -215,7 +216,7 @@ rules:
     checkpoints: [input]
     when:
       all:
-        - {detector: tr-injection, above_threshold: true}
+        - {detector: injection.model, above_threshold: true}
         - {trust: untrusted}
     action: block
     rationale: {code: PROMPT_INJECTION, message_tr: İstek güvenlik politikası nedeniyle engellendi.}
@@ -250,7 +251,7 @@ rules:
 
 ```text
 koşul := {all: [koşul, ...]} | {any: [koşul, ...]} | {not: koşul}
-       | detection koşulu | segment koşulu | sinyal koşulu
+       | detection koşulu | segment koşulu | sinyal koşulu | erişilemezlik koşulu
 ```
 
 - **S5-RUL-001.** Bir kural **segment başına** değerlendirilir: kuralın koşulu isteğin
@@ -260,8 +261,10 @@ koşul := {all: [koşul, ...]} | {any: [koşul, ...]} | {not: koşul}
 - **S5-RUL-002.** **Detection koşulu** (`detector` alanı olan nesne), o segment'teki **tek bir**
   detection koşulun bütün alanlarını sağlıyorsa doğrudur. Alanlar:
     - `detector`: detector adı; `*` ve `?` glob karakterleri kullanılabilir (`pii.*`).
-    - `checksum_valid`, `context_hit`: boolean; detection'daki aynı adlı alanla eşit olmalıdır.
-      Detection'da alan yoksa koşul sağlanmaz.
+    - `checksum_valid`, `context_hit`, `truncated`: boolean; detection'daki aynı adlı alanla eşit
+      olmalıdır. Detection'da alan yoksa koşul sağlanmaz.
+    - `signature`: glob; detection'ın `signature` alanıyla (S4) eşleşmelidir. Detection'da alan
+      yoksa koşul sağlanmaz.
     - `min_score`: sayı; detection'ın `raw_score` değeri `>=` olmalıdır.
     - `above_threshold: true`: detection'ın `raw_score` değeri kendi `threshold` değerine `>=`
       olmalıdır.
@@ -277,6 +280,11 @@ koşul := {all: [koşul, ...]} | {any: [koşul, ...]} | {not: koşul}
 - **S5-RUL-006.** Bir detection koşulunda `min_score` ile `above_threshold` birlikte
   **MUST NOT** kullanılmamalıdır (`SCORE_CONDITION_CONFLICT`). `min_score` veya
   `above_threshold`, `raw_score` alanı olmayan detection'larla **MUST NOT** eşleşmemelidir.
+- **S5-RUL-008.** **Erişilemezlik koşulu** (`{detector_unavailable: <glob>}`), `policy.evaluate`
+  girdisindeki `detector_failures` listesinde desenle eşleşen bir ad varsa doğrudur. İstek
+  düzeyindedir: her segment'te aynı sonucu verir. Policy, model detector'ı çalışmadığında ne
+  yapılacağını bu koşulla açıkça yazar (örneğin `input`'ta `block`); bu koşul detection
+  içermediği için tek başına bir `mask` kuralının koşulu **MUST NOT** olamaz (S5-ACT-002).
 - **S5-RUL-007.** Koşul nesnesinde tanımlı olmayan bir alan bulunan policy **MUST**
   `SCHEMA_INVALID` ile reddedilmelidir. *[doğrulama: şema]*
 

@@ -56,7 +56,7 @@ _Kaçın_: platform, kanal
 
 **Detector**:
 Bir segment'te belirli bir riski arayan, sürümlenmiş bileşen; örneğin `pii.tckn`,
-`tr-injection`.
+`injection.model`.
 _Kaçın_: scanner, guard (tek bir bileşen için), recognizer (Presidio bağlamı dışında)
 
 **Detection**:
@@ -100,6 +100,12 @@ _Kaçın_: homoglyph kelime
 Görünüm üretirken bir karakteri eşdeğer kabul edilen başka bir karaktere çevirme: confusable
 katlama (`а → a`), leet katlama (`3 → e`), diakritik düşürme (`ş → s`).
 _Kaçın_: normalizasyon (genel süreç için ayrılmıştır), dönüştürme
+
+**İmza (signature)**:
+`injection.rules` detector'ının imza setindeki, kimliği olan tek desen
+(`tr.ignore_instructions`); token dizisi ya da literal olarak yazılır. Detection'da `signature`
+alanında taşınır (S4).
+_Kaçın_: kural (policy rule'u ile karışır), pattern, keyword
 
 **Aday (candidate)**:
 Bir PII detector'ının biçimine uyan metin parçası; checksum'ı geçmesi gerekmez. Her aday bir

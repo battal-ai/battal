@@ -37,15 +37,15 @@ Spec'ler Türkçedir. Zorunluluk seviyeleri RFC 2119 anahtar kelimeleriyle yazı
 | S1 | [Evaluation API sözleşmesi](s1-evaluation-api.md) | E1 | S0 | kabul edildi (1.0.0) |
 | S2 | [Türkçe normalizasyon](s2-turkce-normalizasyon.md) | E2 | S0, S1 | kabul edildi (1.0.0) |
 | S3 | [Türkçe PII](s3-turkce-pii.md) | E3 | S0, S1, S2 | kabul edildi (1.0.0) |
-| S4 | Injection tespiti | E4 | S0, S1, S2 | planlandı |
-| S5 | [Policy, binding ve bundle](s5-policy-binding-bundle.md) | E5 | S0, S1 | kabul edildi (1.0.1) |
+| S4 | [Türkçe injection tespiti](s4-turkce-injection.md) | E4 | S0, S1, S2, S5 | kabul edildi (1.0.0) |
+| S5 | [Policy, binding ve bundle](s5-policy-binding-bundle.md) | E5 | S0, S1 | kabul edildi (1.1.0) |
 | S6 | [Sunucu ve LiteLLM adapter'ı](s6-sunucu-litellm.md) | E6 | S1, S5 | kabul edildi (1.1.0) |
 | S7 | [Karar kaydı](s7-karar-kaydi.md) | E8 | S1, S5 | kabul edildi (1.0.0) |
 
 **Yazım sırası:** S0 → S1 → S5 → S2 → S3 → S6 → S7 → S4. S4 en çok ölçüm bekleyen değeri
 içerdiği için sona kalır.
 
-Bütün MVP spec'leri koddan önce yazılır. Ölçüm gerektiren değerler (injection eşiği, model
+Bütün MVP spec'leri koddan önce yazılır; sekizi de 2026-11-18'de kabul edildi. Ölçüm gerektiren değerler (injection eşiği, model
 seçimi, gecikme bütçesi) `TBD` olarak bırakılır ve ölçümden sonra doldurulur.
 
 Benchmark (E7) ve policy playground (E18) spec'leri sıraları geldiğinde yazılacaktır.

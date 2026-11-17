@@ -1,0 +1,197 @@
+{
+  "format_version": 1,
+  "spec": "S4",
+  "function": "injection.model.windows",
+  "description": "Pencereleme (S4 §7.2).",
+  "cases": [
+    {
+      "id": "tek-pencere",
+      "description": "Metin pencereden kısaysa tek pencere.",
+      "spec_refs": [
+        "S4-WIN-001"
+      ],
+      "input": {
+        "token_count": 100,
+        "window": 512,
+        "stride": 384,
+        "max_windows": 8
+      },
+      "expected": {
+        "windows": [
+          [
+            0,
+            100
+          ]
+        ],
+        "truncated": false
+      },
+      "match": "exact"
+    },
+    {
+      "id": "tam-pencere",
+      "description": "Metin pencereye eşitse tek pencere.",
+      "spec_refs": [
+        "S4-WIN-001"
+      ],
+      "input": {
+        "token_count": 512,
+        "window": 512,
+        "stride": 384,
+        "max_windows": 8
+      },
+      "expected": {
+        "windows": [
+          [
+            0,
+            512
+          ]
+        ],
+        "truncated": false
+      },
+      "match": "exact"
+    },
+    {
+      "id": "kaydirmali",
+      "description": "Adım kadar kayan, son pencere metnin sonunda biten pencereler.",
+      "spec_refs": [
+        "S4-WIN-001"
+      ],
+      "input": {
+        "token_count": 1000,
+        "window": 512,
+        "stride": 384,
+        "max_windows": 8
+      },
+      "expected": {
+        "windows": [
+          [
+            0,
+            512
+          ],
+          [
+            384,
+            896
+          ],
+          [
+            768,
+            1000
+          ]
+        ],
+        "truncated": false
+      },
+      "match": "exact"
+    },
+    {
+      "id": "bos",
+      "description": "Token yoksa pencere yoktur.",
+      "spec_refs": [
+        "S4-WIN-001"
+      ],
+      "input": {
+        "token_count": 0,
+        "window": 512,
+        "stride": 384,
+        "max_windows": 8
+      },
+      "expected": {
+        "windows": [],
+        "truncated": false
+      },
+      "match": "exact"
+    },
+    {
+      "id": "kesilme",
+      "description": "max_windows aşılırsa ilk pencereler alınır ve truncated true olur.",
+      "spec_refs": [
+        "S4-WIN-002"
+      ],
+      "input": {
+        "token_count": 2000,
+        "window": 512,
+        "stride": 384,
+        "max_windows": 3
+      },
+      "expected": {
+        "windows": [
+          [
+            0,
+            512
+          ],
+          [
+            384,
+            896
+          ],
+          [
+            768,
+            1280
+          ]
+        ],
+        "truncated": true
+      },
+      "match": "exact"
+    },
+    {
+      "id": "sinira-esit",
+      "description": "Pencere sayısı max_windows'a eşitse kesilme yoktur.",
+      "spec_refs": [
+        "S4-WIN-002"
+      ],
+      "input": {
+        "token_count": 1000,
+        "window": 512,
+        "stride": 384,
+        "max_windows": 3
+      },
+      "expected": {
+        "windows": [
+          [
+            0,
+            512
+          ],
+          [
+            384,
+            896
+          ],
+          [
+            768,
+            1000
+          ]
+        ],
+        "truncated": false
+      },
+      "match": "exact"
+    },
+    {
+      "id": "adim-pencereden-buyuk",
+      "description": "Adım pencereden büyükse metin boşluk bırakır; config geçersizdir.",
+      "spec_refs": [
+        "S4-WIN-003"
+      ],
+      "input": {
+        "token_count": 1000,
+        "window": 512,
+        "stride": 600,
+        "max_windows": 8
+      },
+      "expected_error": {
+        "code": "INVALID_WINDOW_CONFIG"
+      }
+    },
+    {
+      "id": "sifir-pencere",
+      "description": "Pencere boyutu en az 1 olmalıdır.",
+      "spec_refs": [
+        "S4-WIN-003"
+      ],
+      "input": {
+        "token_count": 10,
+        "window": 0,
+        "stride": 0,
+        "max_windows": 8
+      },
+      "expected_error": {
+        "code": "INVALID_WINDOW_CONFIG"
+      }
+    }
+  ]
+}
