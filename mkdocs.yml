@@ -49,7 +49,7 @@ nav:
   - Sözlük: sozluk.md
   - Spec:
       - "Spec listesi ve plan": spec/index.md
-      - "S0: Test vektörü formatı (taslak)": spec/s0-test-vektorleri.md
+      - "S0: Test vektörü formatı": spec/s0-test-vektorleri.md
   - Araştırma:
       - "Araştırma raporu v0.1": research/index.md
       - Ekler:

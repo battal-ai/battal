@@ -1,7 +1,7 @@
 # S0: Spec ve test vektörü formatı
 
-- Durum: taslak
-- Sürüm: 0.1.0
+- Durum: kabul edildi
+- Sürüm: 1.0.0
 - İlgili ADR'ler: [ADR 0003](../decisions/0003-language-python-then-rust.md),
   [ADR 0004](../decisions/0004-policy-binding-and-playground.md)
 - İlgili backlog: E0 (PBI 0.2)
@@ -13,6 +13,7 @@
 | Sürüm | Tarih | Değişiklik |
 |---|---|---|
 | 0.1.0 | 2026-11-17 | İlk taslak |
+| 1.0.0 | 2026-11-17 | Kabul edildi |
 
 ## 1. Amaç ve kapsam
 
