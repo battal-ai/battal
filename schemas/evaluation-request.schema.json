@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://battal-ai.github.io/battal/schemas/evaluation-request.schema.json",
+  "title": "EvaluationRequest",
+  "description": "S1: Evaluation API sözleşmesi, api_version v1.",
+  "type": "object",
+  "required": ["api_version", "checkpoint", "segments"],
+  "additionalProperties": false,
+  "properties": {
+    "api_version": {"const": "v1"},
+    "request_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"},
+    "checkpoint": {"enum": ["input", "output", "retrieval", "tool_call", "tool_result", "memory_write"]},
+    "tenant": {"$ref": "#/$defs/id"},
+    "principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "user_id": {"$ref": "#/$defs/id"},
+        "team_id": {"$ref": "#/$defs/id"},
+        "key_hash": {"$ref": "#/$defs/id"}
+      }
+    },
+    "session": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "turn": {"type": "integer", "minimum": 0}
+      }
+    },
+    "agent": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "name": {"type": "string", "minLength": 1, "maxLength": 256}
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model": {"type": "string", "minLength": 1, "maxLength": 256},
+        "provider_region": {"type": "string", "minLength": 1, "maxLength": 64}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {"id": {"$ref": "#/$defs/id"}}
+    },
+    "segments": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/segment"}}
+  },
+  "$defs": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "segment": {
+      "type": "object",
+      "required": ["id", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "integer", "minimum": 0},
+        "text": {"type": "string"},
+        "role": {"enum": ["system", "user", "assistant", "tool"]},
+        "source": {"enum": ["user", "system", "model", "tool", "retrieval"]},
+        "trust": {"enum": ["trusted", "untrusted"]}
+      }
+    }
+  }
+}

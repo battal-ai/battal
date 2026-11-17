@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://battal-ai.github.io/battal/schemas/evaluation-error.schema.json",
+  "title": "EvaluationError",
+  "description": "S1: Evaluation API sözleşmesi, api_version v1.",
+  "type": "object",
+  "required": ["error"],
+  "additionalProperties": false,
+  "properties": {
+    "error": {
+      "type": "object",
+      "required": ["code", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "code": {"enum": ["UNSUPPORTED_API_VERSION", "INVALID_REQUEST", "CHECKPOINT_NOT_SUPPORTED", "INPUT_TOO_LARGE", "NO_BUNDLE_LOADED", "POLICY_NOT_ALLOWED"]},
+        "message": {"type": "string"},
+        "request_id": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}
+      }
+    }
+  }
+}

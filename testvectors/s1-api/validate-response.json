@@ -1,0 +1,894 @@
+{
+  "format_version": 1,
+  "spec": "S1",
+  "function": "contract.validate_response",
+  "description": "Yanıt şeması ve tutarlılık kuralları (S1 §5).",
+  "cases": [
+    {
+      "id": "gecerli-mask-yaniti",
+      "description": "Şemaya ve transform kurallarına uyan maskeleme yanıtı geçerlidir.",
+      "spec_refs": [
+        "S1-TRF-003",
+        "S1-DET-001"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask_tckn",
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        },
+        "segments": [
+          {
+            "id": 0,
+            "text": "TC'm 10000000146"
+          }
+        ]
+      },
+      "expected": {
+        "valid": true,
+        "issues": []
+      }
+    },
+    {
+      "id": "detection-metin-iceremez",
+      "description": "Detection eşleşen metni text alanında taşıyamaz.",
+      "spec_refs": [
+        "S1-DET-001"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask_tckn",
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true,
+              "text": "10000000146"
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "detection-value-iceremez",
+      "description": "Detection eşleşen metni value alanında taşıyamaz.",
+      "spec_refs": [
+        "S1-DET-001"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask_tckn",
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true,
+              "value": "10000000146"
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "raw-score-calibrated-ister",
+      "description": "raw_score veren detection calibrated alanını da vermelidir.",
+      "spec_refs": [
+        "S1-DET-002"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask_tckn",
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true
+            },
+            {
+              "detector": "tr-injection",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                0,
+                4
+              ],
+              "raw_score": 0.91
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "transform-metni-uyusmaz",
+      "description": "Transform metni, edit'lerin orijinal metne uygulanmış hâline eşit olmalıdır.",
+      "spec_refs": [
+        "S1-TRF-003"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask_tckn",
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <KIMLIK>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        },
+        "segments": [
+          {
+            "id": 0,
+            "text": "TC'm 10000000146"
+          }
+        ]
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "TRANSFORM_TEXT_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "transform-edit-cakisma",
+      "description": "Aynı segment'teki edit'ler çakışamaz.",
+      "spec_refs": [
+        "S1-TRF-002"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask_tckn",
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                },
+                {
+                  "span": [
+                    10,
+                    12
+                  ],
+                  "replacement": "<X>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "TRANSFORM_EDITS_OVERLAP"
+        ]
+      }
+    },
+    {
+      "id": "transform-edit-sirasi",
+      "description": "Edit'ler span'e göre artan sırada olmalıdır.",
+      "spec_refs": [
+        "S1-TRF-002"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask_tckn",
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "<A>m <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                },
+                {
+                  "span": [
+                    0,
+                    3
+                  ],
+                  "replacement": "<A>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "TRANSFORM_EDITS_OVERLAP"
+        ]
+      }
+    },
+    {
+      "id": "transform-ayni-segment-iki-kez",
+      "description": "Bir segment transforms içinde en fazla bir kez geçer.",
+      "spec_refs": [
+        "S1-TRF-001"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask_tckn",
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            },
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "TRANSFORM_DUPLICATE_SEGMENT"
+        ]
+      }
+    },
+    {
+      "id": "rule-id-default-ile-dolu",
+      "description": "decided_by.kind default iken rule_id null olmalıdır.",
+      "spec_refs": [
+        "S1-DEC-002"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask_tckn",
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "default",
+              "binding": null
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "RULE_ID_INCONSISTENT"
+        ]
+      }
+    },
+    {
+      "id": "rule-id-rule-ile-null",
+      "description": "decided_by.kind rule iken rule_id dolu olmalıdır.",
+      "spec_refs": [
+        "S1-DEC-002"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "mask",
+            "rule_id": null,
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "RULE_ID_INCONSISTENT"
+        ]
+      }
+    },
+    {
+      "id": "fail-mode-karari-gecerli",
+      "description": "Fail mode kararı: rule_id null, binding null, degraded true.",
+      "spec_refs": [
+        "S1-DEC-002"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "decision": {
+            "action": "block",
+            "rule_id": null,
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "fail_mode",
+              "binding": null
+            },
+            "fail_mode": "closed",
+            "degraded": true
+          },
+          "detections": [],
+          "transforms": [],
+          "rationale": {
+            "code": "UNAVAILABLE",
+            "message_tr": "İstek şu anda değerlendirilemiyor."
+          },
+          "timing_ms": {
+            "total": 1.2
+          }
+        }
+      },
+      "expected": {
+        "valid": true,
+        "issues": []
+      }
+    },
+    {
+      "id": "camel-case-alan",
+      "description": "camelCase alan adı (requestId) şemaya aykırıdır.",
+      "spec_refs": [
+        "S1-GEN-001"
+      ],
+      "input": {
+        "response": {
+          "api_version": "v1",
+          "decision": {
+            "action": "mask",
+            "rule_id": "pii.mask_tckn",
+            "policy": {
+              "id": "default-tr",
+              "version": "1.0.0"
+            },
+            "bundle_hash": "sha256:0f1e",
+            "matched_bindings": [
+              "global"
+            ],
+            "decided_by": {
+              "kind": "rule",
+              "binding": "global"
+            },
+            "fail_mode": "closed",
+            "degraded": false
+          },
+          "detections": [
+            {
+              "detector": "pii.tckn",
+              "version": "0.1.0",
+              "segment": 0,
+              "span": [
+                5,
+                16
+              ],
+              "checksum_valid": true,
+              "context_hit": true
+            }
+          ],
+          "transforms": [
+            {
+              "segment": 0,
+              "text": "TC'm <TCKN>",
+              "edits": [
+                {
+                  "span": [
+                    5,
+                    16
+                  ],
+                  "replacement": "<TCKN>"
+                }
+              ]
+            }
+          ],
+          "rationale": {
+            "code": "PII_MASKED",
+            "message_tr": "Kişisel veri maskelendi."
+          },
+          "timing_ms": {
+            "total": 1.2
+          },
+          "requestId": "req-1"
+        }
+      },
+      "expected": {
+        "valid": false,
+        "issues": [
+          "SCHEMA_INVALID"
+        ]
+      }
+    }
+  ]
+}

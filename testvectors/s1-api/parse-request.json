@@ -1,0 +1,988 @@
+{
+  "format_version": 1,
+  "spec": "S1",
+  "function": "contract.parse_request",
+  "description": "İstek doğrulama, varsayılanlar, hata önceliği ve sınırlar (S1 §4, §6).",
+  "cases": [
+    {
+      "id": "asgari-gecerli-istek",
+      "description": "Yalnızca zorunlu alanlarla yazılmış istek geçerlidir; trust varsayılanı untrusted olur.",
+      "spec_refs": [
+        "S1-REQ-001",
+        "S1-SEG-003"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "r-asgari",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "api_version": "v1",
+        "request_id": "r-asgari",
+        "checkpoint": "input",
+        "segments": [
+          {
+            "id": 0,
+            "text": "Merhaba",
+            "trust": "untrusted"
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "tum-alanlar-gecerli",
+      "description": "Bütün isteğe bağlı alanları içeren istek değişmeden ayrıştırılır.",
+      "spec_refs": [
+        "S1-REQ-001",
+        "S1-REQ-003"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ],
+          "tenant": "acme",
+          "principal": {
+            "user_id": "u-42",
+            "team_id": "t-7",
+            "key_hash": "kh-9f2c"
+          },
+          "session": {
+            "id": "s-9",
+            "turn": 3
+          },
+          "agent": {
+            "id": "a-1",
+            "name": "yardimci"
+          },
+          "target": {
+            "model": "qwen3-32b",
+            "provider_region": "tr"
+          },
+          "policy": {
+            "id": "default-tr"
+          }
+        }
+      },
+      "expected": {
+        "api_version": "v1",
+        "request_id": "req-1",
+        "checkpoint": "input",
+        "segments": [
+          {
+            "id": 0,
+            "text": "Merhaba",
+            "role": "user",
+            "source": "user",
+            "trust": "untrusted"
+          }
+        ],
+        "tenant": "acme",
+        "principal": {
+          "user_id": "u-42",
+          "team_id": "t-7",
+          "key_hash": "kh-9f2c"
+        },
+        "session": {
+          "id": "s-9",
+          "turn": 3
+        },
+        "agent": {
+          "id": "a-1",
+          "name": "yardimci"
+        },
+        "target": {
+          "model": "qwen3-32b",
+          "provider_region": "tr"
+        },
+        "policy": {
+          "id": "default-tr"
+        }
+      },
+      "match": "exact"
+    },
+    {
+      "id": "role-source-uydurulmaz",
+      "description": "role ve source gönderilmezse çıktıya varsayılan değer eklenmez.",
+      "spec_refs": [
+        "S1-SEG-004"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "trust": "trusted"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "api_version": "v1",
+        "request_id": "req-1",
+        "checkpoint": "input",
+        "segments": [
+          {
+            "id": 0,
+            "text": "Merhaba",
+            "trust": "trusted"
+          }
+        ]
+      },
+      "match": "exact"
+    },
+    {
+      "id": "trust-acik-trusted",
+      "description": "Açıkça verilen trusted değeri korunur.",
+      "spec_refs": [
+        "S1-SEG-003"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "trust": "trusted"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "segments": [
+          {
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "id": "bos-metin-gecerli",
+      "description": "Boş metinli segment geçerlidir.",
+      "spec_refs": [
+        "S1-SEG-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": ""
+            }
+          ]
+        }
+      },
+      "expected": {
+        "segments": [
+          {
+            "id": 0,
+            "text": "",
+            "trust": "untrusted"
+          }
+        ]
+      }
+    },
+    {
+      "id": "api-version-eksik",
+      "description": "api_version olmayan istek reddedilir.",
+      "spec_refs": [
+        "S1-REQ-001"
+      ],
+      "input": {
+        "request": {
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "checkpoint-eksik",
+      "description": "checkpoint olmayan istek reddedilir.",
+      "spec_refs": [
+        "S1-REQ-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "segments-eksik",
+      "description": "segments olmayan istek reddedilir.",
+      "spec_refs": [
+        "S1-REQ-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input"
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "segments-bos",
+      "description": "Boş segments dizisi reddedilir.",
+      "spec_refs": [
+        "S1-SEG-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": []
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "bilinmeyen-ust-alan",
+      "description": "Yanlış yazılmış alan (segmnets) sessizce yok sayılmaz.",
+      "spec_refs": [
+        "S1-REQ-002",
+        "S1-EVAL-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ],
+          "segmnets": []
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "bilinmeyen-segment-alani",
+      "description": "Segment içinde yanlış yazılmış alan (turst) reddedilir.",
+      "spec_refs": [
+        "S1-REQ-002"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "turst": "trusted"
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "ham-api-key-alani",
+      "description": "principal içinde ham key alanı (api_key) kabul edilmez.",
+      "spec_refs": [
+        "S1-REQ-002",
+        "S1-REQ-005"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ],
+          "principal": {
+            "api_key": "sk-test"
+          }
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "policy-version-alani",
+      "description": "İstekte policy.version gönderilemez.",
+      "spec_refs": [
+        "S1-REQ-002",
+        "S1-REQ-007"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ],
+          "policy": {
+            "id": "default-tr",
+            "version": "1.0.0"
+          }
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "null-istege-bagli-alan",
+      "description": "İsteğe bağlı alana null verilemez.",
+      "spec_refs": [
+        "S1-GEN-003"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ],
+          "agent": null
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "tekrarlanan-segment-id",
+      "description": "Aynı segment id'si iki kez kullanılamaz.",
+      "spec_refs": [
+        "S1-SEG-002"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba"
+            },
+            {
+              "id": 0,
+              "text": "ikinci"
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "gecersiz-trust",
+      "description": "trust yalnızca trusted veya untrusted olabilir.",
+      "spec_refs": [
+        "S1-REQ-002"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "trust": "guvenilir"
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "request-id-gecersiz-karakter",
+      "description": "request_id boşluk içeremez.",
+      "spec_refs": [
+        "S1-REQ-004"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req 1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "request-id-cok-uzun",
+      "description": "request_id 128 karakteri aşamaz.",
+      "spec_refs": [
+        "S1-REQ-004"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "request-id-128-karakter",
+      "description": "128 karakterlik request_id geçerlidir.",
+      "spec_refs": [
+        "S1-REQ-004"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "request_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "api-version-v2",
+      "description": "Desteklenmeyen api_version ayrı bir kodla reddedilir.",
+      "spec_refs": [
+        "S1-ERR-001",
+        "S1-EVAL-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v2",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "UNSUPPORTED_API_VERSION"
+      }
+    },
+    {
+      "id": "checkpoint-tool-call",
+      "description": "MVP'de desteklenmeyen checkpoint reddedilir.",
+      "spec_refs": [
+        "S1-CHK-001",
+        "S1-EVAL-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "tool_call",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "CHECKPOINT_NOT_SUPPORTED"
+      }
+    },
+    {
+      "id": "checkpoint-output",
+      "description": "output checkpoint'i desteklenir.",
+      "spec_refs": [
+        "S1-CHK-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "output",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "checkpoint": "output"
+      }
+    },
+    {
+      "id": "checkpoint-bilinmeyen",
+      "description": "Enum dışındaki checkpoint geçersiz istektir.",
+      "spec_refs": [
+        "S1-REQ-002"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "pre_call",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "oncelik-surum-once",
+      "description": "api_version hatası, bilinmeyen alandan önce gelir.",
+      "spec_refs": [
+        "S1-ERR-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v2",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ],
+          "segmnets": []
+        }
+      },
+      "expected_error": {
+        "code": "UNSUPPORTED_API_VERSION"
+      }
+    },
+    {
+      "id": "oncelik-gecersiz-istek-once",
+      "description": "Geçersiz istek, desteklenmeyen checkpoint'ten önce gelir.",
+      "spec_refs": [
+        "S1-ERR-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "tool_call",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ],
+          "segmnets": []
+        }
+      },
+      "expected_error": {
+        "code": "INVALID_REQUEST"
+      }
+    },
+    {
+      "id": "oncelik-checkpoint-once",
+      "description": "Desteklenmeyen checkpoint, girdi sınırından önce gelir.",
+      "spec_refs": [
+        "S1-ERR-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "tool_call",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba",
+              "role": "user",
+              "source": "user",
+              "trust": "untrusted"
+            }
+          ]
+        },
+        "limits": {
+          "max_segment_code_points": 3
+        }
+      },
+      "expected_error": {
+        "code": "CHECKPOINT_NOT_SUPPORTED"
+      }
+    },
+    {
+      "id": "sinir-segment-sayisi-esit",
+      "description": "Segment sayısı sınıra eşitse kabul edilir.",
+      "spec_refs": [
+        "S1-LIM-003"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba"
+            },
+            {
+              "id": 1,
+              "text": "Merhaba"
+            }
+          ]
+        },
+        "limits": {
+          "max_segments": 2
+        }
+      },
+      "expected": {
+        "segments": [
+          {
+            "id": 0
+          },
+          {
+            "id": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "sinir-segment-sayisi-asim",
+      "description": "Segment sayısı sınırı aşarsa reddedilir.",
+      "spec_refs": [
+        "S1-LIM-002",
+        "S1-EVAL-001"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "Merhaba"
+            },
+            {
+              "id": 1,
+              "text": "Merhaba"
+            },
+            {
+              "id": 2,
+              "text": "Merhaba"
+            }
+          ]
+        },
+        "limits": {
+          "max_segments": 2
+        }
+      },
+      "expected_error": {
+        "code": "INPUT_TOO_LARGE"
+      }
+    },
+    {
+      "id": "sinir-code-point-turkce",
+      "description": "Sınır byte değil code point sayar: 'şğı' 3 code point'tir (6 byte).",
+      "spec_refs": [
+        "S1-LIM-003"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "şğı"
+            }
+          ]
+        },
+        "limits": {
+          "max_segment_code_points": 3
+        }
+      },
+      "expected": {
+        "segments": [
+          {
+            "text": "şğı"
+          }
+        ]
+      }
+    },
+    {
+      "id": "sinir-code-point-asim",
+      "description": "Segment metni sınırı bir code point aşarsa reddedilir.",
+      "spec_refs": [
+        "S1-LIM-002",
+        "S1-LIM-003"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "şğıö"
+            }
+          ]
+        },
+        "limits": {
+          "max_segment_code_points": 3
+        }
+      },
+      "expected_error": {
+        "code": "INPUT_TOO_LARGE"
+      }
+    },
+    {
+      "id": "sinir-gorunmez-karakter-sayilir",
+      "description": "Görünmez karakterler de sayılır; sınır normalizasyondan önce uygulanır.",
+      "spec_refs": [
+        "S1-LIM-003"
+      ],
+      "tags": [
+        "unicode"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "ab\u200b"
+            }
+          ]
+        },
+        "limits": {
+          "max_segment_code_points": 2
+        }
+      },
+      "expected_error": {
+        "code": "INPUT_TOO_LARGE"
+      }
+    },
+    {
+      "id": "sinir-toplam-asim",
+      "description": "Toplam code point sınırı segment'ler toplamıyla aşılırsa reddedilir.",
+      "spec_refs": [
+        "S1-LIM-002"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "abc"
+            },
+            {
+              "id": 1,
+              "text": "de"
+            }
+          ]
+        },
+        "limits": {
+          "max_total_code_points": 4
+        }
+      },
+      "expected_error": {
+        "code": "INPUT_TOO_LARGE"
+      }
+    },
+    {
+      "id": "sinir-toplam-esit",
+      "description": "Toplam code point sınıra eşitse kabul edilir.",
+      "spec_refs": [
+        "S1-LIM-003"
+      ],
+      "input": {
+        "request": {
+          "api_version": "v1",
+          "request_id": "req-1",
+          "checkpoint": "input",
+          "segments": [
+            {
+              "id": 0,
+              "text": "ab"
+            },
+            {
+              "id": 1,
+              "text": "cd"
+            }
+          ]
+        },
+        "limits": {
+          "max_total_code_points": 4
+        }
+      },
+      "expected": {
+        "segments": [
+          {
+            "id": 0
+          },
+          {
+            "id": 1
+          }
+        ]
+      }
+    }
+  ]
+}

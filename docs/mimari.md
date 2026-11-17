@@ -131,7 +131,7 @@ kullanılır ve spaCy modeli gerektirmez.
 
 | Modül | Davranışı tanımlayan spec |
 |---|---|
-| `contract` | [S1](spec/index.md) |
+| `contract` | [S1](spec/s1-evaluation-api.md) |
 | `core/normalize` | S2 |
 | `core/pii`, `core/actions` | S3 |
 | `core/rules`, `detectors` | S4 |
